@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block body %}
+    <div class="container">
+    <br>
+    <img class="center-block" src="{% static "images/AZFF-logo.png" %}" />
+      <form class="form-signin" role="form" method="post">
+          {% csrf_token %}
+        <h2 class="form-signin-heading">Please sign in</h2>
+        {% if form.non_field_errors %}
+          {% for error in form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ form.username }}
+       	<br>
+        {{ form.password }}
+        <label class="checkbox">
+            {{ form.remember_me }} {{ form.remember_me.label }}
+          <!--<input type="checkbox" value="remember-me"> Remember me-->
+        </label>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+    </div> <!-- /container -->
+{% endblock body %}

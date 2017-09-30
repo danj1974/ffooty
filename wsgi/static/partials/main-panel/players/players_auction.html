@@ -1,0 +1,55 @@
+
+<!--<p>selectedRows: {{ gridOptions.selectedRows }}</p>-->
+<!-- Position filter options-->
+<div class="btn-group col-md-4">
+    <label ng-repeat="option in filter.options" class="btn btn-default" ng-model="filter.radioModel" ng-click="filterOnPosition(option)" btn-radio="option" uncheckable>{{ option }}</label>
+</div>
+<!-- Quick filter -->
+<div class="col-md-4">
+    <input placeholder="Search/Filter..." type="text" ng-model="gridOptions.quickFilterText" style="margin-top: 5px; margin-bottom: 10px;"/>
+</div>
+
+<!-- Spacer to fix layout issue in IE -->
+<div class="col-md-4"></div>
+
+<!-- the grid -->
+<div ag-grid="gridOptions" class="ag-fresh col-md-8 col-xs-10" style="height: 80%;"></div>
+
+<!-- stats -->
+<div class="col-md-4 col-xs-10">
+    <p>Players selected:</p>
+    <p><strong>GKP: </strong> {{ selectedPlayerCounts.gkp }} / {{ constants.AUCTION_GKP }}</p>
+    <p><strong>DEF: </strong> {{ selectedPlayerCounts.def }} / {{ constants.AUCTION_DEF }}</p>
+    <p><strong>MID: </strong> {{ selectedPlayerCounts.mid }} / {{ constants.AUCTION_MID }}</p>
+    <p><strong>STR: </strong> {{ selectedPlayerCounts.str }} / {{ constants.AUCTION_STR }}</p>
+    <br>
+    <button class="btn btn-primary" ng-click="previewAuctionNominations()">Preview <i class="fa fa-angle-right"></i></button>
+    <!--<br>-->
+    <!--<div class="alert alert-warning" ng-repeat="warning in warnings">{{ warning }}</div>-->
+    <!--<div class="alert alert-danger" ng-repeat="error in errors">{{ error }}</div>-->
+    <!--<div class="alert alert-info" ng-if="errors.length > 0">Correct errors to enable save.</div>-->
+    <!--<div class="alert alert-info" ng-if="errors.length == 0 && warnings.length > 0">You can save these nominations and add others later.</div>-->
+    <!--<br>-->
+    <!--<button class="btn btn-primary" ng-click="saveNominations()" ng-disabled="errors.length > 0"> <i class="fa fa-save"></i> Save Nominations</button>-->
+</div>
+
+<!--<p>{{ constants }}</p>-->
+<!--<p>{{ selectedPlayerIds }}</p>-->
+
+<!--<script type="text/ng-template" id="confirmNominations.html">-->
+
+		<!--<div class="modal-header">-->
+	        <!--<h3 class="modal-title">Confirm Nominations</h3>-->
+	    <!--</div>-->
+	    <!--<div class="modal-body">-->
+            <!--<div class="alert alert-warning" ng-repeat="warning in warnings">{{ warning }}</div>-->
+	        <!--<div class="alert alert-danger" ng-repeat="error in errors">{{ error }}</div>-->
+            <!--<div class="alert alert-info" ng-if="warnings && !errors">Please cancel and correct errors.</div>-->
+	    <!--</div>-->
+	    <!--<div class="modal-footer">-->
+	        <!--<button class="btn btn-primary" ng-disabled="errors" ng-click="finaliseNominations()">Save</button>-->
+	        <!--<button class="btn btn-warning" ng-click="cancel()">Cancel</button>-->
+	    <!--</div>-->
+	<!--</div>-->
+
+<!--</script>-->

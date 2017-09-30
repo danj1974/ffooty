@@ -1,0 +1,11 @@
+#!/bin/bash
+#this is .openshift/action_hooks/build
+#remember to make it +x so openshift can run it.
+if [ ! -d ${OPENSHIFT_DATA_DIR}media ]; then
+    mkdir -p ${OPENSHIFT_DATA_DIR}media
+fi
+ln -snf ${OPENSHIFT_DATA_DIR}media $OPENSHIFT_REPO_DIR/wsgi/static/media
+
+export DJANGO_EMAIL_PASSWORD=astraffootyzeneca
+
+######################### end of file

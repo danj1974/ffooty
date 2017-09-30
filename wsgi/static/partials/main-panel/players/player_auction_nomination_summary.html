@@ -1,0 +1,37 @@
+
+<!--<p>selectedRows: {{ gridOptions.selectedRows }}</p>-->
+<div class="col-md-8">
+
+    <button class="btn btn-primary" ng-click="toggleIsManagerView()" ng-if="isManagerView">Show All Players</button>
+    <button class="btn btn-default" ng-click="toggleIsManagerView()" ng-if="!isManagerView">Show My Nominations</button>
+    <br>
+
+    <h2>TODO IS THIS TEMPLATE IN USE?? (player_auction_nomination_summary.html)</h2>
+    <table class="table table-condensed">
+        <thead>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Team</th>
+            <th>Value</th>
+            <th>Nominations</th>
+        </thead>
+
+        <tbody>
+            <tr ng-repeat="player in players">
+                <td>{{ player.code }}</td>
+                <td>{{ player.name }}</td>
+                <td>{{ player.prem_team }}</td>
+                <td>{{ player.value }}</td>
+                <td ng-if="player.auction_nomination_managers.length == 0"></td>
+                <td ng-if="!isAdmin && player.auction_nomination_managers.length != 2">
+                    <span ng-repeat="manager in player.auction_nomination_managers">{{ manager }}{{ $last ? '':', ' }}</span>
+                </td>
+                <td ng-if="!isAdmin && player.auction_nomination_managers.length == 2">2</td>
+                <td ng-if="isAdmin && player.auction_nomination_managers.length > 0">
+                    <span ng-repeat="manager in player.auction_nomination_managers">{{ manager }}{{ $last ? '':', ' }}</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>

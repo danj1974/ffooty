@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block body %}
+    <div class="container">
+    <form id="file_upload_form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ file_upload_form }}
+        <input type="submit" value="Submit">
+    </form>
+    </div> <!-- /container -->
+{% endblock body %}

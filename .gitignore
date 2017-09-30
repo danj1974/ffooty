@@ -1,0 +1,15 @@
+.idea/
+ghostdriver.log
+*.pyc
+
+assets/*
+players.csv
+players.xls
+.project
+.pydevproject
+.idea/*
+.settings/*
+
+data/*
+*dan_BAK.py
+*settings/dan.py

@@ -1,0 +1,55 @@
+<!--<a class="btn btn-default" href="" ng-href="{{ '/#' + baseUrl }}"><i class="fa fa-angle-left"></i> &nbsp; Main Table</a>-->
+<br>
+<br>
+<div class="col-md-8">
+
+
+</div>
+
+<div class="col-md-8 alert alert-info">
+    <h3>Transfer Window Summary - Processed Nominations</h3>
+    <p ng-if="currentWindow.type != 'Transfer Confirmation'">A summary of processed nominations will be available after the next transfer nomination window has ended.</p>
+</div>
+
+<div class="col-md-10" ng-if="currentWindow.type != 'Transfer Nomination'">
+    <!--<button class="btn btn-warning" ng-click="refreshData();">-->
+        <!--<span class="fa fa-refresh"></span> Refresh Status-->
+    <!--</button>-->
+    <!--<a class="btn btn-default" href="" ng-href="{{ '/#' + baseUrl + '/confirmation/' }}"><i class="fa fa-angle-left"></i> &nbsp; My Transfers</a>-->
+    </br>
+    <table class="table table-condensed">
+    <thead>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Team</th>
+        <th>Value</th>
+        <th>Team</th>
+        <th>Bid</th>
+        <!--<th>Priority</th>-->
+        <th>Status</th>
+        <!--<th>Actions</th>-->
+    </thead>
+
+    <tbody>
+        <!--<tr ng-repeat="nomination in allNominations.nominations" ng-if="nomination.status == 'List' || nomination.status == 'Accepted' || nomination.status == 'Passed' || nomination.status == 'Bid Failed'">-->
+        <tr ng-repeat="nomination in allNominations.nominations" ng-if="nomination.processed || nomination.status == 'List'" >
+            <td>{{ allNominations.players[nomination.player].code }}</td>
+            <td>{{ allNominations.players[nomination.player].name }}</td>
+            <td>{{ allNominations.players[nomination.player].prem_team }}</td>
+            <td>{{ allNominations.players[nomination.player].value }}</td>
+            <td>{{ allNominations.teams[nomination.team].manager.username }}</td>
+            <td>{{ nomination.bid }}</td>
+            <!--<td>{{ nomination.priority }}</td>-->
+            <td>{{ nomination.status }}</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+</br>
+</br>
+
+
+    <!--<div class="alert alert-danger" ng-if="selectedPlayers.length > constants.TRANSFER_NOMINATIONS">Please delete {{ selectedPlayers.length - constants.TRANSFER_NOMINATIONS }} nominations.</div>-->
+    <!--<br>-->
+    <!--<button class="btn btn-primary" ng-click="saveNominations()" ng-disabled="selectedPlayers.length > constants.TRANSFER_NOMINATIONS"> <i class="fa fa-save"></i> Save Nominations</button>-->
+</div>

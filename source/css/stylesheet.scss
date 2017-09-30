@@ -1,0 +1,225 @@
+@import "bootstrap";
+
+$font-stack: "Trebuchet MS", arial, sans-serif;
+$brand-blue: #1f497d;
+
+// Optional class to remove Bootstrap column gutter
+.no-padding {
+	padding: 0;
+}
+
+// Remove navbar bottom margin so content has no gaps
+.navbar, .panel {
+	margin-bottom: 0;
+}
+
+.left-nav-title {
+	color: $brand-blue;
+	font-weight: bold;
+	font-size: 14px;
+	text-transform: uppercase;
+}
+
+.nav {
+	li {
+		a.compact {
+			padding: 2px 8px;
+		}
+	}
+}
+
+.panel-heading.large {
+	font-size: 32px;
+	h3 {
+		font-size: 22px;
+		text-transform: uppercase;
+		display: inline;
+	}
+}
+
+.panel-heading.compact {
+	padding: 5px 10px;
+}
+
+$callout-border-width: 1px;
+$callout-border-left-width: 5px;
+$callout-border-radius: 3px;
+$callout-padding: 4px;
+@mixin callout {
+	padding: $callout-padding;
+	//margin: 20px 0;
+	border: $callout-border-width solid #eee;
+	border-left-width: $callout-border-left-width;
+	border-radius: $callout-border-radius;
+	&.danger {
+		border-left-color: #d9534f;
+	}
+	&.warning {
+		border-left-color:#f0ad4e
+	}
+	&.info {
+		border-left-color: $brand-blue;
+	}
+}
+
+.bs-callout {
+	@include callout;
+}
+
+ul.menu-list {
+	padding-left: 0px;
+	li {
+		font-size: 12px;
+		padding: $callout-padding + $callout-border-width;
+		padding-left: $callout-border-width + $callout-border-left-width + $callout-border-radius;
+		&.selected, &:hover {
+			padding-left: 0;
+			@include callout;
+		}
+		&:hover {
+			cursor: default;
+		}
+	}
+}
+
+.space-name {
+	vertical-align: middle;
+}
+
+.glyphicon-large {
+	font-size: 28px;
+}
+
+// Login page
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.filebrowser {
+	&.grid {
+		text-align: center;
+		.file-label {
+			text-align: center;
+			display: block;
+			word-wrap: break-word;
+			font-size: 12px;
+		}
+		.file-icon {
+			font-size: 64px;
+			margin-bottom: 10px;
+			margin-top: 5px;
+		}
+		&:hover {
+			background-color: $gray-lighter;
+		}
+	}
+	&.list {
+		text-align: left;
+		.file-label {
+			text-align: left;
+			font-size: 12px;
+		}
+		.file-icon {
+			font-size: 12px;
+			margin-bottom: 10px;
+			margin-top: 5px;
+		}
+		&:hover {
+			background-color: $gray-lighter;
+		}
+	}
+}
+
+/* Animations */
+
+/*
+ We're using CSS transitions for when
+ the enter and move events are triggered
+ for the element that has the .repeated-item
+ class
+*/
+.repeated-item.ng-enter, .repeated-item.ng-move {
+ -webkit-transition:0.5s linear all;
+ -moz-transition:0.5s linear all;
+ -o-transition:0.5s linear all;
+ transition:0.5s linear all;
+ opacity:0;
+}
+
+/*
+The ng-enter-active and ng-move-active
+are where the transition destination properties
+are set so that the animation knows what to
+animate.
+*/
+.repeated-item.ng-enter.ng-enter-active,
+.repeated-item.ng-move.ng-move-active {
+ opacity:1;
+}
+
+/*
+ We're using CSS keyframe animations for when
+ the leave event is triggered for the element
+ that has the .repeated-item class
+*/
+.repeated-item.ng-leave {
+ -webkit-animation:0.5s my_animation;
+ -moz-animation:0.5s my_animation;
+ -o-animation:0.5s my_animation;
+ animation:0.5s my_animation;
+}
+
+@keyframes my_animation {
+ from { opacity:1; }
+ to { opacity:0; }
+}
+
+/*
+ Unfortunately each browser vendor requires
+ its own definition of keyframe animation code...
+*/
+@-webkit-keyframes my_animation {
+ from { opacity:1; }
+ to { opacity:0; }
+}
+
+@-moz-keyframes my_animation {
+ from { opacity:1; }
+ to { opacity:0; }
+}
+
+@-o-keyframes my_animation {
+ from { opacity:1; }
+ to { opacity:0; }
+}

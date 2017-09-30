@@ -1,0 +1,81 @@
+/*! project specific CSS goes here. */
+
+/* replacement for the navbar-brand used initially,which made the AZFF
+ * logo look too small.  Some responsive features may be lost however. */
+.ffooty-brand {
+	float: left;
+	margin: 7px;
+	height: 36px;
+}
+
+div[class^='player'], div[class*=' player'] {
+    border-radius: 20px;
+    padding: 20px;
+    height: 150px;
+    margin: 5px;
+}
+
+div[class^='player-first'], div[class*=' player-first'] {
+    border: 2px solid #00CCFF;
+}
+
+div[class^='player-res'], div[class*=' player-res'] {
+    border: 2px solid #993366;
+}
+
+div[class^='player-squad'], div[class*=' player-squad'] {
+    border-radius: 5px !important;
+    border: 2px solid #99CC00;
+    padding: 5px;
+    height: 30px !important;
+    margin: 5px;
+    font-size: 10px;
+}
+
+/* team scores view - centre all scores and their column headers */
+.score, .score-header {
+    text-align: center;
+}
+
+/* and ensure all scores have a white background */
+.score {
+    background-color: #FFFFFF !important;
+}
+
+/* and highlight Cup weeks */
+th.cup-week {
+    background-color: #FFFF00;
+}
+
+.score-grey {
+    font-color: #A9A9A9;
+}
+
+/* set height of motm accordions heading panel */
+#motm-accordion .panel-heading {
+    height: 40px;
+}
+
+/* set height of motm accordions panel body */
+#motm-accordion .panel-body {
+    height: 200px;
+    overflow: scroll;
+}
+
+/*  increasing the standard modal-lg size */
+body .modal-lg {
+  width: 60%;
+}
+/*  adding an additional modal-xl size (not yet implemented with ui-router)*/
+body .modal-xl {
+  width: 70%;
+}
+
+td.actions > button {
+    margin-right: 10px;
+}
+
+.btn[disabled] {
+    background-color: #bdbdbd !important;
+}
+
