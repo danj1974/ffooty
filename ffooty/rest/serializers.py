@@ -8,7 +8,8 @@ from rest_framework import serializers
 
 from ffooty.models import (Team, PremTeam, Player, Week, PlayerScore, TeamWeeklyScore,
                            TeamTotalScore, Window, AuctionNomination, TransferNomination,
-                           Banter, Comment, Constant, TeamMonthlyScore, PlayerTeamScore)
+                           Banter, Comment, Constant, TeamMonthlyScore, PlayerTeamScore,
+                           SquadChange)
 # from storage.models import DatabaseFile
 # from storage.rest.serializers import FileStorageRetrieveSerializer
 # from wiki.models import WikiPageRevision
@@ -147,7 +148,13 @@ class TransferNominationSerializer(serializers.ModelSerializer):
         model = TransferNomination
 
 
-class SquadChangeSerializer(serializers.ModelSerializer)
+class SquadChangeSerializer(serializers.ModelSerializer):
+    player = PlayerSerializer()
+    window = WindowSerializer()
+
+    class Meta:
+        model = SquadChange
+        # fields = ('id', 'player', 'current_status', 'new_status', 'month', )
 
 
 class TransferNominationPlayerSerializer(TransferNominationSerializer):
