@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from .base import *
-import psycopg2.extensions
+# import psycopg2.extensions
 import os
 
 # # SECURITY WARNING: keep the secret key used in production secret!
@@ -15,21 +15,33 @@ TEMPLATE_DEBUG = True
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': 'localhost',
-        'NAME': 'ffooty',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres101',
-        'OPTIONS': {'isolation_level': psycopg2.extensions.ISOLATION_LEVEL_READ_UNCOMMITTED}
-    }
-}
-DATABASE_OPTIONS = {
-    "autocommit": True,
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'HOST': 'localhost',
+#         'NAME': 'ffooty',
+#         'USER': 'postgres',
+#         'PASSWORD': 'postgres101',
+#         'OPTIONS': {'isolation_level': psycopg2.extensions.ISOLATION_LEVEL_READ_UNCOMMITTED}
+#     }
+# }
+# DATABASE_OPTIONS = {
+#     "autocommit": True,
+# }
 DEFAULT_FILE_STORAGE = 'storage.handlers.DatabaseStorage'
 
+########## SQLITE3 DATABASE CONFIGURATION
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        "USER": "",
+        "PASSWORD": "",
+        "HOST": "",
+        "PORT": "",
+#         "ATOMIC_REQUESTS": True,
+    },
+}
 
 # Testing
 #SELENIUM_WEBDRIVER = 'firefox'

@@ -31,7 +31,7 @@ TEMPLATE_DEBUG = True
 # }
 DEFAULT_FILE_STORAGE = 'storage.handlers.DatabaseStorage'
 
-########## IN-MEMORY TEST DATABASE CONFIGURATION
+########## SQLITE3 DATABASE CONFIGURATION
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
