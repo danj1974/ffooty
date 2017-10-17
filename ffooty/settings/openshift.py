@@ -85,3 +85,20 @@ if ON_OPENSHIFT:
     }
 
     PHANTOMJS_PATH = './footy/phantomjs64'
+
+# Openshift logging config (https://blog.openshift.com/migrating-django-applications-openshift-3/)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}
