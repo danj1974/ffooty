@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from .base import *
 # import psycopg2.extensions
 import os
+import sys
 
 # # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'umu8tj3a&k_6zv69-(8w!xj32a64m$kaiu@76wj3!6vvr)1qv^'
@@ -68,23 +69,43 @@ ON_OPENSHIFT = False
 if 'OPENSHIFT_REPO_DIR' in os.environ:
     ON_OPENSHIFT = True
 
-# if ON_OPENSHIFT:
-#     DEBUG = True
-#     TEMPLATE_DEBUG = False
-#     ALLOWED_HOSTS = ['*']
-#     SECRET_KEY = os.environ['OPENSHIFT_SECRET_TOKEN']
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#             'NAME': 'ffooty',
-#             'USER': os.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME'),
-#             'PASSWORD': os.getenv('OPENSHIFT_POSTGRESQL_DB_PASSWORD'),
-#             'HOST': os.getenv('OPENSHIFT_POSTGRESQL_DB_HOST'),
-#             'PORT': os.getenv('OPENSHIFT_POSTGRESQL_DB_PORT'),
-#             }
-#     }
+if ON_OPENSHIFT:
+    DJ_PROJECT_DIR = os.path.dirname(__file__)
+    BASE_DIR = os.path.dirname(DJ_PROJECT_DIR)
+    WSGI_DIR = os.path.dirname(BASE_DIR)
+    REPO_DIR = os.path.dirname(WSGI_DIR)
+    DATA_DIR = os.environ.get('OPENSHIFT_DATA_DIR', BASE_DIR)
 
-    PHANTOMJS_PATH = './footy/phantomjs64'
+    DEBUG = True
+    TEMPLATE_DEBUG = False
+    ALLOWED_HOSTS = ['*']
+    # SECRET_KEY = os.environ['OPENSHIFT_SECRET_TOKEN']
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #         'NAME': 'ffooty',
+    #         'USER': os.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME'),
+    #         'PASSWORD': os.getenv('OPENSHIFT_POSTGRESQL_DB_PASSWORD'),
+    #         'HOST': os.getenv('OPENSHIFT_POSTGRESQL_DB_HOST'),
+    #         'PORT': os.getenv('OPENSHIFT_POSTGRESQL_DB_PORT'),
+    #     }
+    # }
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
+        }
+    }
+
+    sys.path.append(os.path.join(REPO_DIR, 'libs'))
+    import secrets
+    SECRETS = secrets.getter(os.path.join(DATA_DIR, 'secrets.json'))
+
+    # SECURITY WARNING: keep the secret key used in production secret!
+    SECRET_KEY = SECRETS['secret_key']
+
+
+    # PHANTOMJS_PATH = './footy/phantomjs64'
 
 # Openshift logging config (https://blog.openshift.com/migrating-django-applications-openshift-3/)
 LOGGING = {
