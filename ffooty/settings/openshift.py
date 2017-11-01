@@ -68,21 +68,21 @@ ON_OPENSHIFT = False
 if 'OPENSHIFT_REPO_DIR' in os.environ:
     ON_OPENSHIFT = True
 
-if ON_OPENSHIFT:
-    DEBUG = True
-    TEMPLATE_DEBUG = False
-    ALLOWED_HOSTS = ['*']
-    SECRET_KEY = os.environ['OPENSHIFT_SECRET_TOKEN']
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'ffooty',
-            'USER': os.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME'),
-            'PASSWORD': os.getenv('OPENSHIFT_POSTGRESQL_DB_PASSWORD'),
-            'HOST': os.getenv('OPENSHIFT_POSTGRESQL_DB_HOST'),
-            'PORT': os.getenv('OPENSHIFT_POSTGRESQL_DB_PORT'),
-            }
-    }
+# if ON_OPENSHIFT:
+#     DEBUG = True
+#     TEMPLATE_DEBUG = False
+#     ALLOWED_HOSTS = ['*']
+#     SECRET_KEY = os.environ['OPENSHIFT_SECRET_TOKEN']
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#             'NAME': 'ffooty',
+#             'USER': os.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME'),
+#             'PASSWORD': os.getenv('OPENSHIFT_POSTGRESQL_DB_PASSWORD'),
+#             'HOST': os.getenv('OPENSHIFT_POSTGRESQL_DB_HOST'),
+#             'PORT': os.getenv('OPENSHIFT_POSTGRESQL_DB_PORT'),
+#             }
+#     }
 
     PHANTOMJS_PATH = './footy/phantomjs64'
 
