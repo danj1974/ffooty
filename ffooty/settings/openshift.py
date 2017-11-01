@@ -76,6 +76,12 @@ if ON_OPENSHIFT:
     REPO_DIR = os.path.dirname(WSGI_DIR)
     DATA_DIR = os.environ.get('OPENSHIFT_DATA_DIR', BASE_DIR)
 
+    print "DJ_PROJECT_DIR =", DJ_PROJECT_DIR
+    print "BASE_DIR =", BASE_DIR
+    print "WSGI_DIR =", WSGI_DIR
+    print "REPO_DIR =", REPO_DIR
+    print "DATA_DIR =", DATA_DIR
+
     DEBUG = True
     TEMPLATE_DEBUG = False
     ALLOWED_HOSTS = ['*']
@@ -98,7 +104,7 @@ if ON_OPENSHIFT:
     }
 
     sys.path.append(os.path.join(REPO_DIR, 'libs'))
-    import secrets
+    from libs import secrets
     SECRETS = secrets.getter(os.path.join(DATA_DIR, 'secrets.json'))
 
     # SECURITY WARNING: keep the secret key used in production secret!
