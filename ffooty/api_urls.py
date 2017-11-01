@@ -12,7 +12,7 @@ from rest.viewsets import (
     TeamViewSet, PremTeamViewSet, PlayerViewSet, WeekViewSet, PlayerScoreViewSet,
     TeamWeeklyScoreViewSet, TeamTotalScoreViewSet, WindowViewSet,
     AuctionNominationViewSet, ManagerViewSet, TransferNominationViewSet,
-    BanterViewSet, CommentViewSet
+    BanterViewSet, CommentViewSet, SquadChangeViewSet
 )
 
 
@@ -46,5 +46,6 @@ router.register(r'auctionnomination', AuctionNominationViewSet, 'api-auctionnomi
 router.register(r'transfernomination', TransferNominationViewSet, 'api-transfernomination')
 router.register(r'banter', BanterViewSet, 'api-banter')
 router.register(r'comment', CommentViewSet, 'api-comment')
+router.register(r'squadchange', SquadChangeViewSet, 'api-squadchange')
 # router.register(r'constant', ConstantViewSet, 'api-constant')
 urlpatterns += router.urls

@@ -477,7 +477,6 @@ class Window(models.Model):
                                      self.deadline)
 
 
-
 class NominationMixin(models.Model):
     team = models.ForeignKey(Team)
     player = models.ForeignKey(Player)
@@ -648,9 +647,8 @@ class SquadChange(models.Model):
         Process the change.
 
         Only takes effect if the change has not been processed.
-        Validation of the resulting line-up is the responsibility of the
-        caller. If validation fail `self.reverse()` should be used to undo the
-        change.
+        Validation of the resulting line-up is the responsibility of the caller
+        If validation fails `self.reverse()` should be used to undo the change.
         """
         if not self.processed:
             self.player.status = self.new_status
@@ -690,6 +688,7 @@ class Banter(models.Model):
     def __unicode__(self):
         return self.text
 
+
 class Comment(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User)
@@ -698,6 +697,7 @@ class Comment(models.Model):
 
     def __unicode__(self):
         return self.text
+
 
 class Constant(NameMixin):
     BOOLEAN = 'B'

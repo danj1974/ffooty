@@ -1569,7 +1569,7 @@ footyApp.filter('trustAsHtml', function($sce) { return $sce.trustAsHtml; });
 footyApp.controller('TeamLineupController', ['$scope', '$rootScope', '$route', 'Players', 'TeamValidate','teamDetails', 'currentWindow', function($scope, $rootScope, $route, Players, TeamValidate, teamDetails, currentWindow) {
     $scope.team = teamDetails;
     $scope.currentWindow = currentWindow;
-   console.log("TeamLineupController: $scope.currentWindow = " + JSON.stringify($scope.currentWindow));
+    console.log("TeamLineupController: $scope.currentWindow = " + JSON.stringify($scope.currentWindow));
 
     // create a record of current statuses:
     var oldStatuses = {};
@@ -1609,8 +1609,6 @@ footyApp.controller('TeamLineupController', ['$scope', '$rootScope', '$route', '
 
     });
 
-//    $scope.statusChoices = ['First Team']
-
     console.log("$scope.team: " + JSON.stringify($scope.team, null, 4));
 
     $scope.validateTeamSelection = function () {
@@ -1619,6 +1617,196 @@ footyApp.controller('TeamLineupController', ['$scope', '$rootScope', '$route', '
     };
 
     $scope.saveTeam = function () {
+        angular.forEach($scope.team.players, function(player) {
+            if (oldStatuses[player.id] != player.status) {
+            console.log("saveTeam(): changing " + player.name + " from " + oldStatuses[player.id] + " to " + player.status );
+                Players.patch(player).$promise
+                    .then(function (response) {
+        //                window.alert(JSON.stringify(response));
+                    },
+                    function (error) {
+                        window.alert(JSON.stringify(error));
+                    });
+            };
+        });
+
+        TeamValidate.get({id: $scope.team.id}).$promise
+            .then(function (response) {
+                console.log("saveTeam(): response = " + JSON.stringify(response));
+                console.log("saveTeam(): typeof(response.is_valid) = " + typeof(response.is_valid));
+                console.log("saveTeam(): response.is_valid = " + response.is_valid);
+                if (response.is_valid) {
+                    window.alert("A valid team line-up was saved successfully.");
+                } else {
+                    window.alert("WARNING - Team line-up is not valid!!");
+                }
+
+            });
+
+        $route.reload();
+    };
+
+}]);
+
+footyApp.controller('TeamLineupControllerNEW', ['$scope', '$rootScope', '$route', 'Players', 'TeamValidate','teamDetails', 'currentWindow', function($scope, $rootScope, $route, Players, TeamValidate, teamDetails, currentWindow) {
+    $scope.team = teamDetails;
+    $scope.currentWindow = currentWindow;
+    console.log("TeamLineupController: $scope.currentWindow = " + JSON.stringify($scope.currentWindow));
+
+    // create a lookup dict of current statuses key = player.id:
+    var oldStatuses = {};
+    angular.forEach($scope.team.players, function(player) {
+        oldStatuses[player.id] = player.status;
+    });
+
+    function addTeamPositions(object) {
+        // add arrays representing the team positions to an object
+        object.GKP = {
+            F: new Array(1).fill(),
+            R: new Array(1).fill()
+        }
+
+        object.DEF = {
+            F: new Array(4).fill(),
+            R: new Array(1).fill()
+        }
+
+        object.MID = {
+            F: new Array(4).fill(),
+            R: new Array(1).fill()
+        }
+
+        object.STR = {
+            F: new Array(2).fill(),
+            R: new Array(1).fill()
+        }
+
+        object.SQUAD = [];
+    }
+
+    $scope.team.currentPositions = {};
+    addTeamPositions($scope.team.currentPositions);
+
+    $scope.team.newPositions = {};
+    addTeamPositions($scope.team.newPositions);
+
+//    $scope.team.currentPositions.GKP = {
+//        F: new Array(1).fill(),
+//        R: new Array(1).fill()
+//    }
+//    $scope.team.currentPositions.DEF = {
+//        F: new Array(4).fill(),
+//        R: new Array(1).fill()
+//    }
+//    $scope.team.currentPositions.MID = {
+//        F: new Array(4).fill(),
+//        R: new Array(1).fill()
+//    }
+//    $scope.team.currentPositions.STR = {
+//        F: new Array(2).fill(),
+//        R: new Array(1).fill()
+//    }
+//    $scope.team.currentPositions.SQUAD = [];
+
+    console.log("")
+    console.log("BEGIN")
+    console.log("")
+
+    var expectedPlayerCounts = [
+        {position: 'GKP', status: 'F', count: 1},
+        {position: 'GKP', status: 'R', count: 1},
+        {position: 'DEF', status: 'F', count: 4},
+        {position: 'DEF', status: 'R', count: 1},
+        {position: 'MID', status: 'F', count: 4},
+        {position: 'MID', status: 'R', count: 1},
+        {position: 'STR', status: 'F', count: 2},
+        {position: 'STR', status: 'R', count: 1},
+    ]
+
+    function countPlayers(position, status) {
+        // returns a count of the players in a given position with a given status
+        angular.forEach($scope.team.players, function(player) {
+            var count = 0;
+            if (player.position == position && player.status == status) {
+                count += 1;
+            }
+        })
+
+        return count;
+    }
+
+    // an array of error messages for validation
+    $scope.validationErrors = [];
+
+    function validateLineUp () {
+        // count the players in each position & status and return a boolean indicating whether the line is valid
+        // records errors messages in $scope.validationErrors
+
+        // reset an errors first
+        $scope.validationErrors = [];
+
+        angular.forEach(expectedPlayerCounts, function(expected) {
+            var count = countPlayers(expected.position, expected.status);
+            if (expected.count != count) {
+                $scope.validationErrors.push()
+            }
+        })
+
+    }
+
+
+    function populatePlayers(positions) {
+        // initialize the player position arrays with currently selected line-up
+        angular.forEach($scope.team.players, function(player) {
+            if (player.status == 'F' || player.status == 'R') {
+                angular.forEach(positions[player.position][player.status], function(value, index) {
+                    if (value == undefined) {
+                        positions[player.position][player.status][index] = player;
+                    }
+                });
+            } else {
+                positions.SQUAD.push(player);
+            }
+        });
+    }
+
+    populatePlayers($scope.team.currentPositions);
+
+
+    console.log("$scope.team.currentPositions = " + JSON.stringify($scope.team.currentPositions));
+    console.log("$scope.team.newPositions = " + JSON.stringify($scope.team.newPositions));
+
+    console.log("")
+    console.log("END")
+    console.log("")
+
+    function arrayIsFull(array) {
+        return array.indexOf(undefined) == -1
+    }
+
+    function addPlayerToPosition(player) {
+//        angular.forEach(teamDetails)
+    }
+
+
+    $scope.changesToSave = {};
+
+
+    $scope.changePlayerStatus = function (player) {
+        // the status has changed from the original, add it to the list to save
+        if (oldStatuses[player.id] != player.status) {
+            $scope.changesToSave[player.id] = player.status
+        } else {
+            delete $scope.changesToSave[player.id]
+        }
+    }
+
+    $scope.validateTeamSelection = function () {
+
+
+    };
+
+    $scope.saveSquadChanges = function () {
         angular.forEach($scope.team.players, function(player) {
             if (oldStatuses[player.id] != player.status) {
             console.log("saveTeam(): changing " + player.name + " from " + oldStatuses[player.id] + " to " + player.status );

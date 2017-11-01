@@ -154,7 +154,7 @@ class SquadChangeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SquadChange
-        # fields = ('id', 'player', 'current_status', 'new_status', 'month', )
+        fields = ('id', 'player', 'window', 'current_status', 'new_status', 'month', 'processed')
 
 
 class TransferNominationPlayerSerializer(TransferNominationSerializer):

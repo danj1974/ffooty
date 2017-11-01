@@ -998,10 +998,11 @@ def process_squad_changes(team, window, validate_only=True):
 
     :param team: the :class:`ffooty.models.Team` to check
     :param window: the :class:`ffooty.models.Window` to validate
+    :param bool validate_only: flag to indicate
     :return: bool
     """
     changes = SquadChange.objects.select_related(
-        'team', 'player'
+        'player', 'player__team'
     ).filter(player__team=team, window=window)
 
     for change in changes:
@@ -1014,8 +1015,8 @@ def process_squad_changes(team, window, validate_only=True):
         for change in changes:
             change.reverse()
 
-    if team.validate_line_up():
-        message = 'Squad changes for {} could not be reversed'.format(team)
-        raise SquadChangeException()
+    # if team.validate_line_up():
+    #     message = 'Squad changes for {} could not be reversed'.format(team)
+    #     raise SquadChangeException()
 
     return is_valid

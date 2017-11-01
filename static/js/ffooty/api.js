@@ -224,6 +224,12 @@ footyAPI.factory('TeamValidate', ['$resource', function($resource) {
         get: {method: 'GET', params:{id: '@id'}, isArray: false},
     });
 }]);
+//
+//footyAPI.factory('SquadChanges', ['$resource', function($resource) {
+//    return $resource('/api/squadchange/:id/', {}, {
+//        get: {method: 'GET', params:{id: '@id'}, isArray: false},
+//    });
+//}]);
 
 footyAPI.factory('UpdateScores', ['$resource', function($resource) {
     return $resource('/api/update_scores/', {}, {
