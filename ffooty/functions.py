@@ -733,10 +733,13 @@ def export_player_list_csv():
 
 def process_transfer_nominations():
     players = TransferNomination.objects.select_related(
-        'player').values('player_id').distinct('player')
+        'player').values_list('player_id', flat=True)
+        #'player').values('player_id').distinct('player')  # distinct not support by sqlite3
 
-    for p in players:
-        player = Player.objects.get(id=p['player_id'])
+    player_ids = list(set(players))
+
+    for id in player_ids:
+        player = Player.objects.get(id=id)
         print "Updating transfer for ", player.name
         player.update_transfers()
 
