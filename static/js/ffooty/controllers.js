@@ -1,50 +1,8 @@
-footyApp.controller('MenuController', ['$scope', '$location', '$route', '$rootScope', function($scope, $location, $route, $rootScope) {
-
-	$scope.isActive = function(item) {
-		var team_id = $route.current.params.team_id;
-		return $location.path().indexOf('/' + space_id + item.link) == 0;
-		// return $route.current.$$route.regexp.test('/' + space_id + item.link);
-	};
-
-	$scope.selectMenuItem = function(item) {
-		var space_id = $route.current.params.space_id;
-		$location.path('/' + space_id + item.link);
-	};
-
-	var setupMenu = function() {
-		// Repopulate menu with available apps for the current space
-		$scope.menuitems = [].concat(menuitems);
-//		var spaceId = parseInt($route.current.params.space_id);
-//		angular.forEach(apps, function(app) {
-//			if (app.spaces.indexOf(spaceId) > -1 && user_detail.hasPermission(spaceId, 'portal', 'pluggableapp', 'R', app.id)) {
-//				$scope.menuitems.push({
-//						title: app.name,
-//						link: '/pluggable_app/' + app.id + '/',
-//						icon_class: 'glyphicon-list-alt'
-//				});
-//			}
-//		});
-		$scope.space_id = $route.current.params.space_id;
-	};
-
-//	var user_detail;
-//	userHelperFactory.then(function(user) {
-//		user_detail = user;
-//		$rootScope.$on('$routeChangeSuccess', function() {
-//			setupMenu();
-//		});
-//		setupMenu();
-//	});
-
-
-}]);
+//footyApp.controller('MenuController', ['$scope', '$location', '$route', '$rootScope', function($scope, $location, $route, $rootScope) {
+//
+//}]);
 
 footyApp.controller('BaseController', ['$scope', '$location', '$rootScope', 'UpdateScores', function($scope, $location, $rootScope, UpdateScores) {
-    // load the constants
-//    $rootScope.constants = constants;
-//    $rootScope.authUser = authUser;
-    // redirect to home page
-//    $location.path($location.path() + 'home/');
 
     $scope.updateScores = function() {
         window.alert("Sending request to server to update the scores, please do not close or refresh your browser");
@@ -57,9 +15,7 @@ footyApp.controller('BaseController', ['$scope', '$location', '$rootScope', 'Upd
                 console.log("error: " + JSON.stringify(error));
                 window.alert(error.data.detail);
             });
-
     };
-
 }]);
 
 footyApp.controller('AdminAuctionNominationsController', ['$scope','$rootScope', '$location', 'nominationSummary',  function($scope, $rootScope, $location, nominationSummary) {
@@ -151,7 +107,6 @@ footyApp.controller('AuctionListController', ['$scope', '$location', '$rootScope
         if ($rootScope.authUser == 'Admin' || $rootScope.authUser == 'admin') {
             return TEMPLATE_PATH + 'main-panel/players/admin_players_auction.html';
         } else {
-//            return TEMPLATE_PATH + 'main-panel/players/players.html';
             return TEMPLATE_PATH + 'main-panel/players/players_auction.html';
         }
     };
@@ -180,8 +135,6 @@ footyApp.controller('AuctionListController', ['$scope', '$location', '$rootScope
         console.log("windowTypes = " + JSON.stringify(windowTypes));
         console.log("true currentWindow = " + currentWindow);
         columnDefs.push({headerName: "Select", field: null, width: 50, checkboxSelection: true});  //, comparator: selectionComparator
-//    } else if (currentWindow == windowTypes.AUCTION) {
-    // add Nomin
     } else if (currentWindow.type == windowTypes.AUCTION) {
         console.log("windowTypes = " + JSON.stringify(windowTypes));
         console.log("false currentWindow = " + JSON.stringify(currentWindow));
@@ -235,19 +188,9 @@ footyApp.controller('AuctionListController', ['$scope', '$location', '$rootScope
         selectionChange();
     };
 
-//    function selectionComparator(_value1, _value2, data1, data2, isInverted) {
-//        return value1 - value2;
-//    }
-
-
-//    function rowSelected(row) {
-//        window.alert("row " + row.id + " selected: " + row.player);
-//    }
-
     $rootScope.selectedPlayerIdsOld = [];
 
     function selectionChange() {
-//        console.log("selectionChange() called...");
         $rootScope.selectedPlayers = $rootScope.gridOptions.selectedRows;
         $rootScope.selectedPlayerIds = [];
 
@@ -257,8 +200,6 @@ footyApp.controller('AuctionListController', ['$scope', '$location', '$rootScope
 
         setSelectionCounts();
         compareWithPreviousSelection();
-
-//        console.log("$rootScope.gridOptions.selectedNodesById = " + JSON.stringify($rootScope.gridOptions.selectedNodesById, null, 4));
     };
 
     function setSelectionCounts() {
@@ -282,23 +223,16 @@ footyApp.controller('AuctionListController', ['$scope', '$location', '$rootScope
     }
 
     function compareWithPreviousSelection() {
-//        console.log("compareWithPreviousSelection() method called...");
         if ($rootScope.selectedPlayerIds.length > $scope.selectedPlayerIdsOld.length) {
             // a new row has been selected - do nothing
-//            console.log("compareWithPreviousSelection: new length > old");
         } else {
-//            console.log("compareWithPreviousSelection: finding player that has been unchecked");
             angular.forEach($scope.selectedPlayerIdsOld, function (id) {
-//                console.log("checking old id = " + id + " in new list");
                 // find the player that has been unchecked
                 if ($rootScope.selectedPlayerIds.indexOf(id) == -1) {
                     // check whether a nomination has been saved for the player...
-//                    console.log("old player " + id + " not found in new list. Checking for saved nomination.");
                     var isNominated = false;
                     angular.forEach(userNoms, function(nomination) {
-//                        console.log("checking old id = " + id + " against nomination: " + nomination.player);
                         if (nomination.player == id) {
-//                            console.log("A nomination for player id" + nomination.player + " has been found");
                             window.alert("A nomination for player id " + nomination.player +
                                 " has been saved to the database previously. \nPlease go to the preview screen and use the delete option to remove.");
                             isNominated = true;
@@ -387,14 +321,9 @@ footyApp.controller('AuctionSummaryController', ['$scope', '$location', '$rootSc
         ready: onGridReady,
         rowData: $rootScope.players,
         rowSelection: 'multiple',
-//        rowSelected: rowSelected,
         suppressRowClickSelection: true,
 
     };
-
-//    function rowSelected(row) {
-//        window.alert("row " + row.id + " selected: " + row.player);
-//    }
 
     function onGridReady() {
         // resize the columns to fit the container
@@ -427,7 +356,6 @@ footyApp.controller('AuctionSummaryController', ['$scope', '$location', '$rootSc
     $rootScope.selectedPlayerIdsOld = [];
 
     function selectionChange() {
-//        console.log("selectionChange() called...");
         $rootScope.selectedPlayers = $rootScope.gridOptions.selectedRows;
         $rootScope.selectedPlayerIds = [];
 
@@ -437,8 +365,6 @@ footyApp.controller('AuctionSummaryController', ['$scope', '$location', '$rootSc
 
         setSelectionCounts();
         compareWithPreviousSelection();
-
-//        console.log("$rootScope.gridOptions.selectedNodesById = " + JSON.stringify($rootScope.gridOptions.selectedNodesById, null, 4));
     };
 
     function setSelectionCounts() {
@@ -462,23 +388,16 @@ footyApp.controller('AuctionSummaryController', ['$scope', '$location', '$rootSc
     }
 
     function compareWithPreviousSelection() {
-//        console.log("compareWithPreviousSelection() method called...");
         if ($rootScope.selectedPlayerIds.length > $scope.selectedPlayerIdsOld.length) {
             // a new row has been selected - do nothing
-//            console.log("compareWithPreviousSelection: new length > old");
         } else {
-//            console.log("compareWithPreviousSelection: finding player that has been unchecked");
             angular.forEach($scope.selectedPlayerIdsOld, function (id) {
-//                console.log("checking old id = " + id + " in new list");
                 // find the player that has been unchecked
                 if ($rootScope.selectedPlayerIds.indexOf(id) == -1) {
                     // check whether a nomination has been saved for the player...
-//                    console.log("old player " + id + " not found in new list. Checking for saved nomination.");
                     var isNominated = false;
                     angular.forEach(userNoms, function(nomination) {
-//                        console.log("checking old id = " + id + " against nomination: " + nomination.player);
                         if (nomination.player == id) {
-//                            console.log("A nomination for player id" + nomination.player + " has been found");
                             window.alert("A nomination for player id " + nomination.player +
                                 " has been saved to the database previously. \nPlease go to the preview screen and use the delete option to remove.");
                             isNominated = true;
@@ -518,7 +437,6 @@ footyApp.controller('AuctionSummaryController', ['$scope', '$location', '$rootSc
     };
 
     $scope.previewAuctionNominations = function() {
-        console.log("AuctionSummaryController: trying: " + $rootScope.baseUrl + 'auction/selection/');
         $location.path($rootScope.baseUrl + 'auction/selection/');
     };
 
@@ -564,22 +482,16 @@ footyApp.controller('AuctionSelectionController', ['$scope', '$rootScope', '$loc
         } else if (strDiff < 0) {
             $rootScope.errors.push("You need to delete " + Math.abs(strDiff) + " striker nomination(s).");
         }
-
-//        console.log("validateNominations(): warnings = " + $rootScope.warnings);
-//        console.log("validateNominations(): errors = " + $rootScope.errors);
     };
 
     $scope.validateNominations();
 
     $scope.deleteNomination = function(player) {
-//        console.log("deleteNomination(): player = " + JSON.stringify(player));
         var index = $rootScope.selectedPlayers.indexOf(player)
-//        console.log('deleteNomination: index = ' + index)
         if (index != -1) {
             // remove from selectedPlayers & Ids arrays
             $rootScope.selectedPlayers.splice(index, 1);
             $rootScope.selectedPlayerIds.splice(index, 1);
-//            console.log("deleteNomination(): after splice: selectedPlayers = " + JSON.stringify($rootScope.selectedPlayers));
             if (player.position == 'GKP') {
                 $rootScope.selectedPlayerCounts.gkp--;
             } else if (player.position == 'DEF') {
@@ -785,25 +697,6 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
 
 }]);
 
-//footyApp.filter('byActionName', function() {
-//	return function(tasks, action_names) {
-//		var out = tasks.filter(function( task ) {
-//
-//  			angular.forEach(action_names, function(name, key) {
-//				console.log('workflowFilters: by_action_name: forEach loop value: name: ' + name);
-//				if (task.node.name == name) {
-//					return true;
-//				};
-//			});
-//
-//  			// return task.node.name == 'Finalise Hit Rtp' ||
-//  				// task.node.name == 'Request Computational Model';
-//		});
-//		// Filter logic here, adding matches to the out var.
-//		return out;
-//	};
-//});
-
 footyApp.controller('TransferListController', ['$scope', '$location', '$rootScope', 'CurrentWindow', 'TransferNominations', 'userTransferNoms', 'TEMPLATE_PATH', function($scope, $location, $rootScope, CurrentWindow, TransferNominations, userTransferNoms, TEMPLATE_PATH) {
 
     CurrentWindow.query().$promise
@@ -881,8 +774,6 @@ footyApp.controller('TransferListController', ['$scope', '$location', '$rootScop
     $rootScope.selectedPlayerIdsOld = [];
 
     function selectionChange() {
-//        console.log("selectionChange() called...");
-
         $rootScope.selectedPlayers = $rootScope.gridOptions.selectedRows;
         $rootScope.selectedPlayerIds = [];
 
@@ -903,28 +794,19 @@ footyApp.controller('TransferListController', ['$scope', '$location', '$rootScop
 
 //        setSelectionCounts();
         compareWithPreviousSelection();
-
-//        console.log("$rootScope.gridOptions.selectedNodesById = " + JSON.stringify($rootScope.gridOptions.selectedNodesById, null, 4));
     };
 
     function compareWithPreviousSelection() {
-//        console.log("compareWithPreviousSelection() method called...");
         if ($rootScope.selectedPlayerIds.length > $scope.selectedPlayerIdsOld.length) {
             // a new row has been selected - uncheck it if the player is already bought
-//            console.log("compareWithPreviousSelection: new length > old");
         } else {
-//            console.log("compareWithPreviousSelection: finding player that has been unchecked");
             angular.forEach($scope.selectedPlayerIdsOld, function(id) {
-//                console.log("checking old id = " + id + " in new list");
                 // find the player that has been unchecked
                 if ($rootScope.selectedPlayerIds.indexOf(id) == -1) {
                     // check whether a nomination has been saved for the player...
-//                    console.log("old player " + id + " not found in new list. Checking for saved nomination.");
                     var isNominated = false;
                     angular.forEach(userTransferNoms, function(nomination) {
-//                        console.log("checking old id = " + id + " against nomination: " + nomination.player);
                         if (nomination.player == id) {
-//                            console.log("A nomination for player id" + nomination.player + " has been found");
                             window.alert("A nomination for player id " + nomination.player +
                                 " has been saved to the database previously. \nPlease go to the preview screen and use the delete option to remove.");
                             isNominated = true;
@@ -1506,7 +1388,6 @@ footyApp.controller('TeamScoresController', ['$scope', '$rootScope', '$route', '
 
     console.log("$scope.scores.player_ids = " + $scope.scores.player_ids);
     $scope.playerHasScoreForMonth = function (player) {
-//        console.log("playerHasScoreForMonth(): player.id = " + player.id + ", (" + typeof player.id + ")");
         // check for player id in the list of ids for the months scores
         return $scope.scores.player_ids.indexOf(player.id) != -1;
     };
@@ -1854,745 +1735,12 @@ footyApp.controller('MotmController', ['$scope', '$location', '$rootScope', 'mon
 
 }]);
 
-
-footyApp.controller('ActivityStreamController', ['$scope', '$rootScope', '$route', '$interval', 'STATIC_ROOT', 'ActivityStreamData', 'ActivityComment', function($scope, $rootScope, $route, $interval, STATIC_ROOT, ActivityStreamData, ActivityComment) {
-	var StreamData = new ActivityStreamData.Stream($route.current.params.space_id);
-	$scope.stream = function() { return StreamData.getStream(); };
-	$scope.loading_more = function() { return StreamData.loading(); };
-	$scope.loadMore = function () { StreamData.loadMore(); };
-	StreamData.startPolling();
-	
-	//var activitiesPoll = $interval(StreamData.pollForActivities, StreamData.poll_seconds);
- 	//ActivityStreamData.init();
-
-	var fileExt = /\.(\w{1,4})$/;
-
-	$scope.iconFor = function(object) {
-		var matches = fileExt.exec(object.name);
-		return STATIC_ROOT + 'images/icons/' + matches[1].toLowerCase() + '-icon-64x64.png';
-	};
-
-
-	// Add comment callback
-	$scope.addComment = function(activity, comment) {
-		ActivityComment.post({activity: activity.id, text: comment}, function(data) {
-			activity.comments.push(data);
-		});
-	};
-
-	// Add status update callback
-	$scope.updated = function(status) {
-		$scope.stream.unshift(status);
-	};
-
-	$scope.selectSpace = function(space) {
-		$rootScope.$emit('select_space', space);
-	};
-
-	$rootScope.$on('activity_stream_ready', function(event, data){
-		$scope.stream = data;
-	});
-
-	// Tidy up when scope destroyed
-	$scope.$on('$destroy', function() {
-		StreamData.stopPolling();
-	});
-
-}]);
-
-footyApp.factory('ActivityStreamData', ['$rootScope', '$q', '$interval', 'ActivityStream', 'ActivityComment', 'ServerTime', function($rootScope, $q, $interval, ActivityStream, ActivityComment, ServerTime) {
-
-	// Normally Angular factories produce singletons but we need to maintain state across
-	// shared instances so this factory instantiates a new class each time.
-
-	// Constructor
-	var StreamData = function(space) {
-		//angular.extend(this, space);
-		this.loading_more = true;
-		this.stream = [];
-		this.stream_page = 1;
-		this.space = space;
-		console.log('Stream for space ' + this.space);
-		var self = this;
-		var poll_seconds = $q.defer();
-		this.poll_time_seconds = poll_seconds.promise;
-
-		ActivityStream.query({space: this.space, page_size: 5}, function(data) {
-			self.stream = data.results;
-			//newActivity(self.stream);
-			self.loading_more = data.next == null;
-			// Sync time
-			ServerTime.get({}, function(server_time) {
-				poll_seconds.resolve(server_time.poll_time_seconds * 1000);
-				var serverTime = moment(server_time.server_time);
-				self.drift = moment.duration(moment() - serverTime); // Difference between browser and server times
-				self.activitiesSince = self.now(); // Now
-				self.commentsSince = self.activitiesSince.clone();
-			});
-		});
-	};
-
-	StreamData.prototype.loadMore = function () {
-		// console.log("Loading more, page " + this.space);
-		this.loading_more = true;
-		var self = this;
-		ActivityStream.query({space: this.space, page: ++this.stream_page},
-			function(data) {
-				if (data.next !== null) {
-					self.loading_more = false;
-				}
-				for(var i=data.results.length-1; i>-1; i--) {
-					self.stream.push(data.results[i]);
-				}
-				//newActivity(this.stream);
-			}
-			);
-	};
-
-	var now = function(drift) {
-			return moment(moment() + drift);
-	};
-
-	StreamData.prototype.now = function() {
-		return moment(moment() + this.drift);
-	};
-
-	StreamData.prototype.getStream = function () {
-		//console.log('Getting stream');
-		return this.stream;
-	};
-
-	StreamData.prototype.getPollSeconds = function () {
-		return this.poll_seconds;
-	};
-
-	// Get new activities
-	var pollForActivities = function(self) {
-		//console.log("Polling for activities");
-		ActivityStream.query({space: self.space, since: self.activitiesSince.toISOString()},
-			function(data) {
-				// console.log("Poll complete");
-				self.activitiesSince = self.now();
-				for(var i=data.results.length-1; i>-1; i--) {
-					var has_activity = false;
-					for (var j = 0; j < self.stream.length; j++) {
-						if (self.stream[j].id == data.results[i].id) {
-							has_activity = true;
-							break;
-						}
-					};
-					if (!has_activity) self.stream.unshift(data.results[i]);
-				}
-				//newActivity(this.stream);
-			// }).$promise.finally(function() {
-			// 	activitiesPoll = $timeout(pollForActivities, poll_seconds);
-			});
-	};
-
-	// var activitiesPoll = $timeout(pollForActivities, poll_seconds);
-
-	var pollForComments = function(self) {
-		var promises = [];
-		var spaces = [self.space];
-
-		angular.forEach(spaces, function(space) {
-			promises.push(ActivityComment.query({space: space, since: self.commentsSince.toISOString()}).$promise);
-		});
-
-
-		// Wait for all calls to complete and update comments
-		$q.all(promises).then(function(all_comments) {
-			self.commentsSince = self.now();
-			angular.forEach(all_comments, function(comments) {
-				angular.forEach(comments, function(comment) {
-					for(var i=0; i<self.stream.length; i++) {
-						if (self.stream[i].id == comment.activity) {
-							var has_comment = false;
-							angular.forEach(self.stream[i].comments, function(existing_comment) {
-								if (existing_comment.id == comment.id) {
-									has_comment = true;
-									return;
-								}
-							});
-							if (!has_comment) self.stream[i].comments.push(comment);
-							break;
-						}
-					}
-				});
-			});
-		// }).finally(function() {
-		// 	commentsPoll = $timeout(pollForComments, poll_seconds);
-		});
-	};
-
-	StreamData.prototype.startPolling = function() {
-		var self = this;
-		this.poll_time_seconds.then(function(poll_seconds) {
-			// console.log("Polling every " + poll_seconds + " milliseconds");
-			self.activitiesPoll = $interval(function() { pollForActivities(self); }, poll_seconds);
-			self.commentsPoll = $interval(function() { pollForComments(self); }, poll_seconds);
-		});
-	};
-
-	StreamData.prototype.stopPolling = function() {
-		// console.log("Cancelling poll");
-		if (angular.isDefined(this.activitiesPoll)) {
-			$interval.cancel(this.activitiesPoll);
-		}
-		if (angular.isDefined(this.commentsPoll)) {
-			$interval.cancel(this.commentsPoll);
-		}
-	};
-
-	var newActivity = function(data) {
-		$rootScope.$emit('activity_stream_ready', data);
-	};
-
-	StreamData.prototype.loading = function() {
-		// console.log(this);
-		return this.loading_more;
-	};
-
-	// Tidy up when scope destroyed
-	// $scope.$on('$destroy', function() {
-	// 	if (angular.isDefined(activitiesPoll)) {
-	// 		$timeout.cancel(activitiesPoll);
-	// 		activitiesPoll = undefined;
-	// 	}
-	// 	if (angular.isDefined(commentsPoll)) {
-	// 		$timeout.cancel(commentsPoll);
-	// 		commentsPoll = undefined;
-	// 	}
-	// });
-
-	return {
-			Stream: StreamData
-	};
-}]);
-
-footyApp.directive('miniActivityStream', ['ActivityStreamData', 'TEMPLATE_PATH', 'STATIC_ROOT', '$rootScope', function(ActivityStreamData, TEMPLATE_PATH, STATIC_ROOT, $rootScope) {
-
-	var link = function(scope, element, attrs) {
-		var StreamData = new ActivityStreamData.Stream(0);
-		scope.stream = function() { return StreamData.getStream(); };
-		// scope.loading_more = StreamData.loading_more;
-		// scope.loadMore = StreamData.loadMore;
-		StreamData.startPolling();
-
-		var fileExt = /\.(\w{1,4})$/;
-
-		scope.iconFor = function(object) {
-			var matches = fileExt.exec(object.name);
-			return STATIC_ROOT + 'images/icons/' + matches[1].toLowerCase() + '-icon-16x16.png';
-		};
-
-		$rootScope.$on('activity_stream_ready', function(event, data){
-			scope.stream = data;
-		});
-	};
-
-
-	return {
-		restrict: 'E',
-		replace: true,
-		templateUrl: TEMPLATE_PATH + 'main-panel/activity/activity-stream-mini.html',
-		link: link
-	};	
-}]);
-
-footyApp.directive('activityComment', ['$route', 'TEMPLATE_PATH', function($route, TEMPLATE_PATH) {
-	return {
-		restrict: 'E',
-		replace: true,
-		scope: {
-			activity: '=',
-			'addComment': '&onAddComment',
-		},
-		templateUrl: TEMPLATE_PATH + 'main-panel/activity/activity-comment.html',
-		link: function(scope, element, attrs) {
-			scope._addComment = function() {
-				scope.addComment({activity: scope.activity, comment: scope.comment});
-				scope.comment = undefined;
-			};
-		}
-	};
-}]);
-
-footyApp.directive('activityStatus', ['$route', 'TEMPLATE_PATH', 'StatusUpdate', function($route, TEMPLATE_PATH, StatusUpdate) {
-	return {
-		restrict: 'E',
-		replace: true,
-		transclude: true,
-		scope: {
-			'updated': '&onUpdated',
-		},
-		templateUrl: TEMPLATE_PATH + 'main-panel/activity/activity-status.html',
-		link: function(scope, element, attrs) {
-			scope.updateStatus = function() {
-				var status = {message: scope.message, content_model: '', space: $route.current.params.space_id};
-				StatusUpdate.post(status, function(update) {
-					scope.message = undefined;
-					scope.updated({status: update});
-				});
-			};
-		}
-	};
-}]);
-
-footyApp.controller('DocumentsController', ['$scope', '$route', '$location', '$modal', 'files', 'paths', 'TEMPLATE_PATH', '$timeout', 'FileStorage', 'FileStoragePaths', 'session', function($scope, $route, $location, $modal, files, paths, TEMPLATE_PATH, $timeout, FileStorage, FileStoragePaths, session) {
-	$scope.browser = {
-		current_path: paths.current_path,
-		path: paths.current_path.full_path,
-		viewMode: session.viewmode || 'grid',
-		setMode: function(mode) {
-			$scope.browser.viewMode = session.viewmode = mode;
-		},
-		files: files,
-		paths: paths.paths,
-	};
-
-	$scope.selectedObject = undefined;
-
-	$scope.show_delete = function() {
-		if ($scope.selectedObject) {
-			if ($scope.selectedObject.content) {
-				if ($scope.permissions.can_delete) return true;
-			} else {
-				if ($scope.permissions.can_delete_folder) return true;
-			}
-		}
-		return false;
-	};
-
-	$scope.uploadFile = function (size) {
-	    var modalInstance = $modal.open({
-	      templateUrl: TEMPLATE_PATH + 'main-panel/fileUpload.html',
-	      controller: 'FileUploadControl',
-	      size: size,
-	      resolve: {
-		      path_id: function() { return $scope.browser.current_path.id; },
-		      files: function() { return $scope.browser.files; },
-	      }
-    	});
-	    modalInstance.result.then(function (result) {
-	    	if (result.update) {
-	    		for (var i=0; i<$scope.browser.files.length; i++) {
-	    			if ($scope.browser.files[i].id === result.file.id) {
-	    				$scope.browser.files[i] = result.file;
-	    				break;
-	    			}
-	    		}
-	    	} else {
-	    		$scope.browser.files.push(result.file);
-	    	}
-    	}, function () {
-      		//$log.info('Modal dismissed at: ' + new Date());
-    	});
-	};
-
-	$scope.newFolder = function (size) {
-	    var modalInstance = $modal.open({
-	      templateUrl: 'newFolder.html',
-	      controller: 'NewFolderControl',
-	      size: size,
-	      resolve: {
-		      path_id: function() { return $scope.browser.current_path.id; },
-		      space_id: function() { return $route.current.params.space_id; },
-	      }
-    	});
-	    modalInstance.result.then(function (result) {
-      		$scope.browser.paths.push(result);
-    	}, function () {
-      		//$log.info('Modal dismissed at: ' + new Date());
-    	});
-	};
-
-	$scope.select = function(object) {
-		if ($scope.selectedObject) $scope.selectedObject.$$select(false);
-		object.$$select(true);
-		$scope.selectedObject = object;
-	};
-
-	$scope.delete = function() {
-		if ($scope.selectedObject.content) {
-		    var modalInstance = $modal.open({
-		      templateUrl: 'confirmModal.html',
-		      controller: 'ConfirmOperationController',
-		      size: 'm',
-		      resolve: {
-			      modal: function () { return {title: 'Please confirm', message: 'Are you sure you want to delete "<em>' + $scope.selectedObject.name + '</em>"?'}; },
-		      }
-	    	});
-		    modalInstance.result.then(function (result) {
-				FileStorage.remove({id: $scope.selectedObject.id}).$promise.then(
-					function() {
-						for (var i=0; i<$scope.browser.files.length; i++) {
-							if ($scope.browser.files[i].id === $scope.selectedObject.id) {
-								$scope.browser.files.splice(i, 1);
-								break;
-							}					
-						}
-						$scope.selectedObject = undefined;
-					},
-					function(response) {
-					    var modalInstance = $modal.open({
-					      templateUrl: 'errorModal.html',
-					      controller: 'ModalErrorControl',
-					      //size: 's',
-					      resolve: {
-					      	error: function() { return { title: 'Unable to delete', message: response.data.detail }; },
-					      }
-				    	});
-					    modalInstance.result.then(function (result) {
-				      		//object.name = object._name;
-				    	}, function () {
-				      		//$log.info('Modal dismissed at: ' + new Date());
-				    	});
-					}
-					);
-	    	}, function () {
-	      		//$log.info('Modal dismissed at: ' + new Date());
-	    	});
-
-		} else {
-		    var modalInstance = $modal.open({
-		      templateUrl: 'confirmModal.html',
-		      controller: 'ConfirmOperationController',
-		      size: 'm',
-		      resolve: {
-			      modal: function () { return {title: 'Please confirm', message: '<p>Are you sure you want to delete "<em>' + $scope.selectedObject.name + '</em>"?</p><p class="text-danger"><strong>WARNING: This will delete all files and folders in this folder!</strong></p>'}; },
-		      }
-	    	});
-		    modalInstance.result.then(function (result) {
-				FileStoragePaths.remove({id: $scope.selectedObject.id}).$promise.then(
-					function() {
-						for (var i=0; i<$scope.browser.paths.length; i++) {
-							if ($scope.browser.paths[i].id === $scope.selectedObject.id) {
-								$scope.browser.paths.splice(i, 1);
-								break;
-							}					
-						}
-						$scope.selectedObject = undefined;
-					},
-					function(response) {
-					    var modalInstance = $modal.open({
-					      templateUrl: 'errorModal.html',
-					      controller: 'ModalErrorControl',
-					      //size: 's',
-					      resolve: {
-					      	error: function() { return { title: 'Unable to delete', message: response.data.detail }; },
-					      }
-				    	});
-					    modalInstance.result.then(function (result) {
-				      		//object.name = object._name;
-				    	}, function () {
-				      		//$log.info('Modal dismissed at: ' + new Date());
-				    	});
-					}
-					);
-	    	}, function () {
-	      		//$log.info('Modal dismissed at: ' + new Date());
-	    	});
-		}
-	};
-
-	$scope.viewOrDownload = function(object) {
-	    var modalInstance = $modal.open({
-	      templateUrl: 'filePreview.html',
-	      controller: 'ModalFilePreviewControl',
-	      size: 'lg',
-	      resolve: {
-	      	file: function() { return object; },
-	      }
-    	});
-	    // modalInstance.result.then(function (result) {
-     //  		object.name = object._name;
-    	// }, function () {
-     //  		//$log.info('Modal dismissed at: ' + new Date());
-    	// });
-
-	};
-
-	var changePath = function(path) {
-		var space_id = $route.current.params.space_id;
-		$location.path('/' + space_id + '/documents/!' + path.full_path);
-	};
-
-	$scope.changePath = changePath;
-
-	$scope.refresh = function() {
-		$route.reload();
-	};
-
-	$scope.parent = function() {
-		var parent_path;
-		angular.forEach($scope.browser.paths, function(value, key) {
-			if (value.id == $scope.browser.current_path.parent) {
-				parent_path = value;
-				return;
-			}
-		});
-		changePath(parent_path);
-	};
-
-	$scope.rename = function (object) {
-		if (object.content) {
-			// File
-			FileStorage.rename({id: object.id, name: object._name}).$promise.then(
-				function(data) {
-					// Success
-					for(var i=0; i<$scope.browser.files.length; i++) {
-						if ($scope.browser.files[i].id === data.id) {
-							$scope.browser.files[i] = data;
-							break;
-						}
-					}
-				},
-				function(response) {
-					//console.log(response);
-				    var modalInstance = $modal.open({
-				      templateUrl: 'errorModal.html',
-				      controller: 'ModalErrorControl',
-				      //size: 's',
-				      resolve: {
-				      	error: function() { return { title: 'Unable to rename', message: response.data.non_field_errors[0] }; },
-				      }
-			    	});
-				    modalInstance.result.then(function (result) {
-			      		//object.name = object._name;
-			    	}, function () {
-			      		//$log.info('Modal dismissed at: ' + new Date());
-			    	});
-
-				});
-		} else {
-			// Path
-			FileStoragePaths.rename({id: object.id, name: object._name}).$promise.then(
-				function(data) {
-					// Success
-					for(var i=0; i<$scope.browser.paths.length; i++) {
-						if ($scope.browser.paths[i].id === data.id) {
-							$scope.browser.paths[i] = data;
-							break;
-						}
-					}
-				},
-				function(response) {
-					//console.log(response);
-				    var modalInstance = $modal.open({
-				      templateUrl: 'errorModal.html',
-				      controller: 'ModalErrorControl',
-				      //size: 's',
-				      resolve: {
-				      	error: function() { return { title: 'Unable to rename', message: response.data.__all__[0] }; },
-				      }
-			    	});
-				    modalInstance.result.then(function (result) {
-			      		//object.name = object._name;
-			    	}, function () {
-			      		//$log.info('Modal dismissed at: ' + new Date());
-			    	});
-				});
-		}
-	};
-
-}]);
-
 footyApp.controller('ModalErrorControl', ['$scope', '$modalInstance', 'error', function($scope, $modalInstance, error) {
 	$scope.error = error;
 	$scope.ok = function() {
 		$modalInstance.close();
 	};
 }]);
-
-footyApp.controller('ModalFilePreviewControl', ['$scope', '$modalInstance', 'file', function($scope, $modalInstance, file) {
-	$scope.file = file;
-	$scope.ok = function() {
-		$modalInstance.close();
-	};
-}]);
-
-footyApp.controller('WikiPortalController', ['$scope', '$route', 'sections', function($scope, $route, sections) {
-	$scope.params = $route.current.params;
-
-	$scope.pages = ['Contents']; // , 'Portals', 'Categories'];
-	//$scope.main_sections = ['Reference', 'Research', 'Help']
-	$scope.main_sections = sections;
-}]);
-
-footyApp.controller('WikiCategoryController', ['$scope', '$route', '$filter', 'category', 'subcategories', function($scope, $route, $filter, category, subcategories) {
-	$scope.params = $route.current.params;
-
-	var subcategories_sorted = {};
-	var index = '';
-	// Sort subcategories and index them
-	angular.forEach($filter('orderBy')(subcategories, 'name'), function(value, key) {
-		var ch = value.name.substring(0, 1);
-		if (ch != index) {
-			index = ch;
-		}
-		if (!subcategories_sorted[index]) {
-			subcategories_sorted[index] = [];
-		}
-		subcategories_sorted[index].push(value);
-	});
-	// Sort pages and index them
-	var pages_sorted = {};
-	angular.forEach($filter('orderBy')(category.pages, 'title'), function(value, key) {
-		var ch = value.title.substring(0, 1);
-		if (ch != index) {
-			index = ch;
-		}
-		if (!pages_sorted[index]) {
-			pages_sorted[index] = [];
-		}
-		pages_sorted[index].push(value);
-	});
-	$scope.context = {
-		category: category,
-		subcategories: subcategories_sorted,
-		subcategories_length: subcategories.length,
-		pages: pages_sorted,
-		pages_length: category.pages.length,
-	};
-}]);
-
-footyApp.controller('WikiController', ['$scope', '$route', function($scope, $route) {
-	$scope.params = $route.current.params;
-	$scope.pages = ['Contents']; // , 'Portals', 'Categories'];
-	$scope.main_sections = ['Reference', 'Research', 'Help'];
-
-}]);
-
-footyApp.controller('WikiPageController', ['$scope', '$location', '$route', '$modal', 'wikipage', 'pages', 'files_list', 'upload_path', 'category', 'WikiPages', 'Slugify', 'TEMPLATE_PATH', 'session',
-	function($scope, $location, $route, $modal, wikipage, pages, files_list, upload_path, category, WikiPages, Slugify, TEMPLATE_PATH, session) {
-	$scope.$location = $location;
-	$scope.mode = $route.current.params.mode ? $route.current.params.mode : 'view';
-	if ($scope.mode === 'view') {
-		$scope.wikipage = session.wikipage = wikipage;
-	} else {
-		$scope.wikipage = session.wikipage;
-	}
-	$scope.pages = pages;
-
-	$scope.tinymceOptions = {
-		plugins: 'advlist autolink link image lists charmap print preview',
-		toolbar: ["newdocument | undo redo | cut copy paste | removeformat bold italic underline strikethrough removeformat subscript superscript alignjustify alignleft aligncenter alignright | bullist numlist outdent indent blockquote | link image"],
-		image_list: files_list,
-		height: 550,
-	};
-
-	// Validation
-	$scope.word = /^\w+$/;
-
-	setViewMode = function() {
-		$location.path('/' + $route.current.params.space_id + '/wiki/Section!' + $route.current.params.portalSection + '/' + $route.current.params.portalCategory + '/' + $scope.wikipage.link + '/');
-	};
-
-
-	$scope.save = function() {
-		if ($scope.wikipage.id) {
-			// Update
-			WikiPages.put($scope.wikipage, function(response) {
-				setViewMode();
-			});
-		} else {
-			// New page
-			//$scope.wikipage.current_revision.categories = [category.id];
-			console.log("NEW: $scope.wikipage: " + JSON.stringify($scope.wikipage));
-			WikiPages.save($scope.wikipage, function(response) {
-				delete session.wikipage;
-				setViewMode();
-			});
-		}
-	};
-
-	$scope.cancelEdit = function () {
-		delete session.wikipage;
-		setViewMode();
-	};
-
-	$scope.uploadFile = function (size) {
-	    var modalInstance = $modal.open({
-	      templateUrl: TEMPLATE_PATH + 'main-panel/fileUpload.html',
-	      controller: 'FileUploadControl',
-	      size: size,
-	      resolve: {
-		      path_id: function() { return upload_path.id; },
-		      files: function() { return files_list; },
-	      }
-    	});
-	    modalInstance.result.then(function (result) {
-	    	var newFile = {title: result.file.name, value: result.file.content.url};
-      		files_list.push(newFile);
-    	}, function () {
-      		//$log.info('Modal dismissed at: ' + new Date());
-    	});
-	};
-
-	$scope.delete = function(size) {
-		    var modalInstance = $modal.open({
-		      templateUrl: 'confirmModal.html',
-		      controller: 'ConfirmOperationController',
-		      size: 'm',
-		      resolve: {
-			      modal: function () { return {title: 'Please confirm', message: 'Are you sure you want to delete "<em>' + $scope.wikipage.title + '</em>"?'}; },
-		      }
-	    	});
-		    modalInstance.result.then(function (result) {
-				WikiPages.remove({id: $scope.wikipage.id}).$promise.then(
-					function() {
-						$scope.wikipage = undefined;
-					},
-					function(response) {
-					    var modalInstance = $modal.open({
-					      templateUrl: 'errorModal.html',
-					      controller: 'ModalErrorControl',
-					      //size: 's',
-					      resolve: {
-					      	error: function() { return { title: 'Unable to delete', message: response.data.detail }; },
-					      }
-				    	});
-					    modalInstance.result.then(function (result) {
-				      		//object.name = object._name;
-				    	}, function () {
-				      		//$log.info('Modal dismissed at: ' + new Date());
-				    	});
-					}
-					);
-	    	}, function () {
-	      		//$log.info('Modal dismissed at: ' + new Date());
-	    	});
-	};
-
-}]);
-
-footyApp.controller('NewPageModalControl', ['$scope', '$modalInstance', 'Slugify', 'categories', function($scope, $modalInstance, Slugify, categories) {
-	console.log(categories);
-	$scope.page = {
-		title: '',
-		categories: categories,
-		category: '',
-	};
-	$scope.word = /^[\w\s()-]+$/;
-
-	$scope.ok = function () {
-    	var response = Slugify.post({title: $scope.page.title},
-    		function() {
-    			$scope.page.link = response.link;
-      			$modalInstance.close($scope.page);
-    		},
-			function (response) {
-				$scope.error_message = response.data.error_message;
-			}
-		);
-  	};
-
-  	$scope.cancel = function () {
-    	$modalInstance.dismiss('cancel');
-  	};
-}]);
-
 
 footyApp.factory('managers', ['$route', 'Managers', function($route, Spaces) {
                 return {
@@ -2612,469 +1760,6 @@ footyApp.factory('managers', ['$route', 'Managers', function($route, Spaces) {
            }
 ]);
 
-footyApp.factory('pluggable_apps', ['PluggableApps', '$timeout', '$route', '$q', function(PluggableApps, $timeout, $route, $q) {
-                return {
-                	apps: function() {
-                		return PluggableApps.query().$promise;
-                	}
-                };
-            }
-]);
-
-footyApp.directive('wikiNav', ['$route', '$location', '$filter', 'TEMPLATE_PATH', function($route, $location, $filter, TEMPLATE_PATH) {
-	return {
-		restrict: 'E',
-		templateUrl: TEMPLATE_PATH + 'main-panel/wiki/wiki-nav.html',
-		link: function(scope) {
-			scope.selectPage = function(page) {
-				//var routeparams = $route.current.params;
-				$location.path('/' + $route.current.params.space_id + '/wiki/Portal!' + page);
-			};
-			scope.selectSection = function(section) {
-				var routeparams = $route.current.params;
-				$location.path('/' + $route.current.params.space_id + '/wiki/Portal!' + routeparams.portalPage + '/' + section);
-			};
-			scope.selectCategory = function(section, category) {
-				$location.path('/' + $route.current.params.space_id + '/wiki/Section!' + section + '/' + category);
-			};
-			scope.categoriesFor = function(section) {
-				var categories = $filter('filter')(scope.main_sections, {'name': section});
-				if (categories.length > 0) {
-					return categories[0].categories;
-				} else {
-					return [];
-				}
-			};
-		}
-	};
-}]);
-
-footyApp.directive('wikiNavbar', ['$route', '$location', '$filter', '$modal', 'TEMPLATE_PATH', 'WikiCategories', 'WikiPages', 'userHelperFactory', 'session', function($route, $location, $filter, $modal, TEMPLATE_PATH, WikiCategories, WikiPages, userHelperFactory, session) {
-	return {
-		restrict: 'E',
-		transclude: true,
-		templateUrl: TEMPLATE_PATH + 'main-panel/wiki/navbar.html',
-		link: function(scope, element, attrs) {
-			scope.open = function (size) {
-			    var modalInstance = $modal.open({
-			      templateUrl: 'newPageModal.html',
-			      controller: 'NewPageModalControl',
-			      size: size,
-			      resolve: {
-			        categories: function () {
-			            return WikiCategories.query({space: $route.current.params.space_id}).$promise;
-			        }
-			      }
-		    	});
-			    modalInstance.result.then(function (page) {
-			    	session.wikipage = page;
-		      		$location.path('/' + $route.current.params.space_id + '/wiki/Section!' + $route.current.params.portalSection + '/' + page.category.name + "/" + page.link + '/edit/');
-		    	}, function () {
-		      		//$log.info('Modal dismissed at: ' + new Date());
-		    	});
-			};
-			scope.editURL = function() {
-				return '/' + $route.current.params.space_id + '/wiki/Section!' + $route.current.params.portalSection + '/' + $route.current.params.portalCategory + "/" + scope.wikipage.link + '/edit/';
-			};
-
-			scope.searcher = {
-				search: function(isvalid) {
-					if (isvalid) {
-						var response = WikiPages.query({search: scope.searcher.search_text},
-							function() {
-								if (response.length>0) {
-									scope.searcher.results = response;
-									scope.searcher.isopen = true;
-								}
-							}
-						);
-					} else {
-						scope.searcher.isopen = false;
-					}
-				},
-				search_text: '',
-				isopen: false,
-				results: [],
-			};
-
-			userHelperFactory.then(function(user_detail) {
-				scope.permissions = {
-					can_add: user_detail.hasPermission($route.current.params.space_id, 'wiki', 'wikipage', 'C'),
-					can_edit: user_detail.hasPermission($route.current.params.space_id, 'wiki', 'wikipage', 'M'),
-					can_delete: user_detail.hasPermission($route.current.params.space_id, 'wiki', 'wikipage', 'D'),		
-				};				
-			});
-
-			scope.breadcrumbs = function() {
-				return session.breadcrumbs;
-			};
-
-		}
-	};
-}]);
-
-footyApp.directive('storagePanel', ['$route', '$location', '$filter', '$modal', 'TEMPLATE_PATH', 'userHelperFactory', 'FileStorage', function($route, $location, $filter, $modal, TEMPLATE_PATH, userHelperFactory, FileStorage) {
-	return {
-		restrict: 'E',
-		templateUrl: TEMPLATE_PATH + 'main-panel/documents/navbar.html',
-		// transclude: true,
-		// scope: {},
-		link: function(scope, element, attrs) {
-
-			// var changePath = function(path) {
-			// 	console.log(path);
-			// 	var space_id = $route.current.params.space_id;
-			// 	$location.path('/' + space_id + '/documents/!' + path.full_path);
-			// };
-
-			// scope.changePath = changePath;
-
-			// scope.refresh = function() {
-			// 	$route.reload();
-			// };
-
-			// scope.parent = function() {
-			// 	var parent_path;
-			// 	angular.forEach(scope.browser.paths, function(value, key) {
-			// 		if (value.id == scope.browser.current_path.parent) {
-			// 			parent_path = value;
-			// 			return;
-			// 		}
-			// 	});
-			// 	changePath(parent_path);
-			// };
-
-			scope.searcher = {
-				search: function(isvalid) {
-					if (isvalid) {
-						var response = FileStorage.query({space: $route.current.params.space_id, search: scope.searcher.search_text},
-							function() {
-								if (response.length>0) {
-									scope.searcher.results = response;
-									scope.searcher.isopen = true;
-								}
-							}
-						);
-					} else {
-						scope.searcher.isopen = false;
-					}
-				},
-				search_text: '',
-				isopen: false,
-				results: [],
-			};
-
-			// scope.select = function(obj) {
-			// 	console.log('Click ' + obj.name);
-			// };
-
-			userHelperFactory.then(function(user_detail) {
-				scope.permissions = {
-					can_add: user_detail.hasPermission($route.current.params.space_id, 'storage', 'databasefile', 'C'),
-					can_delete: user_detail.hasPermission($route.current.params.space_id, 'storage', 'databasefile', 'D'),		
-					can_add_folder: user_detail.hasPermission($route.current.params.space_id, 'storage', 'databasefilepath', 'C'),
-					can_delete_folder: user_detail.hasPermission($route.current.params.space_id, 'storage', 'databasefilepath', 'D'),
-				};
-			});
-			
-
-		}
-	};
-}]);
-
-footyApp.directive('storageObject', ['$timeout', 'TEMPLATE_PATH', 'STATIC_ROOT', function($timeout, TEMPLATE_PATH, STATIC_ROOT) {
-	return {
-		restrict: 'E',
-		transclude: true,
-		scope: {
-			'fnclick': '&onClick',
-			'dblclick': '&onDblclick',
-			'rename': '&onRename',
-			'object': '=',
-			'viewmode': '=',
-		},
-		templateUrl: TEMPLATE_PATH + 'main-panel/documents/storage-object.html',
-		link: function(scope, element, attrs) {
-			var singleClicked = false;
-			var singleClickTimer;
-			var clickCount = 0;
-			var inputSelector = 'input#storage-object-' + scope.object.id;
-			scope.renaming = false;
-			scope.object.$$select = select;
-			scope.newname = {name: ''};
-
-			if (scope.object.content) {
-				scope.class = 'glyphicon-file';
-			} else {
-				scope.class = 'glyphicon-folder-close';
-			}
-
-			var fileExt = /\.(\w{1,4})$/;
-
-			scope.iconFor = function(object) {
-				var matches = fileExt.exec(object.name);
-				var iconSize = scope.viewmode == 'grid' ? '-icon-64x64.png' : '-icon-24x24.png';
-				return STATIC_ROOT + 'images/icons/' + matches[1].toLowerCase() + iconSize;
-			};
-
-
-			scope.blur = function () {
-				// Ignore blur if already hidden e.g. via 'Enter' key event
-				if ($(inputSelector + ':visible').length) {
-				    scope.renaming = false;
-				    if (scope.object.name != scope.newname.name && scope.newname.name != '') {
-						scope.object._name = scope.newname.name;
-						//scope.object.name = scope.name;
-						$timeout(scope.rename);
-					}
-				}
-			};
-
-			scope.keypress = function (event) {
-				if (event.which === 27) {
-					scope.renaming = false;
-					scope.name = scope.object.name;
-				}
-				if (event.which === 13)
-				{
-					scope.blur();
-				}
-			};
-
-			function select(selected) {
-				var divElement = $(element.children()[0]);
-				if (selected) {
-					divElement.css({border: '1px solid'});
-				}
-				else {
-					divElement.css({border: ''});
-				}
-			}
-
-			function singleClick(event) {
-				// Always fire single click event
-				$timeout(scope.fnclick);
-				clickCount = 0;
-				if (singleClicked) {
-					// Slow double-click
-					singleClicked = false;
-					scope.renaming = true;
-					scope.newname.name = scope.object.name; // Shadow model
-					$timeout(function() {
-						select(false);
-						$(inputSelector).focus();
-					});
-				} else {
-					singleClicked = true;
-					$timeout(function() {
-						singleClicked = false;
-					}, 1500);
-				}
-			}
-
-			function doubleClick(event) {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				$timeout.cancel(singleClickTimer);
-				clickCount = 0;
-				singleClicked = false;
-				$timeout(scope.dblclick);
-			}
-
-			function delayClick(event) {
-				var cloneEvent = $.Event('click', event);
-				cloneEvent._delayedSingleClick = true;
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				singleClickTimer = $timeout(singleClick.bind(null, cloneEvent), 300);
-			}
-
-			element.on('click', function(event) {
-				if (event._delayedSingleClick || scope.renaming) return;
-				if (clickCount++) {
-					doubleClick(event);
-				} else {
-					delayClick(event);
-				}
-			});
-		},
-	};
-}]);
-
-footyApp.directive('wikiLink', ['$route', function($route) {
-	return {
-		restrict: 'E',
-		scope: {
-			page: '=',
-		},
-		replace: true,
-		template: '<a href="{{ href }}">{{ page.title }}</a>',
-		link: function(scope, element, attrs) {
-			scope.href = '/#' + (scope.page ? scope.page.full_link : '');
-		}
-	};
-}]);
-
-footyApp.directive('wikiCategoryLink', ['$route', function($route) {
-	return {
-		restrict: 'E',
-		scope: {
-			section: '=',
-			category: '=',
-		},
-		replace: true,
-		template: '<a href="{{ href }}">{{ category.name }}</a>',
-		link: function(scope, element, attrs) {
-			scope.href = '/#/' + $route.current.params.space_id + '/wiki/Section!' + scope.section.name + '/' + scope.category.name + '/';
-		}
-	};
-}]);
-
-footyApp.directive('fileLink', ['$route', function($route) {
-	return {
-		restrict: 'E',
-		scope: {
-			file: '=',
-		},
-		replace: true,
-		template: '<a href="{{ href }}">{{ file.name }}</a>',
-		link: function(scope, element, attrs) {
-			scope.href = '/#/' + $route.current.params.space_id + '/documents/!' + scope.file.path.full_path;
-		}
-	};
-}]);
-
-footyApp.controller('FileUploadControl', ['$scope', '$modalInstance', 'FileUpload', 'path_id', 'files', function($scope, $modalInstance, FileUpload, path_id, files) {
-	$scope.upload = {
-		myFile: undefined,
-	};
-
-	var overwriting = false;
-	var existing = undefined;
-
-	$scope.ok = function () {
-
-		if (!existing) {
-			for(var i=0; i<files.length; i++) {
-				if (files[i].name === $scope.upload.myFile.name) {
-					$scope.error_message = 'A file with that name already exists. Press OK to overwrite.';
-					existing = files[i];
-					return;
-				}
-			}
-			overwriting = true;
-		} else {
-			overwriting = true;
-		}
-
-		if (overwriting) {
-			var id = existing ? existing.id : undefined;
-	    	var promise = FileUpload.storeFile(id, $scope.upload.myFile, path_id);
-	    	promise.then(
-	        	function(response){
-		      		$modalInstance.close({update: id !== undefined, file: response});
-	        	},
-	        	function(response){
-	        		$scope.error_message = response.data.detail;
-	        	}
-			);
-    	}
-  	};
-
-  	$scope.cancel = function () {
-    	$modalInstance.dismiss('cancel');
-  	};
-}]);
-
-footyApp.controller('NewFolderControl', ['$scope', '$modalInstance', 'FileStoragePaths', 'path_id', 'space_id', function($scope, $modalInstance, FileStoragePaths, path_id, space_id) {
-	$scope.folder = {
-		name: undefined,
-	};
-
-	$scope.validPath = /^[a-z0-9\s\(\)+=\[\]{}~;!\"\'£\$%&@]+$/i;
-
-	$scope.ok = function () {
-
-    	var promise = FileStoragePaths.post({name: $scope.folder.name, parent: path_id, space: space_id}).$promise;
-    	promise.then(
-        	function(response){
-	      		$modalInstance.close(response);
-        	},
-        	function(response){
-        		console.log('Fail');
-        		console.log(response);
-        		$scope.error_message = response.data.__all__[0];
-        	}
-		);
-  	};
-
-  	$scope.cancel = function () {
-    	$modalInstance.dismiss('cancel');
-  	};
-}]);
-
-footyApp.directive('fileModel', ['$parse', function ($parse) {
-    return {
-        restrict: 'A',
-        link: function(scope, element, attrs) {
-            var model = $parse(attrs.fileModel);
-            var modelSetter = model.assign;
-            
-            element.bind('change', function(){
-                scope.$apply(function(){
-                    modelSetter(scope, element[0].files[0]);
-                });
-            });
-        }
-    };
-}]);
-
-footyApp.service('FileUpload', ['$http', 'FileStorage', function($http, FileStorage) {
-    this.storeFile = function(id, file, path_id) {
-        var fd = new FormData();
-        fd.append('content', file);
-        fd.append('path', path_id);
-        if (id) fd.append('id', id);
-        return FileStorage.post(fd).$promise;
-    };
-}]);
-
-// User class
-
-footyApp.factory('userHelperFactory', ['UserDetail', '$q', function(UserDetail, $q) {
-	function UserHelper(user) {
-
-		this.hasPermission = function(space, apptype, model, access_level, app_id) {
-			app_id = typeof app_id !== 'undefined' ? app_id : null;
-			for (var i=0; i<user.permissions.length; i++) {
-				var p = user.permissions[i];
-				if (p.apptype == apptype && p.model == model && p.access_level == access_level && p.app == app_id) {
-					for (var s=0; s<p.spaces.length; s++) {
-						if (space == p.spaces[s]) {
-							return true;
-						}
-					}
-					// Personal space
-					if (space == 0 && p.spaces.length == 0) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		};
-	}
-
-	var deferred = $q.defer();
-
-    var user = UserDetail.get(
-        function() {
-            deferred.resolve(new UserHelper(user));
-    });
-
-	return deferred.promise;
-}]);
-
 // Session class
 // Holds state in the current browser window only and does not persist
 footyApp.factory('session', [function() {
@@ -3090,72 +1775,3 @@ footyApp.directive('openInNewWindow', function() {
     }
   };
 });
-
-// unfinished code - abandoned in favour of the tab 'JSME EDITOR' approach - delete when that is fully implmented/tested
-// footyApp.directive('structureSearch', ['$route', '$location', '$filter', '$modal', 'TEMPLATE_PATH', 'userHelperFactory', 'session', function($route, $location, $filter, $modal, TEMPLATE_PATH, userHelperFactory, session) {
-	// return {
-		// restrict: 'E',
-		// transclude: true,
-		// template: TEMPLATE_PATH + 'main-panel/tools/structure-search.html',
-		// link: function(scope, element, attrs) {
-			// scope.search = function (options) {
-			    // var modalInstance = $modal.open({
-			      // templateUrl: 'jsmeEditor.html',
-			      // controller: 'StructureEditorCtrl',
-			      // size: 'm',
-			      // resolve: {
-			        // // categories: function () {
-			            // // return WikiCategories.query({space: $route.current.params.space_id}).$promise;
-			        // // }
-			        // options: options
-			      // }
-		    	// });
-			    // modalInstance.result.then(function (smiles) {
-			    	// session.wikipage = page;
-		      		// $location.path('/' + $route.current.params.space_id + '/wiki/Section!' + $route.current.params.portalSection + '/' + page.category.name + "/" + page.link + '/edit/');
-		    	// }, function () {
-		      		// $log.info('StructureSearch Modal dismissed at: ' + new Date());
-		    	// });
-			// };
-// 
-			// // userHelperFactory.then(function(user_detail) {
-				// // scope.permissions = {
-					// // can_add: user_detail.hasPermission($route.current.params.space_id, 'wiki', 'wikipage', 'C'),
-					// // can_edit: user_detail.hasPermission($route.current.params.space_id, 'wiki', 'wikipage', 'M'),
-					// // can_delete: user_detail.hasPermission($route.current.params.space_id, 'wiki', 'wikipage', 'D'),		
-				// // };				
-			// // });
-// 
-			// scope.breadcrumbs = function() {
-				// return session.breadcrumbs;
-			// };
-// 
-		// }
-	// };
-// }]);
-// 
-// footyApp.controller('StructureEditorCtrl', ['$scope', '$modalInstance', 'Slugify', 'categories', function($scope, $modalInstance, Slugify, categories) {
-	// console.log(categories);
-	// $scope.page = {
-		// title: '',
-		// categories: categories,
-		// category: '',
-	// };
-	// $scope.word = /^[\w\s()-]+$/;
-// 
-	// $scope.ok = function () {
-    	// var response = Slugify.post({title: $scope.page.title},
-    		// function() {
-    			// $scope.page.link = response.link;
-      			// $modalInstance.close($scope.page);
-    		// },
-			// function (response) {
-				// $scope.error_message = response.data.error_message;
-			// }
-		// );
-  	// };
-// 
-  	// $scope.cancel = function () {
-    	// $modalInstance.dismiss('cancel');
-  	// };
-// }]);
