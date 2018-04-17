@@ -6,39 +6,11 @@
 {% block body %}
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
       <img class="portal-brand" src="{% static 'images/AZFF-logo.png' %}" />
     </div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" ng-controller="MenuController" >
-      <ul class="nav navbar-nav">
-        <!-- <li class="active"><a href="#">Link</a></li>
-        <li><a href="#">Link</a></li>
-        <li class="dropdown" dropdown>
-          <a href="#" class="dropdown-toggle" dropdown-toggle><span class="glyphicon glyphicon-cog"></span> Administration <span class="caret"></span></a>
-    {% verbatim %}
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#/{{ space_id }}/admin/users/">Manage Users</a></li>
-            <li><a href="#/{{ space_id }}/admin/groups/">Manage Groups</a></li>
-            <li><a href="/admin/">Django Admin</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-    {% endverbatim %}
-        </li> -->
-      </ul>
-
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/admin/"><span class="glyphicon glyphicon-cog"></span> Administration</a></li>
         <li class="dropdown" dropdown>
@@ -58,8 +30,6 @@
     <div class="col-md-2 no-padding">
         <div ng-controller="TeamsController" ng-include="'{% static "partials/left-nav/teams.html" %}'">
         </div>
-        <!--<div ng-controller="MyAppsController" ng-include="'{% static "partials/left-nav/myapps.html" %}'">-->
-        <!--</div>-->
     </div>
     <div class="col-md-10 no-padding">
     {% block "content" %}

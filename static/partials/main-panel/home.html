@@ -28,13 +28,6 @@
     </table>
 </div>
 
-<!--<div class="col-md-8 alert alert-info">-->
-    <!--<h3>News</h3>-->
-    <!--<p>You can now cyhange your team line-up for October's matches.  The deadline is <strong>Saturday 3rd October at 11am</strong>.</p>-->
-
-
-<!--</div>-->
-
 <!-- Admin functions -->
 <div class="col-md-8" ng-if="authUser == 'Admin'">
     <button class="btn btn-default" ng-click="updateScores()">Update Scores</button>
@@ -42,3 +35,92 @@
 
 </div>
 
+<div class="col-md-8" >
+    <h3>Running Totals</h3>
+    <canvas id="pointsChart" width="400" height="400"></canvas>
+</div>
+
+
+<script>
+    <!-- Note static  dataset for chart -->
+    $( document ).ready(function() {
+        var ctx = document.getElementById("pointsChart").getContext('2d');
+
+        var data = {
+            labels: [28, 29, 30, 31, 32, 33, 34, 35],
+            datasets: [{
+                data: [904, 931, 972, 992, 1035, 1035, 1072, 1095],
+                label: "Calum",
+                borderColor: "#222222",
+                fill: false
+              }, {
+                data: [1004, 1037, 1092, 1121, 1146, 1146, 1174, 1208],
+                label: "Dan",
+                borderColor: "#F3C300",
+                fill: false
+              }, {
+                data: [923, 950, 963, 995, 1029, 1029, 1075, 1112],
+                label: "Gareth",
+                borderColor: "#875692",
+                fill: false
+              }, {
+                data: [1018, 1041, 1098, 1125, 1147, 1147, 1190, 1219],
+                label: "Jon",
+                borderColor: "#F38400",
+                fill: false
+              }, {
+                data: [1027, 1044, 1082, 1120, 1134, 1134, 1172, 1203],
+                label: "Mark",
+                borderColor: "#A1CAF1",
+                fill: false
+              }, {
+                data: [1079, 1101, 1173, 1215, 1248, 1248, 1282, 1305],
+                label: "Matt",
+                borderColor: "#BE0032",
+                fill: false
+              }, {
+                data: [983, 999, 1046, 1083, 1119, 1119, 1159, 1195],
+                label: "Nat",
+                borderColor: "#C2B280",
+                fill: false
+              }, {
+                data: [920, 927, 951, 997, 1015, 1015, 1032, 1044] ,
+                label: "Neil",
+                borderColor: "#848482",
+                fill: false
+              }, {
+                data: [1087, 1106, 1188, 1229, 1270, 1270, 1314, 1363],
+                label: "Paul",
+                borderColor: "#008856",
+                fill: false
+              }, {
+                data: [870, 905, 959, 995, 1026, 1026, 1059, 1097],
+                label: "Phil",
+                borderColor: "#E68FAC",
+                fill: false
+              }, {
+                data: [1208, 1246, 1283, 1308, 1367, 1367, 1411, 1426],
+                label: "Rich",
+                borderColor: "#0067A5",
+                fill: false
+              }
+            ]
+        }
+
+        var pointsChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                legend: {
+                    position: "right",
+                },
+                elements: {
+                    line: {
+                        tension: 0,
+                    }
+                }
+            }
+        });
+
+    });
+</script>
