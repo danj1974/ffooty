@@ -5,12 +5,12 @@ footyApp.config(['$routeProvider', '$locationProvider', 'TEMPLATE_PATH', functio
     }).when('/home/', {
         controller: 'BaseController',
         templateUrl: TEMPLATE_PATH + 'main-panel/home.html',
-//        resolve: {
-//    		constants: ['Constants', function(Constants) {
-//	            console.log('resolving Constants...');
-//	            return Constants.get().$promise
-//	        }],
-//    	}
+        resolve: {
+    		teamRunningTotals: ['TeamRunningTotals', function(TeamRunningTotals) {
+	            console.log('resolving TeamRunningTotals...');
+	            return TeamRunningTotals.get().$promise;
+	        }],
+    	}
     }).when('/admin/:admin_key/auction_nominations', {
         controller: 'AdminAuctionNominationsController',
         templateUrl: TEMPLATE_PATH + 'main-panel/admin/auction_nominations.html',

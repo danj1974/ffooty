@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -23,7 +21,7 @@ from ffooty.models import (Team, PremTeam, Player, Week, PlayerScore, TeamWeekly
                            Banter, Comment, Constant, IllegalNominationOperationException,
                            TeamMonthlyScore, SquadChange)
 
-from ffooty.functions import process_transfer_outcomes
+from ffooty.functions import get_week, process_transfer_outcomes
 
 
 class ManagerViewSet(ReadOnlyModelViewSet):
@@ -103,6 +101,32 @@ class PlayerScoreViewSet(ModelViewSet):
 class TeamWeeklyScoreViewSet(ModelViewSet):
     queryset = TeamWeeklyScore.objects.all()
     serializer_class = TeamWeeklyScoreSerializer
+
+    @list_route(methods=['get'])
+    def running_totals(self, request):
+        # fetch the teams & weekly scores
+        teams = Team.objects.select_related('weekly_scores', 'manager')
+
+        data = []
+
+        for team in teams:
+            # create a data dict for each team
+            team_data = {
+                'id': team.id,
+                'manager': team.manager.username
+            }
+
+            # running total of scores
+            total = 0
+            scores = []
+            for score in team.weekly_scores.all():
+                total += score.value
+                scores.append(total)
+
+            team_data['scores'] = scores
+            data.append(team_data)
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class TeamMonthlyScoreViewSet(ModelViewSet):
