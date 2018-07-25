@@ -184,12 +184,16 @@ def get_player_rows_from_file(file_object=None, initialise=False):
     players_source = BeautifulSoup(file_object)
 
     # when initialising the table pre-season, different table id & row classes are needed
-    if initialise:
-        table_id = 'player-selection-list'
-        row_class = 'accel'
-    else:
-        table_id = 'table-players'
-        row_class = 'playerstats'
+    # stats centre table is valid pre-season 2019
+    # if initialise:
+    #     table_id = 'player-selection-list'
+    #     row_class = 'accel'
+    # else:
+    #     table_id = 'table-players'
+    #     row_class = 'playerstats'
+
+    table_id = 'table-players'
+    row_class = 'playerstats'
 
     player_table = players_source.find(id=table_id)
     return player_table.findAll('tr', {'class': row_class})
