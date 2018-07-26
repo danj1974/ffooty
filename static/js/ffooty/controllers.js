@@ -1,7 +1,3 @@
-//footyApp.controller('MenuController', ['$scope', '$location', '$route', '$rootScope', function($scope, $location, $route, $rootScope) {
-//
-//}]);
-
 footyApp.controller('BaseController', ['$scope', '$location', '$rootScope', 'UpdateScores', function($scope, $location, $rootScope, UpdateScores) {
 
     $scope.updateScores = function() {

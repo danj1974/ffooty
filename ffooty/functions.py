@@ -31,8 +31,8 @@ def initialise_weeks():
     """
     # TODO - use the constants to set the start/end date
     # TODO - or submit dates in the form when uploading the players.
-    week_date = dt(2017, 8, 15)  # the first Tuesday after start of season
-    end_date = dt(2018, 5, 23)  # the *Wednesday* after the cup final/last weekend
+    week_date = dt(2018, 8, 14)  # the first Tuesday after start of season
+    end_date = dt(2019, 5, 22)  # the *Wednesday* after the cup final/last weekend
 
     current_week = 1
 
@@ -258,6 +258,8 @@ def initialise_players(update=False, from_file=True, file_object=None):
             'S': 4000,
         }
 
+    print "codes:", codes
+
     # get a lookup dict of PremTeams, key = name
     prem_team_dict = get_prem_team_dict()
     # print team_dict
@@ -295,18 +297,19 @@ def initialise_players(update=False, from_file=True, file_object=None):
         if 'table-head' in attrs['class']:
             continue
 
-        if attrs['data-status'] == 'HIDDEN':
+        if attrs.get('data-status', None) == 'HIDDEN':
             continue
 
         # first cell contains <a href"player-stat-address"><img>player-name</img></a>
         name = attrs['data-name']
-        web_code = attrs['data-plaid']
+        web_code = attrs['data-playerid']
         prem_team_code = attrs['data-team']
         prem_team = prem_team_dict[prem_team_code]
         value = float(attrs['data-value'])
+
         try:
             last_years_total = int(attrs['data-points'])
-        except KeyError:
+        except (KeyError, ValueError):
             # no points available for previous season
             last_years_total = 0
 
@@ -329,14 +332,7 @@ def initialise_players(update=False, from_file=True, file_object=None):
             new_players.append(p)
             print p.code, p.name, p.prem_team, p.value, created
 
-        # print p.web_code, p.name, created
-
-    players = Player.objects.all()
-    # TODO - this issue is fixed now.  remove?
-    # the initial create can sometimes fail to assign positions correctly
-    # resave all players before continuing
-    for p in players:
-        p.save()
+        print p.web_code, p.name, created
 
     print "****"
     print 'All players saved'
