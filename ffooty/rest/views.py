@@ -48,7 +48,7 @@ class UserTeamView(APIView):
         # get the team for the user by username url parameter
         username = kwargs['username']
         if username:
-            team = Team.objects.get(manager__username=username)
+            team = Team.active_objects.get(manager__username=username)
             return Response(TeamSerializer(team).data)
         # else
         return Response({'detail': 'Team not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -62,7 +62,7 @@ class AuctionNominationSummaryView(APIView):
             return Response({'detail': 'Team not found.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         data = []
-        teams = Team.objects.exclude(manager__username__in=['Admin', 'admin'])
+        teams = Team.active_objects.exclude(manager__username__in=['Admin', 'admin'])
 
         for team in teams:
             nominations = AuctionNomination.objects.select_related('player', 'manager').filter(team=team)
@@ -89,7 +89,7 @@ class AuctionTeamSummaryView(APIView):
         #     return Response({'detail': 'Unauthorized Access.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         data = {}
-        teams = Team.objects.exclude(manager__username__in=['Admin', 'admin'])
+        teams = Team.active_objects.exclude(manager__username__in=['Admin', 'admin'])
         funds_per_player = 100.0 / 15
 
         for team in teams:
@@ -152,7 +152,7 @@ class AuctionRandomPlayerCodesView(APIView):
 class TeamDetailsView(APIView):
 
     def get(self, request, **kwargs):
-        team = Team.objects.filter(
+        team = Team.active_objects.filter(
             id=kwargs['id']
         ).first()
 
@@ -169,7 +169,7 @@ class TeamDetailsView(APIView):
 class TeamScoresView(APIView):
 
     def get(self, request, *args, **kwargs):
-        team = Team.objects.filter(
+        team = Team.active_objects.filter(
             id=kwargs['id']
         ).select_related(
             'manager', 'players', 'weekly_scores', 'monthly_scores'
@@ -204,7 +204,7 @@ class TeamScoresView(APIView):
 class TeamLineupView(APIView):
 
     def get(self, request, *args, **kwargs):
-        team = Team.objects.get(id=kwargs['id'])
+        team = Team.active_objects.get(id=kwargs['id'])
         data = TeamDetailsSerializer(team).data
         # identify whether the user is the manager of this team
         data['is_manager'] = True if request.user == team.manager else False
@@ -220,7 +220,7 @@ class TeamLineupView(APIView):
 class TeamValidateView(APIView):
 
     def get(self, request, *args, **kwargs):
-        team = Team.objects.get(id=kwargs['id'])
+        team = Team.active_objects.get(id=kwargs['id'])
         data = {'is_valid': team.validate_line_up()}
 
         return Response(data)
@@ -269,7 +269,7 @@ class CurrentWindowView(APIView):
 
 class ProcessTransfersForTeamView(APIView):
     def get(self, request, *args, **kwargs):
-        team = Team.objects.get(id=kwargs['id'])
+        team = Team.active_objects.get(id=kwargs['id'])
         messages = process_transfer_outcomes(team)
         data = {'messages': messages}
         return Response(data)

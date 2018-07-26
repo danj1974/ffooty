@@ -43,6 +43,7 @@ class Team(NameMixin):
     cup_start_position = models.IntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True)  # is the team active in the current season
 
+    objects = models.Manager()
     active_objects = TeamObjectManager()
 
     class Meta:

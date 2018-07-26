@@ -218,7 +218,7 @@ def get_team_dict():
 
     :return: dict, key = manager username, val = :class:``ffooty.models.Team``
     """
-    teams = Team.objects.all()
+    teams = Team.active_objects.all()
     return {t.manager.username: t for t in teams}
 
 
@@ -416,7 +416,7 @@ def reset_for_new_season(definitely=False):
     for window in windows:
         window.delete()
 
-    teams = Team.objects.all()
+    teams = Team.active_objects.all()
     for team in teams:
         team.score = 0
         team.funds = 0.0
@@ -533,7 +533,7 @@ def update_players(week=None, from_file=False, file_object=None):
 
 
 def update_weekly_scores(week):
-    teams = Team.objects.all()
+    teams = Team.active_objects.all()
 
     for team in teams:
 
@@ -671,7 +671,7 @@ def read_auction_excel_file(filepath):
     Column 5 [F]: sale
     """
     # create a lookup dict of teams by manager name
-    teams = Team.objects.all()
+    teams = Team.active_objects.all()
     team_dict = {}
 
     for t in teams:
@@ -864,7 +864,7 @@ def initialise_cup_competition(bye_list=[]):
     :return:
     """
     # create a list of all teams
-    teams = list(Team.objects.all())
+    teams = list(Team.active_objects.all())
 
     # if no. of teams + no. of byes is less than 16 then one or more random byes are required
     random_byes = 16 - len(teams) - len(bye_list)
@@ -950,7 +950,7 @@ def initialise_cup_competition(bye_list=[]):
 
 def get_cup_scores():
     cup_weeks = Week.objects.filter(is_cup=True)
-    teams = Team.objects.all().order_by('cup_start_position')
+    teams = Team.active_objects.all().order_by('cup_start_position')
     current_week = get_week()
 
     assert cup_weeks.count() == 4, "There should be 4 cup weeks assigned."
@@ -975,7 +975,7 @@ def archive_season_scores():
     Create :class:`ffooty.models.TeamTotalScoreArchive` instances for each team.
     :return:
     """
-    teams = Team.objects.all()
+    teams = Team.active_objects.all()
     year = dt.now().year - 1
 
     print "archiving year {} for {} teams".format(year, teams.count())

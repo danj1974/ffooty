@@ -30,7 +30,7 @@ class ManagerViewSet(ReadOnlyModelViewSet):
 
 
 class TeamViewSet(ModelViewSet):
-    queryset = Team.objects.all().order_by('manager__username')
+    queryset = Team.active_objects.all().order_by('manager__username')
     serializer_class = TeamSerializer
 
     def patch(self, request, *args, **kwargs):
@@ -172,7 +172,7 @@ class TransferNominationViewSet(ModelViewSet):
         window = Window.objects.filter(type=Window.TRANSFER_NOMINATION).first()
         print "window = ", window.id, window
 
-        teams = Team.objects.all()
+        teams = Team.active_objects.all()
 
         for team in teams:
             process_transfer_outcomes(team)
