@@ -25,15 +25,15 @@ footyApp.config(['$routeProvider', '$locationProvider', 'TEMPLATE_PATH', functio
         templateUrl: TEMPLATE_PATH + 'main-panel/admin/auction.html',
         resolve: {
     		auctionTeamSummary: ['$rootScope', 'AuctionTeamSummary', function($rootScope, AuctionTeamSummary) {
-                console.log('admin: resolving auctionTeamSummary...');
+                console.log('admin_auction: resolving auctionTeamSummary...');
                 return AuctionTeamSummary.query().$promise;
             }],
             auctionRandomPlayerCodes: ['$rootScope', 'AuctionRandomPlayerCodes', function($rootScope, AuctionRandomPlayerCodes) {
-                console.log('admin: resolving auctionRandomPlayerCodes...');
+                console.log('admin_auction: resolving auctionRandomPlayerCodes...');
                 return AuctionRandomPlayerCodes.query().$promise;
             }],
             teams: ['$rootScope', 'Teams', function($rootScope, Teams) {
-                console.log('admin: resolving Teams...');
+                console.log('admin_auction: resolving Teams...');
                 return Teams.query().$promise;
             }],
     	}
