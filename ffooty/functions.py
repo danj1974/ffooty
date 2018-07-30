@@ -332,8 +332,6 @@ def initialise_players(update=False, from_file=True, file_object=None):
             new_players.append(p)
             print p.code, p.name, p.prem_team, p.value, created
 
-        print p.web_code, p.name, created
-
     print "****"
     print 'All players saved'
     print "****"
