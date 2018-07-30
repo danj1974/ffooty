@@ -206,14 +206,10 @@ class Player(models.Model):
     def auction_nomination_managers(self):
         # return a string of manager names, those with only 2 are anonymised
         nom_list = [nom.team.manager.username for nom in self.auctionnomination_set.all()]
-        # if len(nom_list) == 2:
-        #     return '[2]'
-        # else:
-        #     return ', '.join(nom_list)
-
-        # TODO - temp change to anonymise all
-        return '[{}]'.format(len(nom_list))
-
+        if len(nom_list) == 2:
+            return '[2]'
+        else:
+            return ', '.join(nom_list)
 
     @property
     def admin_auction_nomination_managers(self):
