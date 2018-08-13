@@ -532,6 +532,98 @@ def update_players(week=None, from_file=False, file_object=None):
             p.save()
 
 
+def auto_update_players(week=None, from_file=False, file_object=None):
+    # get a lookup dict of PremTeams, key = name
+    prem_team_dict = get_prem_team_dict()
+
+    # need to do this first?
+    players_source = BeautifulSoup(urlopen(settings.TG_PLAYERS_STATS))
+
+    rows = requests.get(settings.TG_PLAYERS_STATS_JSON).json()['playerstats']
+    print "No. of player table rows = ", len(rows)
+
+    # get the most recent codes assigned
+    codes = get_player_codes()
+
+    # for each player in the main players table
+    for row in rows:
+
+	name = row['PLAYERNAME']
+        web_code = row['PLAYERID']
+        prem_team_code = row['TEAMCODE']
+        prem_team = prem_team_dict[prem_team_code]
+        value = float(row['VALUE'])
+        try:
+            total_score = int(row['POINTS'])
+            week_score = int(row['WEEKPOINTS'])
+        except ValueError:
+            # no points available
+            total_score = 0
+            week_score = 0
+
+        # get existing player (or None if the web code isn't in the db)
+        player = Player.objects.filter(web_code=web_code).first()
+        
+        if player:
+            # check the weekly and total scores against the existing total
+            if total_score != week_score + player.total_score:
+                print "ERROR: Points don't add up for player ", player
+                print "Web player total = {}, but week_score = {} and current total = {}".format(
+                    total_score, week_score, player.total_score
+                )
+            # if team has changed, flag player as 'new' and update the team
+            if str(player.prem_team) != str(prem_team):
+                print "{}: {}; team change from {} to {}".format(player.code,
+                                                                 name,
+                                                                 player.prem_team,
+                                                                 prem_team)
+                # TODO - review when to make is_new = false
+                player.is_new = True
+                player.prem_team = prem_team
+#                player.save()
+        else:
+#            player = Player.objects.create(name=name, web_code=web_code,
+#                                           prem_team=prem_team, value=value)
+            codes[player.position] += 1
+            player.code = codes[player.position]
+            player.is_new = True
+
+            print "New Player: {}: {}, {}, {}".format(player.code, player.name, player.prem_team, player.value)
+
+        # compare appearance totals with database to determine if player played.
+        starts = row['SXI']
+        subs = row['SUBS']
+        new_appearances = starts + subs
+
+        if new_appearances <= player.appearances:
+            if week_score == 0:
+                week_score = None
+            else:
+                print "ERROR: appearances for player: ", player
+                print "week_score = {}, but new_appearances = {} and current appearances = {}".format(
+                    week_score, new_appearances, player.appearances
+                )
+        player.total_score = total_score
+        player.appearances = new_appearances
+ #       player.save()
+
+        # create a new PlayerScore if it's a scoring week and the player is owned by a team
+        # TODO - currently creating PlayerScores for all players - mainly used to identify inactive players
+        if week:
+            print player.name, player.team, week_score
+ #           PlayerScore.objects.update_or_create(player=player, week=week, team=player.team,
+ #                                                defaults={'value': week_score})
+
+
+    # find any players without a PlayerScore this week and deactivate them
+    players = Player.objects.filter(is_active=True)
+    for p in players:
+        week_score = PlayerScore.objects.filter(week=week, player=p).first()
+        if week_score is None:
+            p.is_active = False
+#            p.save()
+
+
 def update_weekly_scores(week):
     teams = Team.active_objects.all()
 
