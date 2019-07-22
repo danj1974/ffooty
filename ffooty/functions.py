@@ -3,6 +3,7 @@
 import csv
 from datetime import datetime as dt, timedelta
 from decimal import Decimal
+import json
 import os
 import random
 import requests
@@ -531,14 +532,18 @@ def update_players(week=None, from_file=False, file_object=None):
             p.save()
 
 
-def auto_update_players(week=None, from_file=False, file_object=None):
+def update_players_json(week=None, from_file=False, file_object=None):
     # get a lookup dict of PremTeams, key = name
     prem_team_dict = get_prem_team_dict()
 
     # need to do this first?
     players_source = BeautifulSoup(urlopen(settings.TG_PLAYERS_STATS))
 
-    rows = requests.get(settings.TG_PLAYERS_STATS_JSON).json()['playerstats']
+    if file_object:
+        rows = json.loads(file_object.read())['playerstats']
+        file_object.close()
+    else:
+        rows = requests.get(settings.TG_PLAYERS_STATS_JSON).json()['playerstats']
     print "No. of player table rows = ", len(rows)
 
     # get the most recent codes assigned
@@ -579,10 +584,10 @@ def auto_update_players(week=None, from_file=False, file_object=None):
                 # TODO - review when to make is_new = false
                 player.is_new = True
                 player.prem_team = prem_team
-#                player.save()
+                player.save()
         else:
-#            player = Player.objects.create(name=name, web_code=web_code,
-#                                           prem_team=prem_team, value=value)
+            player = Player.objects.create(name=name, web_code=web_code,
+                                           prem_team=prem_team, value=value)
             codes[player.position] += 1
             player.code = codes[player.position]
             player.is_new = True
@@ -604,14 +609,13 @@ def auto_update_players(week=None, from_file=False, file_object=None):
                 )
         player.total_score = total_score
         player.appearances = new_appearances
- #       player.save()
+        player.save()
 
         # create a new PlayerScore if it's a scoring week and the player is owned by a team
         # TODO - currently creating PlayerScores for all players - mainly used to identify inactive players
         if week:
-            print player.name, player.team, week_score
- #           PlayerScore.objects.update_or_create(player=player, week=week, team=player.team,
- #                                                defaults={'value': week_score})
+            PlayerScore.objects.update_or_create(player=player, week=week, team=player.team,
+                                                 defaults={'value': week_score})
 
 
     # find any players without a PlayerScore this week and deactivate them
@@ -620,7 +624,7 @@ def auto_update_players(week=None, from_file=False, file_object=None):
         week_score = PlayerScore.objects.filter(week=week, player=p).first()
         if week_score is None:
             p.is_active = False
-#            p.save()
+            p.save()
 
 
 def update_weekly_scores(week):
