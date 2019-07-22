@@ -32,8 +32,8 @@ def initialise_weeks():
     """
     # TODO - use the constants to set the start/end date
     # TODO - or submit dates in the form when uploading the players.
-    week_date = dt(2018, 8, 14)  # the first Tuesday after start of season
-    end_date = dt(2019, 5, 22)  # the *Wednesday* after the cup final/last weekend
+    week_date = dt(2019, 8, 13)  # the first Tuesday after start of season
+    end_date = dt(2020, 5, 27)  # the *Wednesday* after the cup final/last weekend
 
     current_week = 1
 
