@@ -264,20 +264,15 @@ def initialise_players(update=False, from_file=True, file_object=None):
 
     # get a lookup dict of PremTeams, key = name
     prem_team_dict = get_prem_team_dict()
-    # print team_dict
+    print prem_team_dict
 
-    # get the rows from the players table
-    if from_file:
-        rows = get_player_rows_from_file(file_object=file_object, initialise=True)
+    # get the rows from the provided stats file, or request it directly
+    if file_object:
+        rows = json.loads(file_object.read())['playerstats']
+        file_object.close()
     else:
-        rows = get_player_rows()
-
-    # OLD code for website download
-    # # get the rows from the players table
-    # players_source = BeautifulSoup(urlopen(settings.TG_PLAYERS_LIST))
-    # table = players_source.find('table', {'id': 'player-selection-list'})
-    # # rows = players_source.findAll('tr', {'class': 'playerstats'})
-    # rows = table.findAll('tr')
+        rows = requests.get(settings.TG_PLAYERS_STATS_JSON).json()['playerstats']
+    print "No. of player table rows = ", len(rows)
 
     # track new players *during update only*
     new_players = []
@@ -286,31 +281,15 @@ def initialise_players(update=False, from_file=True, file_object=None):
     print "New Players"
     print "****"
 
-    # for each <tr> element in the main players table
     for row in rows:
-        # current format:
-        # <tr class data-teamname="Manchester United" data-plaid="1001"
-        #         data-points="148" data-team="MUN" data-group="GK" data-value="4.0"
-        #         data-status="AVAILABLE" data-picked="23.7%" data-name="de Gea, D"
-        #         style="display: block;">
-
-        attrs = row.attrs
-
-        if 'table-head' in attrs['class']:
-            continue
-
-        if attrs.get('data-status', None) == 'HIDDEN':
-            continue
-
-        # first cell contains <a href"player-stat-address"><img>player-name</img></a>
-        name = attrs['data-name']
-        web_code = attrs['data-playerid']
-        prem_team_code = attrs['data-team']
+        name = row['PLAYERNAME']
+        web_code = row['PLAYERID']
+        prem_team_code = row['TEAMCODE']
         prem_team = prem_team_dict[prem_team_code]
-        value = float(attrs['data-value'])
+        value = float(row['VALUE'])
 
         try:
-            last_years_total = int(attrs['data-points'])
+            last_years_total = int(row['POINTS'])
         except (KeyError, ValueError):
             # no points available for previous season
             last_years_total = 0
@@ -536,9 +515,6 @@ def update_players_json(week=None, from_file=False, file_object=None):
     # get a lookup dict of PremTeams, key = name
     prem_team_dict = get_prem_team_dict()
 
-    # need to do this first?
-    players_source = BeautifulSoup(urlopen(settings.TG_PLAYERS_STATS))
-
     if file_object:
         rows = json.loads(file_object.read())['playerstats']
         file_object.close()
@@ -552,7 +528,7 @@ def update_players_json(week=None, from_file=False, file_object=None):
     # for each player in the main players table
     for row in rows:
 
-	name = row['PLAYERNAME']
+        name = row['PLAYERNAME']
         web_code = row['PLAYERID']
         prem_team_code = row['TEAMCODE']
         prem_team = prem_team_dict[prem_team_code]
