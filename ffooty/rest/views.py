@@ -130,7 +130,8 @@ class AuctionRandomPlayerCodesView(APIView):
         nominated_player_codes = AuctionNomination.objects.select_related(
             'player'
         ).filter(
-            player__team__isnull=True
+            player__team__isnull=True,
+            passed=False
         ).order_by(
             'player__code'
         ).values_list(
@@ -147,6 +148,22 @@ class AuctionRandomPlayerCodesView(APIView):
         print "****"
 
         return Response(nominated_player_codes)
+
+
+class AuctionPassNominationsView(APIView):
+    """
+    Pass all nominations for a particular player.
+    """
+    def get(self, request, *args, **kwargs):
+        auction_nominations = AuctionNomination.objects.filter(
+            player__id=kwargs['player_id']
+        )
+
+        for nomination in auction_nominations:
+            nomination.passed = True
+            nomination.save()
+
+        return Response({"success": True})
 
 
 class TeamDetailsView(APIView):

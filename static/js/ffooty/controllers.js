@@ -624,7 +624,7 @@ footyApp.controller('AuctionNominationsController', ['$scope', '$location', '$ro
 
 }]);
 
-footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$rootScope', '$filter', 'Players', 'teams', 'auctionTeamSummary', 'auctionRandomPlayerCodes', 'TEMPLATE_PATH', function($scope, $location, $rootScope, $filter, Players, teams, auctionTeamSummary, auctionRandomPlayerCodes, TEMPLATE_PATH) {
+footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$rootScope', '$filter', 'Players', 'teams', 'auctionTeamSummary', 'auctionRandomPlayerCodes', 'AuctionPassNominations', 'TEMPLATE_PATH', function($scope, $location, $rootScope, $filter, Players, teams, auctionTeamSummary, auctionRandomPlayerCodes, AuctionPassNominations, TEMPLATE_PATH) {
 
     $scope.players = $rootScope.players;
     $scope.auctionTeamSummary = auctionTeamSummary;
@@ -689,6 +689,20 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
 
     $scope.cancel = function() {
         $scope.selectedPlayer = {};
+    };
+
+    $scope.passNominations = function() {
+        var p = $scope.selectedPlayer;
+        console.log("passNominations: " + JSON.stringify(p, null, 4));
+
+        AuctionPassNominations.get({player_id: p.id}).$promise
+            .then(function(response) {
+                console.log('AuctionPassNominations: response = ' + JSON.stringify(response));
+                $scope.selectedPlayer = {};
+            },
+            function (error) {
+                window.alert(JSON.stringify(error));
+            });
     };
 
 }]);

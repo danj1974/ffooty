@@ -6,7 +6,7 @@ from rest.views import (
     AuthUserView, ConstantsView, UserTeamView, AuctionNominationSummaryView,
     AuctionTeamSummaryView, TeamDetailsView, TeamLineupView, TeamValidateView,
     UpdateScoresView, ProcessTransfersForTeamView, ManagerOfTheMonthView,
-    TeamScoresView, AuctionRandomPlayerCodesView
+    TeamScoresView, AuctionRandomPlayerCodesView, AuctionPassNominationsView
 )
 from rest.viewsets import (
     TeamViewSet, PremTeamViewSet, PlayerViewSet, WeekViewSet, PlayerScoreViewSet,
@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     url(r'^auction_nomination_summary/$', AuctionNominationSummaryView.as_view(), name='api-auction_nomination_summary'),
     url(r'^auction_team_summary/$', AuctionTeamSummaryView.as_view(), name='api-auction_team_summary'),
     url(r'^auction_random_player_codes/$', AuctionRandomPlayerCodesView.as_view(), name='api-auction_player_codes'),
+    url(r'^auction_pass_nominations/(?P<player_id>[0-9]+)/$', AuctionPassNominationsView.as_view(), name='api-auction_pass_nominations'),
     url(r'^team_details/(?P<id>[0-9]+)/$', TeamDetailsView.as_view(), name='api-team_details'),
     url(r'^team_scores/(?P<id>[0-9]+)/$', TeamScoresView.as_view(), name='api-team_scores'),
     url(r'^team_lineup/(?P<id>[0-9]+)/$', TeamLineupView.as_view(), name='api-team_lineup'),

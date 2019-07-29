@@ -207,6 +207,12 @@ footyAPI.factory('AuctionRandomPlayerCodes', ['$resource', function($resource) {
     });
 }]);
 
+footyAPI.factory('AuctionPassNominations', ['$resource', function($resource) {
+    return $resource('/api/auction_pass_nominations/:player_id/', {}, {
+        query: {method: 'GET', params:{player_id: '@player_id'}, isArray: false},
+    });
+}]);
+
 footyAPI.factory('TeamDetails', ['$resource', function($resource) {
     return $resource('/api/team_details/:id/', {}, {
         get: {method: 'GET', params:{id: '@id'}, isArray: false},

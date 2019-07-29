@@ -489,6 +489,8 @@ class NominationMixin(models.Model):
 
 class AuctionNomination(NominationMixin):
 
+    passed = models.BooleanField(default=False)
+
     class Meta:
         unique_together = ('team', 'player',)
 
