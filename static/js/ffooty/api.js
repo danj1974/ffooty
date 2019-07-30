@@ -213,6 +213,12 @@ footyAPI.factory('AuctionPassNominations', ['$resource', function($resource) {
     });
 }]);
 
+footyAPI.factory('AuctionDealLogs', ['$resource', function($resource) {
+    return $resource('/api/auction_deal_logs/', {}, {
+        query: {method: 'GET', params:{}, isArray: false},
+    });
+}]);
+
 footyAPI.factory('TeamDetails', ['$resource', function($resource) {
     return $resource('/api/team_details/:id/', {}, {
         get: {method: 'GET', params:{id: '@id'}, isArray: false},

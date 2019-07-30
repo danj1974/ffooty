@@ -155,15 +155,43 @@ class AuctionPassNominationsView(APIView):
     Pass all nominations for a particular player.
     """
     def get(self, request, *args, **kwargs):
-        auction_nominations = AuctionNomination.objects.filter(
+        auction_nominations = AuctionNomination.objects.select_related(
+            'player'
+        ).filter(
             player__id=kwargs['player_id']
         )
+
+        player = auction_nominations.first().player
 
         for nomination in auction_nominations:
             nomination.passed = True
             nomination.save()
 
+        if not player.team:
+            # log the action
+            with open('./data/auction_log.txt', 'a') as outfile:
+                msg = "{} {} ({}) {} - was returned to the pool".format(
+                    player.code,
+                    player.name,
+                    player.prem_team,
+                    player.value
+                )
+                outfile.write(msg + "\n")
+
         return Response({"success": True})
+
+
+class AuctionDealLogsView(APIView):
+    """
+    Return all auction deal log messages.
+    """
+    def get(self, request, *args, **kwargs):
+        deals = []
+        with open('./data/auction_log.txt', 'r') as infile:
+            deals = [line.rstrip('\n') for line in infile]
+
+        deals.reverse()
+        return Response({"deals": deals})
 
 
 class TeamDetailsView(APIView):

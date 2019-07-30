@@ -61,23 +61,32 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         # log the change to auction log file
+        old_manager = self.get_manager(instance)
         new_team = validated_data.get('team')
+        new_manager = new_team.manager.username if new_team else "pool"
+        new_sale = validated_data.get('sale')
+
         action = ""
-        if not instance.team:
-            if new_team:
-                action = " was bought by {}".format(new_team.manager.username)
+        if not old_manager:
+            if new_manager:
+                action = " was bought by {}".format(new_manager)
         else:
-            action = " was changed from {} to {}".format(
-                instance.team.manager.username,
-                new_team.manager.username if new_team else "pool"
-            )
+            if (old_manager == new_manager and
+                    instance.sale != new_sale):
+                action = " - sale value adjusted for {},".format(new_manager)
+            else:
+                action = " was changed from {} to {}".format(
+                    old_manager,
+                    new_manager
+                )
 
         with open('./data/auction_log.txt', 'a') as outfile:
-            msg = "{} ({}){} sale = {}".format(
+            msg = "{} {} ({}){} sale = {}".format(
+                instance.code,
                 instance.name,
                 instance.prem_team,
                 action,
-                validated_data.get('sale')
+                new_sale
             )
             print(msg)
             outfile.write(msg + "\n")

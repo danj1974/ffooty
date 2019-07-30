@@ -624,7 +624,7 @@ footyApp.controller('AuctionNominationsController', ['$scope', '$location', '$ro
 
 }]);
 
-footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$rootScope', '$filter', 'Players', 'teams', 'auctionTeamSummary', 'auctionRandomPlayerCodes', 'AuctionPassNominations', 'TEMPLATE_PATH', function($scope, $location, $rootScope, $filter, Players, teams, auctionTeamSummary, auctionRandomPlayerCodes, AuctionPassNominations, TEMPLATE_PATH) {
+footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$rootScope', '$filter', 'Players', 'teams', 'auctionTeamSummary', 'auctionRandomPlayerCodes', 'AuctionPassNominations', 'AuctionDealLogs', 'TEMPLATE_PATH', function($scope, $location, $rootScope, $filter, Players, teams, auctionTeamSummary, auctionRandomPlayerCodes, AuctionPassNominations, AuctionDealLogs, TEMPLATE_PATH) {
 
     $scope.players = $rootScope.players;
     $scope.auctionTeamSummary = auctionTeamSummary;
@@ -644,7 +644,7 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
         if (playerCode == undefined) {
             playerCode = $scope.randomPlayerCodes.pop();
             console.log("playerCode set to " + playerCode);
-            console.log("randomPlayerCodes = " + JSON.stringify($scope.randomPlayerCodes))
+//            console.log("randomPlayerCodes = " + JSON.stringify($scope.randomPlayerCodes))
 
         }
 
@@ -668,15 +668,21 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
         var position = p.position[0]
         console.log("savePlayers: " + JSON.stringify(p, null, 4));
 
-        Players.patch(p).$promise
-            .then(function (response) {
-                $scope.auctionTeamSummary[p.team].players[position].push(p.sale)
-                $scope.auctionTeamSummary[p.team].funds -= p.sale;
-                $scope.selectedPlayer = {};
-            },
-            function (error) {
-                window.alert(JSON.stringify(error));
-            });
+        if (p.team == undefined) {
+            window.alert("Please set the Manager or click 'Pass / Cancel'");
+        } else {
+
+            Players.patch(p).$promise
+                .then(function (response) {
+                    $scope.auctionTeamSummary[p.team].players[position].push(p.sale)
+                    $scope.auctionTeamSummary[p.team].funds -= p.sale;
+                    $scope.selectedPlayer = {};
+                    $scope.refreshAuctionDealLogs();
+                },
+                function (error) {
+                    window.alert(JSON.stringify(error));
+                });
+        }
     };
 
     $scope.setManager = function(manager) {
@@ -695,15 +701,33 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
         var p = $scope.selectedPlayer;
         console.log("passNominations: " + JSON.stringify(p, null, 4));
 
-        AuctionPassNominations.get({player_id: p.id}).$promise
+        if (p.admin_auction_nomination_managers.length > 0) {
+            AuctionPassNominations.get({player_id: p.id}).$promise
+                .then(function(response) {
+                    console.log('AuctionPassNominations: response = ' + JSON.stringify(response));
+                    $scope.selectedPlayer = {};
+                    $scope.refreshAuctionDealLogs();
+                },
+                function (error) {
+                    window.alert(JSON.stringify(error));
+                });
+        } else {
+            console.log("passNominations: no auction nominations to pass.");
+        }
+    };
+
+    $scope.refreshAuctionDealLogs = function() {
+        AuctionDealLogs.get().$promise
             .then(function(response) {
-                console.log('AuctionPassNominations: response = ' + JSON.stringify(response));
-                $scope.selectedPlayer = {};
+//                console.log('AuctionDealLogs: response = ' + JSON.stringify(response));
+                $scope.auctionDealLogs = response.deals;
             },
             function (error) {
                 window.alert(JSON.stringify(error));
             });
-    };
+    }
+
+    $scope.refreshAuctionDealLogs();
 
 }]);
 

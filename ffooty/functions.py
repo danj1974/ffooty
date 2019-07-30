@@ -593,14 +593,14 @@ def update_players_json(week=None, from_file=False, file_object=None):
             PlayerScore.objects.update_or_create(player=player, week=week, team=player.team,
                                                  defaults={'value': week_score})
 
-
-    # find any players without a PlayerScore this week and deactivate them
-    players = Player.objects.filter(is_active=True)
-    for p in players:
-        week_score = PlayerScore.objects.filter(week=week, player=p).first()
-        if week_score is None:
-            p.is_active = False
-            p.save()
+    if week:
+        # find any players without a PlayerScore this week and deactivate them
+        players = Player.objects.filter(is_active=True)
+        for p in players:
+            week_score = PlayerScore.objects.filter(week=week, player=p).first()
+            if week_score is None:
+                p.is_active = False
+                p.save()
 
 
 def update_weekly_scores(week):
