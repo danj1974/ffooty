@@ -674,8 +674,13 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
 
             Players.patch(p).$promise
                 .then(function (response) {
-                    $scope.auctionTeamSummary[p.team].players[position].push(p.sale)
-                    $scope.auctionTeamSummary[p.team].funds -= p.sale;
+                    var team = $scope.auctionTeamSummary[p.team];
+                    team.players[position].push(p.sale)
+                    team.funds -= p.sale;
+                    team.bought += 1;
+                    if (team.bought < 15) {
+                        team.funds_per_player = team.funds / (15 - team.bought);
+                    }
                     $scope.selectedPlayer = {};
                     $scope.refreshAuctionDealLogs();
                 },
