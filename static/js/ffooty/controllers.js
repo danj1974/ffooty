@@ -680,6 +680,8 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
                     team.bought += 1;
                     if (team.bought < 15) {
                         team.funds_per_player = team.funds / (15 - team.bought);
+                    } else {
+                        team.funds_per_player = team.funds
                     }
                     $scope.selectedPlayer = {};
                     $scope.refreshAuctionDealLogs();
