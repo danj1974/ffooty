@@ -784,7 +784,7 @@ def export_player_list_csv():
         '-value', 'code'
     )
 
-    with open('/home/dan/Documents/ffooty_data/csv_exports/player_list_auction.csv', 'wb') as f:
+    with open('./data/player_list_auction.csv', 'w') as f:
         writer = csv.writer(f)
 
         for position in Player.POSITION:

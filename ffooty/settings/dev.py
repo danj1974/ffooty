@@ -36,7 +36,8 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         # "NAME": os.path.join(BASE_DIR, "../data", "db.sqlite3"),
-        "NAME": "../../ffooty/website_data/db.sqlite3",
+        # "NAME": "../../ffooty/website_data/db.sqlite3",
+        "NAME": "../../ffooty/website_data/2018/db_2018_season_final.sqlite3",
         "USER": "",
         "PASSWORD": "",
         "HOST": "",
