@@ -1,8 +1,0 @@
-#!/bin/bash
-
-python $OPENSHIFT_REPO_DIR/ffooty/manage.py migrate --noinput
-
-# create the secrets file if it doesn't already exist
-if [ ! -f $OPENSHIFT_DATA_DIR/secrets.json ]; then
-    python $OPENSHIFT_REPO_DIR/libs/secrets.py > $OPENSHIFT_DATA_DIR/secrets.json
-fi

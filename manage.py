@@ -3,7 +3,7 @@ import os
 import sys
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ffooty.settings.openshift")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ffooty.settings.python_anywhere")
 
     from django.core.management import execute_from_command_line
 

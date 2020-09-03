@@ -32,8 +32,8 @@ def initialise_weeks():
     """
     # TODO - use the constants to set the start/end date
     # TODO - or submit dates in the form when uploading the players.
-    week_date = dt(2019, 8, 13)  # the first Tuesday after start of season
-    end_date = dt(2020, 5, 27)  # the *Wednesday* after the cup final/last weekend
+    week_date = dt(2020, 9, 15)  # the first Tuesday after start of season
+    end_date = dt(2021, 6, 2)  # the *Wednesday* after the cup final/last weekend
 
     current_week = 1
 
@@ -77,22 +77,23 @@ def load_premiership_teams():
         {'name': 'Arsenal', 'code': 'ARS', 'is_prem': True},
         {'name': 'Aston Villa', 'code': 'AVL', 'is_prem': True},
         {'name': 'Brighton', 'code': 'BTN', 'is_prem': True},
-        {'name': 'Bournemouth', 'code': 'BOU', 'is_prem': True},
+        {'name': 'Bournemouth', 'code': 'BOU', 'is_prem': False},
         {'name': 'Burnley', 'code': 'BUR', 'is_prem': True},
         {'name': 'Cardiff City', 'code': 'CAR', 'is_prem': False},
         {'name': 'Chelsea', 'code': 'CHE', 'is_prem': True},
         {'name': 'Crystal Palace', 'code': 'CRY', 'is_prem': True},
         {'name': 'Everton', 'code': 'EVE', 'is_prem': True},
-        {'name': 'Fulham', 'code': 'FUL', 'is_prem': False},
+        {'name': 'Fulham', 'code': 'FUL', 'is_prem': True},
         {'name': 'Hull', 'code': 'HUL', 'is_prem': False},
         {'name': 'Huddersfield Town', 'code': 'HUD', 'is_prem': False},
+        {'name': 'Leeds United', 'code': 'LEE', 'is_prem': True},
         {'name': 'Leicester City', 'code': 'LEI', 'is_prem': True},
         {'name': 'Liverpool', 'code': 'LIV', 'is_prem': True},
         {'name': 'Manchester City', 'code': 'MCY', 'is_prem': True},
         {'name': 'Manchester United', 'code': 'MUN', 'is_prem': True},
         {'name': 'Middlesbrough', 'code': 'MID', 'is_prem': False},
         {'name': 'Newcastle United', 'code': 'NEW', 'is_prem': True},
-        {'name': 'Norwich City', 'code': 'NOR', 'is_prem': True},
+        {'name': 'Norwich City', 'code': 'NOR', 'is_prem': False},
         {'name': 'Queens Park Rangers', 'code': 'QPR', 'is_prem': False},
         {'name': 'Sheffield United', 'code': 'SHF', 'is_prem': True},
         {'name': 'Southampton', 'code': 'SOT', 'is_prem': True},
@@ -100,8 +101,8 @@ def load_premiership_teams():
         {'name': 'Sunderland', 'code': 'SUN', 'is_prem': False},
         {'name': 'Swansea City', 'code': 'SWA', 'is_prem': False},
         {'name': 'Tottenham Hotspur', 'code': 'TOT', 'is_prem': True},
-        {'name': 'Watford', 'code': 'WAT', 'is_prem': True},
-        {'name': 'West Bromwich Albion', 'code': 'WBA', 'is_prem': False},
+        {'name': 'Watford', 'code': 'WAT', 'is_prem': False},
+        {'name': 'West Bromwich Albion', 'code': 'WBA', 'is_prem': True},
         {'name': 'West Ham United', 'code': 'WHM', 'is_prem': True},
         {'name': 'Wolverhampton Wanderers', 'code': 'WLV', 'is_prem': True},
     ]

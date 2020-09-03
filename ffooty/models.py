@@ -196,11 +196,14 @@ class Player(models.Model):
         unique_together = ('name', 'code',)
 
     def __unicode__(self):
-        return '{} {} {} {} {}'.format(self.code, self.position, self.name, self.prem_team, self.value)
+        return '{} {} {} {} {}'.format(self.code, self.position, self.name.encode('utf-8'), self.prem_team, self.value)
+
+    def __str__(self):
+        return '{} {} {} {} {}'.format(self.code, self.position, self.name.encode('utf-8'), self.prem_team, self.value)
 
     @property
     def details(self, *args, **kwargs):
-        return "{}, {}, £{}m".format(self.name, self.team, self.value)
+        return "{}, {}, £{}m".format(self.name.encode('utf-8'), self.team, self.value)
 
     @property
     def auction_nomination_managers(self):
@@ -231,19 +234,19 @@ class Player(models.Model):
             team = self.team
         return self.scores.filter(team=team, is_counted=True).aggregate(models.Sum('value'))['value__sum']
 
-    def save(self, *args, **kwargs):
-        # self.web_code is a unicode object at this point
-        web_code = int(self.web_code)
-        if web_code < 2000:
-            self.position = Player.GKP
-        elif web_code < 3000:
-            self.position = Player.DEF
-        elif web_code < 4000:
-            self.position = Player.MID
-        else:
-            self.position = Player.STR
-
-        super(Player, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # self.web_code is a unicode object at this point
+    #     web_code = int(self.web_code)
+    #     if web_code < 2000:
+    #         self.position = Player.GKP
+    #     elif web_code < 3000:
+    #         self.position = Player.DEF
+    #     elif web_code < 4000:
+    #         self.position = Player.MID
+    #     else:
+    #         self.position = Player.STR
+    #
+    #     super(Player, self).save(*args, **kwargs)
 
     def return_to_pool(self, loss_offset=0):
         """
@@ -262,7 +265,7 @@ class Player(models.Model):
             self.save()
             return loss
         else:
-            print "return_to_pool(): {} is not owned by a team!".format(self.name)
+            print "return_to_pool(): {} is not owned by a team!".format(self.name.encode('utf-8'))
 
     def update_transfers(self):
 
