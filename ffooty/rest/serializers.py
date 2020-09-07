@@ -83,7 +83,7 @@ class PlayerSerializer(serializers.ModelSerializer):
         with open('./data/auction_log.txt', 'a') as outfile:
             msg = "{} {} ({}){} sale = {}".format(
                 instance.code,
-                instance.name,
+                instance.name.encode('utf-8'),
                 instance.prem_team,
                 action,
                 new_sale

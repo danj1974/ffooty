@@ -670,6 +670,8 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
 
         if (p.team == undefined) {
             window.alert("Please set the Manager or click 'Pass / Cancel'");
+        } else if (p.sale == undefined || parseFloat(p.sale) < parseFloat(p.value)) {
+            window.alert("Please add a valid sale price or click 'Pass / Cancel'");
         } else {
 
             Players.patch(p).$promise

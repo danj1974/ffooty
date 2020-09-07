@@ -191,7 +191,7 @@ class AuctionDealLogsView(APIView):
             deals = [line.rstrip('\n') for line in infile]
 
         deals.reverse()
-        return Response({"deals": deals})
+        return Response({"deals": deals[:20]})
 
 
 class TeamDetailsView(APIView):
