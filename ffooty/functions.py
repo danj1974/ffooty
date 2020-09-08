@@ -108,16 +108,16 @@ def load_premiership_teams():
     ]
 
     for team in team_list:
-        print PremTeam.objects.update_or_create(
+        print(PremTeam.objects.update_or_create(
             name=team['name'],
             code=team['code'],
             defaults={'is_prem': team['is_prem']}
-        )
-        # print pt, created
+        ))
+        # print(pt, created)
 
 
 def is_player_stats_table_visible(session):
-    print "waiting for playerstats to load..."
+    print("waiting for playerstats to load...")
     players_source = BeautifulSoup(session.body())
     rows = players_source.findAll('tr', {'class': 'playerstats'})
     if rows:
@@ -170,8 +170,8 @@ def get_player_rows():
     if settings.ON_OPENSHIFT:
         webdriver.phantomjs.webdriver.Service = NewService
 
-    print "settings.ON_OPENSHIFT:", settings.ON_OPENSHIFT
-    print "settings.PHANTOMJS_PATH: ", settings.PHANTOMJS_PATH
+    print("settings.ON_OPENSHIFT:", settings.ON_OPENSHIFT)
+    print("settings.PHANTOMJS_PATH: ", settings.PHANTOMJS_PATH)
 
     browser = webdriver.PhantomJS(settings.PHANTOMJS_PATH)
     browser.get(settings.TG_PLAYERS_STATS)
@@ -252,7 +252,7 @@ def initialise_players(update=False, from_file=True, file_object=None):
         # flag that this is an update performed to get new players before the auction
         update = True
         codes = get_player_codes()
-        print codes
+        print(codes)
     else:
         codes = {
             'G': 1000,
@@ -261,11 +261,11 @@ def initialise_players(update=False, from_file=True, file_object=None):
             'S': 4000,
         }
 
-    print "codes:", codes
+    print("codes:", codes)
 
     # get a lookup dict of PremTeams, key = name
     prem_team_dict = get_prem_team_dict()
-    print prem_team_dict
+    print(prem_team_dict)
 
     # get the rows from the provided stats file, or request it directly
     if file_object:
@@ -273,14 +273,14 @@ def initialise_players(update=False, from_file=True, file_object=None):
         file_object.close()
     else:
         rows = requests.get(settings.TG_PLAYERS_STATS_JSON).json()['playerstats']
-    print "No. of player table rows = ", len(rows)
+    print("No. of player table rows = ", len(rows))
 
     # track new players *during update only*
     new_players = []
 
-    print "****"
-    print "New Players"
-    print "****"
+    print("****")
+    print("New Players")
+    print("****")
 
     for row in rows:
         name = row['PLAYERNAME']
@@ -312,11 +312,11 @@ def initialise_players(update=False, from_file=True, file_object=None):
             p.is_new = True
             p.save()
             new_players.append(p)
-            print p.code, p.name, p.prem_team, p.value, created
+            print(p.code, p.name.encode('utf-8'), p.prem_team, p.value, created)
 
-    print "****"
-    print 'All players saved'
-    print "****"
+    print("****")
+    print('All players saved')
+    print("****")
 
     if not update:
         # Makes ure players are in the correct order before calculating tha AZFF player code
@@ -326,7 +326,7 @@ def initialise_players(update=False, from_file=True, file_object=None):
 
         # GKP
         gkps = Player.objects.filter(web_code__lt=2000).order_by('-value')
-        print 'gkps.count() = ', gkps.count()
+        print('gkps.count() = ', gkps.count())
         for g in gkps:
             codes['G'] += 1
             g.code = codes['G']
@@ -334,7 +334,7 @@ def initialise_players(update=False, from_file=True, file_object=None):
 
         # DEF
         defs = Player.objects.filter(web_code__range=(2000, 2999)).order_by('-value')
-        print 'defs.count() = ', defs.count()
+        print('defs.count() = ', defs.count())
         for d in defs:
             codes['D'] += 1
             d.code = codes['D']
@@ -342,7 +342,7 @@ def initialise_players(update=False, from_file=True, file_object=None):
 
         # MID
         mids = Player.objects.filter(web_code__range=(3000, 3999)).order_by('-value')
-        print 'mids.count() = ', mids.count()
+        print('mids.count() = ', mids.count())
         for m in mids:
             codes['M'] += 1
             m.code = codes['M']
@@ -350,7 +350,7 @@ def initialise_players(update=False, from_file=True, file_object=None):
 
         # STR
         strs = Player.objects.filter(web_code__gte=4000).order_by('-value')
-        print 'strs.count() = ', strs.count()
+        print('strs.count() = ', strs.count())
         for s in strs:
             codes['S'] += 1
             s.code = codes['S']
@@ -359,7 +359,7 @@ def initialise_players(update=False, from_file=True, file_object=None):
 
 def reset_for_new_season(definitely=False):
     if not definitely:
-        print "Exiting - need to specify definitely=True (this is a rudimentary safeguard)"
+        print("Exiting - need to specify definitely=True (this is a rudimentary safeguard)")
         return
 
     archive_season_scores()
@@ -419,7 +419,7 @@ def update_players(week=None, from_file=False, file_object=None):
         rows = get_player_rows_from_file(file_object=file_object)
     else:
         rows = get_player_rows()
-    print "No. of player table rows = ", len(rows)
+    print("No. of player table rows = ", len(rows))
 
     # get the most recent codes assigned
     codes = get_player_codes()
@@ -454,16 +454,15 @@ def update_players(week=None, from_file=False, file_object=None):
         if player:
             # check the weekly and total scores against the existing total
             if total_score != week_score + player.total_score:
-                print "ERROR: Points don't add up for player ", player
-                print "Web player total = {}, but week_score = {} and current total = {}".format(
+                print("ERROR: Points don't add up for player ", player)
+                print("Web player total = {}, but week_score = {} and current total = {}".format(
                     total_score, week_score, player.total_score
-                )
+                ))
             # if team has changed, flag player as 'new' and update the team
             if str(player.prem_team) != str(prem_team):
-                print "{}: {}; team change from {} to {}".format(player.code,
-                                                                 name,
-                                                                 player.prem_team,
-                                                                 prem_team)
+                print("{}: {}; team change from {} to {}".format(
+                    player.code, name, player.prem_team, prem_team
+                ))
                 # TODO - review when to make is_new = false
                 player.is_new = True
                 player.prem_team = prem_team
@@ -476,7 +475,9 @@ def update_players(week=None, from_file=False, file_object=None):
             player.code = codes[player.position]
             player.is_new = True
 
-            print "New Player: {}: {}, {}, {}".format(player.code, player.name, player.prem_team, player.value)
+            print("New Player: {}: {}, {}, {}".format(
+                player.code, player.name.encode('utf-8'), player.prem_team, player.value
+            ))
 
         # compare appearance totals with database to determine if player played.
         starts = row.find('td', {'class': 'player-sxi'}).text
@@ -487,10 +488,10 @@ def update_players(week=None, from_file=False, file_object=None):
             if week_score == 0:
                 week_score = None
             else:
-                print "ERROR: appearances for player: ", player
-                print "week_score = {}, but new_appearances = {} and current appearances = {}".format(
+                print("ERROR: appearances for player: ", player)
+                print("week_score = {}, but new_appearances = {} and current appearances = {}".format(
                     week_score, new_appearances, player.appearances
-                )
+                ))
 
         player.total_score = total_score
         player.appearances = new_appearances
@@ -521,7 +522,7 @@ def update_players_json(week=None, from_file=False, file_object=None):
         file_object.close()
     else:
         rows = requests.get(settings.TG_PLAYERS_STATS_JSON).json()['playerstats']
-    print "No. of player table rows = ", len(rows)
+    print("No. of player table rows = ", len(rows))
 
     # get the most recent codes assigned
     codes = get_player_codes()
@@ -548,16 +549,15 @@ def update_players_json(week=None, from_file=False, file_object=None):
         if player:
             # check the weekly and total scores against the existing total
             if total_score != week_score + player.total_score:
-                print "ERROR: Points don't add up for player ", player
-                print "Web player total = {}, but week_score = {} and current total = {}".format(
+                print("ERROR: Points don't add up for player ", player)
+                print("Web player total = {}, but week_score = {} and current total = {}".format(
                     total_score, week_score, player.total_score
-                )
+                ))
             # if team has changed, flag player as 'new' and update the team
             if str(player.prem_team) != str(prem_team):
-                print "{}: {}; team change from {} to {}".format(player.code,
-                                                                 name,
-                                                                 player.prem_team,
-                                                                 prem_team)
+                print("{}: {}; team change from {} to {}".format(
+                    player.code, name, player.prem_team, prem_team
+                ))
                 # TODO - review when to make is_new = false
                 player.is_new = True
                 player.prem_team = prem_team
@@ -569,7 +569,9 @@ def update_players_json(week=None, from_file=False, file_object=None):
             player.code = codes[player.position]
             player.is_new = True
 
-            print "New Player: {}: {}, {}, {}".format(player.code, player.name, player.prem_team, player.value)
+            print("New Player: {}: {}, {}, {}".format(
+                player.code, player.name.encode('utf-8'), player.prem_team, player.value
+            ))
 
         # compare appearance totals with database to determine if player played.
         starts = row['SXI']
@@ -580,10 +582,10 @@ def update_players_json(week=None, from_file=False, file_object=None):
             if week_score == 0:
                 week_score = None
             else:
-                print "ERROR: appearances for player: ", player
-                print "week_score = {}, but new_appearances = {} and current appearances = {}".format(
+                print("ERROR: appearances for player: ", player)
+                print("week_score = {}, but new_appearances = {} and current appearances = {}".format(
                     week_score, new_appearances, player.appearances
-                )
+                ))
         player.total_score = total_score
         player.appearances = new_appearances
         player.save()
@@ -621,7 +623,7 @@ def update_weekly_scores(week):
 
         # get team players and order by status (first team > reserve > squad)
         for player in team.players.order_by('status'):
-            print "player = ", player
+            print("player = ", player)
             score = PlayerScore.objects.filter(player=player, week=week).first()
 
             if score.value is not None:
@@ -632,7 +634,9 @@ def update_weekly_scores(week):
                     week_score += score.value
                     score.is_counted = True
                     score.save()
-                    print "score for {} ({}) is {}, counted = {}".format(player.name, player.status, score.value, score.is_counted)
+                    print("score for {} ({}) is {}, counted = {}".format(
+                        player.name.encode('utf-8'), player.status, score.value, score.is_counted
+                    ))
 
             elif score.value is None:
                 # if it's a first team player, we flag that the reserve score can be counted
@@ -640,8 +644,8 @@ def update_weekly_scores(week):
                     include_reserve[player.position] = True
 
             else:
-                print "****ERROR****: Logic needs reviewing:"
-                print "Player:", player, "score:", score
+                print("****ERROR****: Logic needs reviewing:")
+                print("Player:", player, "score:", score)
 
             # get or create the PlayerTeamScore for this team & player and update its value
             player_team_score, _created = PlayerTeamScore.objects.get_or_create(
@@ -797,7 +801,7 @@ def export_player_list_csv():
             for p in players.filter(position=position[0]):
                 writer.writerow([
                     p.code,
-                    p.name,
+                    p.name.encode('utf-8'),
                     p.prem_team.code,
                     p.value,
                     p.last_years_total,
@@ -815,7 +819,7 @@ def process_transfer_nominations():
 
     for id in player_ids:
         player = Player.objects.get(id=id)
-        print "Updating transfer for ", player.name
+        print("Updating transfer for ", player.name.encode('utf-8'))
         player.update_transfers()
 
 
@@ -840,7 +844,7 @@ def process_transfer_outcomes(team):
             tn.player.sale = tn.bid    # LIST outcomes have already set bid to list value
             tn.player.save()
             messages.append("Adding {} to {}'s team (sale = {})".format(
-                tn.player.name, tn.player.team.manager.username, tn.player.sale
+                tn.player.name.encode('utf-8'), tn.player.team.manager.username, tn.player.sale
             ))
         else:
             messages.append("Error processing nomination: {}".format(tn))
@@ -888,7 +892,7 @@ def award_motm(month):
     instance or None if the month is not yet complete.
     """
     if not month_is_complete(month):
-        print "Month {} is not complete!".format(month)
+        print("Month {} is not complete!".format(month))
         return None
 
     # get the scores for the month in descending order
@@ -899,12 +903,12 @@ def award_motm(month):
     ).order_by('-value')
 
     awarded = scores.filter(prize_awarded=True).first()  # there should only be 1 per month
-    print "awarded = ", awarded
+    print("awarded = ", awarded)
     highest = scores[0]
-    print "highest = ", highest
+    print("highest = ", highest)
 
     if awarded and awarded == highest:
-        print "confirmed: MOTM for {} awarded: {}".format(month, awarded)
+        print("confirmed: MOTM for {} awarded: {}".format(month, awarded))
         return awarded
     elif awarded:
         # reset the current winner
@@ -944,20 +948,20 @@ def initialise_cup_competition(bye_list=[]):
     # if it's more than then there's a problem
     # TODO - raise an error here
     if random_byes < 0:
-        print len(teams), len(bye_list)
-        print "Error: teams + byes > 16"
+        print(len(teams), len(bye_list))
+        print("Error: teams + byes > 16")
         exit
 
     # add a None for each random bye to be incorporated into the random list
     for i in range(random_byes):
-        print " adding random bye"
+        print(" adding random bye")
         teams.append(None)
 
     # randomise the list
     random.shuffle(teams)
 
-    print "randomised teams:"
-    print teams
+    print("randomised teams:")
+    print(teams)
 
     # flag for monitoring when planned byes are needed
     bye_next = False
@@ -976,15 +980,15 @@ def initialise_cup_competition(bye_list=[]):
 
         # pass over any Nones in the list and set the previous flag
         if not team and not bye_previous:
-            print "if not team and not bye_previous"
+            print("if not team and not bye_previous")
             bye_previous = True
             continue
         elif not team:
-            print "elif not team"
+            print("elif not team")
             # add the team/None back to the list and reshuffle until the next one is note none
             teams.append(team)
             while teams[-1] is not None:
-                print "Two Nones in a row - shuffling"
+                print("Two Nones in a row - shuffling")
                 random.shuffle(teams)
             team = teams.pop()
 
@@ -1000,7 +1004,7 @@ def initialise_cup_competition(bye_list=[]):
                     # otherwise we need to re-add the team back to the end of the list and pop the next non-bye team
                     index = -1
                     while len(teams) + index >= 0:
-                        print "executing while loop: index = ", index
+                        print("executing while loop: index = ", index)
                         if teams[index] is not None and teams[index] not in bye_list:
                             old_team = team
                             team = teams.pop(index)
@@ -1050,16 +1054,16 @@ def archive_season_scores():
     teams = Team.active_objects.all()
     year = dt.now().year - 1
 
-    print "archiving year {} for {} teams".format(year, teams.count())
+    print("archiving year {} for {} teams".format(year, teams.count()))
 
     for team in teams:
-        print "{} scored {} in {}".format(team, team.score, year)
+        print("{} scored {} in {}".format(team, team.score, year))
 
-        print TeamTotalScoreArchive.objects.update_or_create(
+        print(TeamTotalScoreArchive.objects.update_or_create(
             team=team,
             year=year,
             defaults={'value': team.score}
-        )
+        ))
 
 
 class SquadChangeException(Exception):
