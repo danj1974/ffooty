@@ -1,17 +1,11 @@
 import random
-# import os
-# from dateutil.relativedelta import relativedelta
-# from django.contrib.auth.models import User
-# from django.core.urlresolvers import reverse
-# from django.db.models import Q
 
 from calendar import month_name
-from datetime import date, timedelta
+from datetime import date
 
 from django.db.models import Count
 from django.utils import timezone
 from rest_framework import status
-# from rest_framework import generics, filters
 # from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
 
@@ -22,11 +16,8 @@ from ffooty.models import (Constant, Team, AuctionNomination, Player, Window, Te
                            PlayerTeamScore, )
 from ffooty.rest.serializers import (TeamSerializer, TeamDetailsSerializer, PlayerScoreSerializer,
                                      TeamWeeklyScoreSerializer, WeekSerializer, WindowSerializer,
-                                     TeamMonthlyScoreSerializer, )
-# from ffooty.rest.serializers import UserSerializer
+                                     TeamMonthlyScoreSerializer, AUCTION_LOG_FILE)
 from rest_framework.response import Response
-# import dateutil.parser
-# from ffooty.signals import add_activity_callback
 
 
 class AuthUserView(APIView):
@@ -169,10 +160,10 @@ class AuctionPassNominationsView(APIView):
 
         if not player.team:
             # log the action
-            with open('./data/auction_log.txt', 'a') as outfile:
+            with open(AUCTION_LOG_FILE, 'a') as outfile:
                 msg = "{} {} ({}) {} - was returned to the pool".format(
                     player.code,
-                    player.name,
+                    player.name.encode('utf-8'),
                     player.prem_team,
                     player.value
                 )
@@ -187,7 +178,7 @@ class AuctionDealLogsView(APIView):
     """
     def get(self, request, *args, **kwargs):
         deals = []
-        with open('./data/auction_log.txt', 'r') as infile:
+        with open(AUCTION_LOG_FILE, 'r') as infile:
             deals = [line.rstrip('\n') for line in infile]
 
         deals.reverse()
@@ -335,89 +326,3 @@ class ManagerOfTheMonthView(APIView):
                     'scores': TeamMonthlyScoreSerializer(scores, many=True).data
                 })
         return Response(data)
-
-#
-#
-# class ActivityStreamList(generics.ListCreateAPIView):
-#     queryset = ActivityStream.objects.all()
-#     serializer_class = ActivityStreamSerializer
-#     paginate_by = 2
-#
-#     def get_queryset(self):
-#         queryset = self.queryset
-#         space = int(self.request.QUERY_PARAMS.get('space', 0))
-#         if space != 0:  # 0 means focus is on user's personal space
-#             queryset = queryset.filter(space__pk=space)
-#         else:
-#             # Only get spaces the user is a member of
-#             queryset = queryset.filter(Q(space__groups__in=self.request.user.group_set.all()) | Q(user=self.request.user))
-#         since = self.request.QUERY_PARAMS.get('since', None)
-#         if since is not None:
-#             d1 = dateutil.parser.parse(since)
-#             queryset = queryset.filter(added__gte=d1)
-#         return queryset
-#
-#     def create(self, request, *args, **kwargs):
-#         ''' Override the create method to use the ActivityWriteSerializer '''
-#         data = request.DATA
-#         data['user'] = self.request.user.id
-#         serializer = ActivityStreamWriteSerializer(data=data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#
-# class ActivityComment(generics.ListCreateAPIView):
-#     serializer_class = CommentReadSerializer
-#     queryset = Comment.objects.all()
-#
-#     def get_queryset(self):
-#         queryset = self.queryset
-#         space = int(self.request.QUERY_PARAMS.get('space', 0))
-#         if space != 0:
-#             queryset = queryset.filter(activity__space__pk=space)
-#         else:
-#             # Only get spaces the user is a member of
-#             queryset = queryset.filter(activity__space__groups__in=self.request.user.group_set.all())
-#         activity = self.request.QUERY_PARAMS.get('activity', None)
-#         if activity is not None:
-#             queryset = queryset.filter(activity__pk=activity)
-#         since = self.request.QUERY_PARAMS.get('since', None)
-#         if since is not None:
-#             d1 = dateutil.parser.parse(since) + relativedelta(microseconds=1000) # Add 1ms because JS does not have microsecond resolution
-#             queryset = queryset.filter(added__gt=d1)
-#         return queryset
-#
-#     def create(self, request, *args, **kwargs):
-#         data = request.DATA
-#         data['user'] = self.request.user.id
-#         serializer = CommentWriteSerializer(data=data, files=request.FILES)
-#         if serializer.is_valid():
-#             self.pre_save(serializer.object)
-#             self.object = serializer.save(force_insert=True)
-#             self.post_save(self.object, created=True)
-#             headers = self.get_success_headers(serializer.data)
-#             serializer = CommentReadSerializer(serializer.object)
-#             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-#
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#
-# class StatusUpdate(generics.CreateAPIView):
-#     serializer_class = StatusUpdateSerializer
-#
-#     def create(self, request, *args, **kwargs):
-#         data = request.DATA
-#         data['user'] = self.request.user.id
-#         serializer = self.serializer_class(data=data)
-#         if serializer.is_valid():
-#             headers = self.get_success_headers(serializer.data)
-#             space = Space.objects.get(id=data['space'])
-#             activity = add_activity_callback(sender=self.__class__, user=self.request.user, space=space, content_object=self.request.user, message=data['message'])
-#             serializer = ActivityStreamSerializer(activity)
-#             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-#
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-

@@ -1,7 +1,6 @@
-# import datetime
-# from django.contrib.auth.models import User
-# from django.contrib.contenttypes.models import ContentType
-# from django.core.urlresolvers import reverse
+import os
+
+from django.conf import settings
 from django.contrib.auth.models import User
 
 from rest_framework import serializers
@@ -10,14 +9,9 @@ from ffooty.models import (Team, PremTeam, Player, Week, PlayerScore, TeamWeekly
                            TeamTotalScore, Window, AuctionNomination, TransferNomination,
                            Banter, Comment, Constant, TeamMonthlyScore, PlayerTeamScore,
                            SquadChange)
-# from storage.models import DatabaseFile
-# from storage.rest.serializers import FileStorageRetrieveSerializer
-# from wiki.models import WikiPageRevision
 
 
-# class ContentTypeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = ContentType
+AUCTION_LOG_FILE = os.path.join(settings.BASE_DIR, '../data/auction_log.txt')
 
 
 class ManagerSerializer(serializers.ModelSerializer):
@@ -80,7 +74,7 @@ class PlayerSerializer(serializers.ModelSerializer):
                     new_manager
                 )
 
-        with open('./data/auction_log.txt', 'a') as outfile:
+        with open(AUCTION_LOG_FILE, 'a') as outfile:
             msg = "{} {} ({}){} sale = {}".format(
                 instance.code,
                 instance.name.encode('utf-8'),
