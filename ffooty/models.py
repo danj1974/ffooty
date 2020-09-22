@@ -126,6 +126,7 @@ class Team(NameMixin):
 class PremTeam(NameMixin):
     is_prem = models.BooleanField(default=True)
     code = models.CharField(max_length=3, unique=True)
+    web_code = models.IntegerField(null=True)
 
     def __unicode__(self):
         return self.code
@@ -158,6 +159,11 @@ class Player(models.Model):
         (STR, 'STR'),
     )
 
+    WEB_GKP = 1
+    WEB_DEF = 2
+    WEB_MID = 3
+    WEB_STR = 4
+
     AVAILABLE = 'A'
     FIRST_TEAM = 'F'
     RESERVE = 'R'
@@ -177,7 +183,7 @@ class Player(models.Model):
     position = models.CharField(null=True, blank=True, max_length=1, choices=POSITION)
     status = models.CharField(blank=True, max_length=1, choices=STATUS, default=AVAILABLE)
     code = models.IntegerField(null=True, blank=True)
-    web_code = models.IntegerField(unique=True)
+    web_code = models.IntegerField(unique=True, null=True)
     team = models.ForeignKey(Team, null=True, blank=True, related_name='players')
     prem_team = models.ForeignKey(PremTeam, related_name='players')
     value = models.DecimalField(decimal_places=1, max_digits=3, null=True, blank=True)
@@ -233,20 +239,6 @@ class Player(models.Model):
         if not team:
             team = self.team
         return self.scores.filter(team=team, is_counted=True).aggregate(models.Sum('value'))['value__sum']
-
-    # def save(self, *args, **kwargs):
-    #     # self.web_code is a unicode object at this point
-    #     web_code = int(self.web_code)
-    #     if web_code < 2000:
-    #         self.position = Player.GKP
-    #     elif web_code < 3000:
-    #         self.position = Player.DEF
-    #     elif web_code < 4000:
-    #         self.position = Player.MID
-    #     else:
-    #         self.position = Player.STR
-    #
-    #     super(Player, self).save(*args, **kwargs)
 
     def return_to_pool(self, loss_offset=0):
         """
@@ -642,7 +634,7 @@ class SquadChange(models.Model):
     new_status = models.CharField(max_length=1, choices=Player.STATUS)
     window = models.ForeignKey(Window)
     # the month the changes will take place
-    month = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)])
+    week = models.ForeignKey(Week, null=True)
     processed = models.BooleanField(default=False)
 
     class Meta:

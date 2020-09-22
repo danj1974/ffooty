@@ -229,7 +229,7 @@ REST_FRAMEWORK = {
 ########## FFOOTY CONFIGURATION
 TG_WEBSITE_BASE = 'https://fantasyfootball.telegraph.co.uk/premier-league'
 TG_PLAYERS_STATS = TG_WEBSITE_BASE + '/statscentre'
-TG_PLAYERS_STATS_JSON = TG_WEBSITE_BASE + '/json/getstatsjson'
+TG_PLAYERS_STATS_JSON = TG_WEBSITE_BASE + '/json/epl/players.json'
 TG_PLAYERS_LIST = TG_WEBSITE_BASE + '/select-team/'
 # TG_PLAYER_STATS_BASE = TG_WEBSITE_BASE + '/statistics/points/'  # OLD 2015/16
 TG_TEAM_STATS_BASE = TG_WEBSITE_BASE + '/statistics/teams/'
