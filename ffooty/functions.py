@@ -244,6 +244,15 @@ def get_player_codes(use_web_codes=False):
     return codes
 
 
+def get_position_lookup():
+    return {
+        Player.WEB_GKP: Player.GKP,
+        Player.WEB_DEF: Player.DEF,
+        Player.WEB_MID: Player.MID,
+        Player.WEB_STR: Player.STR,
+    }
+
+
 def initialise_players(update=False, from_file=True, file_object=None):
     """
     Initialize player information from the TG website.
@@ -535,6 +544,8 @@ def update_players_json(week=None, from_file=False, file_object=None):
     # get the most recent codes assigned
     codes = get_player_codes(use_web_codes=True)
 
+    position_lookup = get_position_lookup()
+
     # for each player in the main players table
     for row in rows:
 
@@ -548,7 +559,7 @@ def update_players_json(week=None, from_file=False, file_object=None):
         prem_team_code = row['squad_id']
         prem_team = prem_team_dict[prem_team_code]
         value = float(row['cost'] / 1000000.0)
-        position = row['position']
+        position = position_lookup[row['position']]
 
         stats = row['stats']
 
