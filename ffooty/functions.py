@@ -542,7 +542,7 @@ def update_players_json(week=None, from_file=False, file_object=None):
     print("No. of player table rows = ", len(rows))
 
     # get the most recent codes assigned
-    codes = get_player_codes(use_web_codes=True)
+    codes = get_player_codes()
 
     position_lookup = get_position_lookup()
 
