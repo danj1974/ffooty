@@ -561,11 +561,12 @@ def update_players_json(week=None, from_file=False, file_object=None):
         value = float(row['cost'] / 1000000.0)
         position = position_lookup[row['position']]
 
-        stats = row['stats']
+        # stats for new players can be an empty list
+        stats = row['stats'] or {}
 
-        total_score = stats['total_points']
-        round_scores = stats['round_scores']
-        appearances = stats['games_played']
+        total_score = stats.get('total_points')
+        round_scores = stats.get('round_scores')
+        appearances = stats.get('games_played')
 
         # `round_scores` is a dict if populated, e.g. {'1': 2, '2': 19} where the key
         # is the week number, but if empty is an empty list
