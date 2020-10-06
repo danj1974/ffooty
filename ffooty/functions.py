@@ -564,7 +564,7 @@ def update_players_json(week=None, from_file=False, file_object=None):
         # stats for new players can be an empty list
         stats = row['stats'] or {}
 
-        total_score = stats.get('total_points')
+        total_score = stats.get('total_points', 0)
         round_scores = stats.get('round_scores')
         appearances = stats.get('games_played')
 
