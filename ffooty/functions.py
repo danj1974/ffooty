@@ -566,7 +566,7 @@ def update_players_json(week=None, from_file=False, file_object=None):
 
         total_score = stats.get('total_points', 0)
         round_scores = stats.get('round_scores')
-        appearances = stats.get('games_played')
+        appearances = stats.get('games_played', 0)
 
         # `round_scores` is a dict if populated, e.g. {'1': 2, '2': 19} where the key
         # is the week number, but if empty is an empty list
