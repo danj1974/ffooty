@@ -577,7 +577,7 @@ def update_players_json(week=None, from_file=False, file_object=None):
         if not round_scores:
             week_score = None
         else:
-            week_score = round_scores.get(round_no)
+            week_score = round_scores.get(str(round_no))
 
         # get existing player (or None if the web code isn't in the db)
         player = Player.objects.filter(web_code=web_code).first()
