@@ -991,6 +991,8 @@ def process_transfer_outcomes(team):
     ).select_related('player', 'team', 'team__manager')
     messages = []
 
+    week = get_week()
+
     for tn in tns:
         if tn.status in [TransferNomination.PENDING, TransferNomination.HIGHEST,
                          TransferNomination.LIST, TransferNomination.OUTBID]:
@@ -1005,6 +1007,18 @@ def process_transfer_outcomes(team):
             messages.append("Adding {} to {}'s team (sale = {})".format(
                 tn.player.name.encode('utf-8'), tn.player.team.manager.username, tn.player.sale
             ))
+            # add a dummy player score record so new players show in team pages
+            PlayerScore.objects.create(
+                player=tn.player,
+                team=team,
+                value=None,
+                week=week,
+            )
+            PlayerTeamScore.objects.get_or_create(
+                player=tn.player,
+                team=tn.team,
+                defaults={'value': 0}
+            )
         else:
             messages.append("Error processing nomination: {}".format(tn))
             continue
