@@ -566,19 +566,14 @@ class TransferNomination(NominationMixin):
         self.player.update_transfers()
 
     def accept_bid(self):
+        from .functions import process_transfer_outcomes
+
         # bids can only be accepted if HIGHEST or LIST
         if self.status == TransferNomination.HIGHEST or self.status == TransferNomination.LIST:
             self.status = TransferNomination.ACCEPTED
             self.save()
-            # # set the status on remaining nominations currently outbid
-            # # this will have no effect for LIST
-            # remaining_bids = TransferNomination.objects.filter(
-            #     player=self.player, status=TransferNomination.OUTBID
-            # )
-            # for bid in remaining_bids:
-            #     bid.status = TransferNomination.FAILED
-            #     bid.save()
             self.player.update_transfers()
+            process_transfer_outcomes(self.team)
         else:
             print "ERROR: bid cannot be accepted"
             raise IllegalNominationOperationException('TransferNomination bid cannot be accepted.')
