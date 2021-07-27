@@ -36,8 +36,8 @@ def load_teams(apps, schema_editor):
     ]
 
     for team in team_list:
-        print PremTeam.objects.update_or_create(name=team['name'], code=team['code'], is_prem=team['is_prem'])
-        # print pt, created
+        print(PremTeam.objects.update_or_create(name=team['name'], code=team['code'], is_prem=team['is_prem']))
+        # print(pt, created)
 
 
 class Migration(migrations.Migration):

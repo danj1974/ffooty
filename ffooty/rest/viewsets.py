@@ -51,15 +51,15 @@ class PremTeamViewSet(ModelViewSet):
 
 class PlayerViewSet(ModelViewSet):
     queryset = Player.objects.extra(
-        select={'position_order': Player.CASE_SQL},
-        order_by=['position_order', '-value', 'code']
+        # select={'position_order': Player.CASE_SQL},
+        order_by=['position', '-value', 'code']
     )
 
     def get_serializer_class(self):
-        print "self.request.user", self.request.user
-        print "self.request.user.is_superuser", self.request.user.is_superuser
+        print("self.request.user", self.request.user)
+        print("self.request.user.is_superuser", self.request.user.is_superuser)
         if self.request.user.is_superuser:
-            print "returning AdminPlayerSerializer..."
+            print("returning AdminPlayerSerializer...")
             return AdminPlayerSerializer
         return PlayerSerializer
 
@@ -133,10 +133,10 @@ class AuctionNominationViewSet(ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_superuser:
-            print "AuctionNominationViewSet: get_queryset(): user.is_superuser"
+            print("AuctionNominationViewSet: get_queryset(): user.is_superuser")
             return AuctionNomination.objects.all()
         else:
-            print "AuctionNominationViewSet: get_queryset(): normal user"
+            print("AuctionNominationViewSet: get_queryset(): normal user")
             return AuctionNomination.objects.filter(team__manager=self.request.user)
 
 
@@ -146,11 +146,11 @@ class TransferNominationViewSet(ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_superuser:
-            print "TransferNominationViewSet: get_queryset(): user.is_superuser"
+            print("TransferNominationViewSet: get_queryset(): user.is_superuser")
             # return TransferNomination.objects.all().select_related('player')
             return None
         else:
-            print "TransferNominationViewSet: get_queryset(): normal user"
+            print("TransferNominationViewSet: get_queryset(): normal user")
             return TransferNomination.objects.filter(team__manager=self.request.user).select_related('player').order_by('priority')
 
     @list_route(methods=['get'])
@@ -170,7 +170,7 @@ class TransferNominationViewSet(ModelViewSet):
     def summary(self, request):
         # get the most recent transfer window
         window = Window.objects.filter(type=Window.TRANSFER_NOMINATION).first()
-        print "window = ", window.id, window
+        print("window = ", window.id, window)
 
         teams = Team.active_objects.all()
 
@@ -186,7 +186,7 @@ class TransferNominationViewSet(ModelViewSet):
             'player'
         ).order_by('player__code', '-bid')
 
-        print "qs.count():", qs.count()
+        print("qs.count():", qs.count())
 
         serializer = TransferNominationSerializer(qs, many=True)
         data = {
@@ -210,7 +210,7 @@ class TransferNominationViewSet(ModelViewSet):
         # TODO - review this? is it needed?
         """Override the patch method to use the TeamWriteSerializer."""
         data = request.DATA
-        print "TransferNominationViewSet.patch: data = " + data
+        print("TransferNominationViewSet.patch: data = " + data)
         serializer = TransferNominationSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -219,16 +219,16 @@ class TransferNominationViewSet(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
-        print "TransferNominationViewSet.create: request.data = ", request.data
+        print("TransferNominationViewSet.create: request.data = ", request.data)
         return super(TransferNominationViewSet, self).create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
-        print "TransferNominationViewSet.update: request.data = ", request.data
+        print("TransferNominationViewSet.update: request.data = ", request.data)
         return super(TransferNominationViewSet, self).update(request, *args, **kwargs)
 
     @detail_route(methods=['patch'])
     def accept_bid(self, request, pk=None):
-        print "accept_bid(): pk = ", pk
+        print("accept_bid(): pk = ", pk)
         try:
             self.get_object().accept_bid()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -237,7 +237,7 @@ class TransferNominationViewSet(ModelViewSet):
 
     @detail_route(methods=['patch'])
     def pass_on_bid(self, request, pk=None):
-        print "pass_on_bid(): pk = ", pk
+        print("pass_on_bid(): pk = ", pk)
         self.get_object().pass_on_bid()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

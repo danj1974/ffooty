@@ -134,23 +134,23 @@ class PremTeam(NameMixin):
 
 class PlayerManager(models.Manager):
     def goalkeepers(self):
-        return super(PlayerManager, self).get_queryset().filter(code__lt=2000)
+        return super(PlayerManager, self).get_queryset().filter(position=Player.GKP)
 
     def defenders(self):
-        return super(PlayerManager, self).get_queryset().filter(code__range=(2000, 2999))
+        return super(PlayerManager, self).get_queryset().filter(position=Player.DEF)
 
     def midfielders(self):
-        return super(PlayerManager, self).get_queryset().filter(code__range=(3000, 3999))
+        return super(PlayerManager, self).get_queryset().filter(position=Player.MID)
 
     def strikers(self):
-        return super(PlayerManager, self).get_queryset().filter(code__gte=4000)
+        return super(PlayerManager, self).get_queryset().filter(position=Player.STR)
 
 
 class Player(models.Model):
-    GKP = 'G'
-    DEF = 'D'
-    MID = 'M'
-    STR = 'S'
+    GKP = '1'
+    DEF = '2'
+    MID = '3'
+    STR = '4'
 
     POSITION = (
         (GKP, 'GKP'),
@@ -158,11 +158,6 @@ class Player(models.Model):
         (MID, 'MID'),
         (STR, 'STR'),
     )
-
-    WEB_GKP = 1
-    WEB_DEF = 2
-    WEB_MID = 3
-    WEB_STR = 4
 
     AVAILABLE = 'A'
     FIRST_TEAM = 'F'
@@ -177,7 +172,7 @@ class Player(models.Model):
     )
 
     # sql for ordering by position in a custom (non-alphbetical) ordering
-    CASE_SQL = "case when position='G' then 1 when position='D' then 2 when position='M' then 3 when position='S' then 4 end"
+    # CASE_SQL = "case when position='1' then 1 when position='D' then 2 when position='M' then 3 when position='S' then 4 end"
 
     name = models.CharField(max_length=50)
     position = models.CharField(null=True, blank=True, max_length=1, choices=POSITION)
@@ -257,14 +252,14 @@ class Player(models.Model):
             self.save()
             return loss
         else:
-            print "return_to_pool(): {} is not owned by a team!".format(self.name.encode('utf-8'))
+            print("return_to_pool(): {} is not owned by a team!".format(self.name.encode('utf-8')))
 
     def update_transfers(self):
 
         # get the bids in descending order
         tns = TransferNomination.objects.filter(player=self).order_by('-bid')
 
-        print "update_transfers: tns = ", tns
+        print("update_transfers: tns = ", tns)
 
         # if there's only one bid, set it to LIST unless it's already been ACCEPTED or PASSED
         # those nominations set to LIST will also have bids adjusted to list price
@@ -438,7 +433,6 @@ class TeamTotalScoreArchive(ScoreBaseModel):
         return "{} (total for {}): {}".format(self.team.name, self.year, self.value)
 
 
-
 class TeamTablePosition(models.Model):
     """
     Model to track team position in league table.
@@ -575,7 +569,7 @@ class TransferNomination(NominationMixin):
             self.player.update_transfers()
             process_transfer_outcomes(self.team)
         else:
-            print "ERROR: bid cannot be accepted"
+            print("ERROR: bid cannot be accepted")
             raise IllegalNominationOperationException('TransferNomination bid cannot be accepted.')
 
     def save(self, *args, **kwargs):
@@ -617,7 +611,7 @@ class TransferNomination(NominationMixin):
             # try:
             #     send_mail(subject, body, 'noreply.azff@gmail.com', [self.team.manager.email], fail_silently=False)
             # except Exception, err:
-            #     print "error sending mail: ", err
+            #     print("error sending mail: ", err)
 
 
 class SquadChange(models.Model):
@@ -647,11 +641,11 @@ class SquadChange(models.Model):
             self.player.status = self.new_status
             self.processed = True
             self.player.save()
-            print "{} processed from {} to {}.".format(
+            print("{} processed from {} to {}.".format(
                 self.player,
                 self.get_current_status_display(),
                 self.get_new_status_display(),
-            )
+            ))
 
     def reverse(self):
         """
@@ -663,11 +657,11 @@ class SquadChange(models.Model):
             self.player.status = self.current_status
             self.processed = False
             self.player.save()
-            print "{} reversed from {} to {}.".format(
+            print("{} reversed from {} to {}.".format(
                 self.player,
                 self.get_new_status_display(),
                 self.get_current_status_display(),
-            )
+            ))
 
 
 class Banter(models.Model):

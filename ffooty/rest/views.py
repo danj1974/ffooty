@@ -9,9 +9,8 @@ from rest_framework import status
 # from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
 
-from ffooty.functions import (get_weeks_and_scores_for_month, get_week, update_players,
-                              update_weekly_scores, process_transfer_outcomes,
-                              get_months_to_date, )
+from ffooty.functions import (get_weeks_and_scores_for_month, get_week, update_weekly_scores,
+                              process_transfer_outcomes, get_months_to_date, )
 from ffooty.models import (Constant, Team, AuctionNomination, Player, Window, TeamMonthlyScore,
                            PlayerTeamScore, )
 from ffooty.rest.serializers import (TeamSerializer, TeamDetailsSerializer, PlayerScoreSerializer,
@@ -134,9 +133,9 @@ class AuctionRandomPlayerCodesView(APIView):
 
         # randomise the list
         random.shuffle(nominated_player_codes)
-        print "****"
-        print "nominated_player_codes[:10] =", nominated_player_codes[:10]
-        print "****"
+        print("****")
+        print("nominated_player_codes[:10] =", nominated_player_codes[:10])
+        print("****")
 
         return Response(nominated_player_codes)
 
@@ -262,36 +261,36 @@ class TeamValidateView(APIView):
         return Response(data)
 
 
-class UpdateScoresView(APIView):
-
-    def get(self, request, *args, **kwargs):
-        # this view is only used with Admin-only functions, but just to be sure...
-        if not request.user.is_superuser:
-            return Response({'detail': 'Unauthorized Access.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-        try:
-            week = get_week()
-            # check the update is being requested on the correct day
-            if date.today() != week.date:
-                print "UpdateScoresView: update requested too early - ", date.today()
-                detail = ('Update requested too early.  Please try again on {}, or use the recalculate '
-                          'scores function specifying a week.'.format(week.date))
-                print detail
-                return Response({'detail': detail}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            print "UpdateScoresView: getting player update for week ", week
-            update_players(week)
-            print "UpdateScoresView: updating team scores for week ", week
-            update_weekly_scores(week)
-            print "UpdateScoresView: update completed successfully!"
-            return Response({'detail': 'Update successfully completed.'}, status=status.HTTP_200_OK)
-        except Exception, err:
-            print "Exceptions:", Exception
-            print "err:", err
-            import traceback
-            traceback.print_exc()
-            print "UpdateScoresView: error occurred during update!"
-            return Response({'detail': 'Error with update.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# class UpdateScoresView(APIView):
+#
+#     def get(self, request, *args, **kwargs):
+#         # this view is only used with Admin-only functions, but just to be sure...
+#         if not request.user.is_superuser:
+#             return Response({'detail': 'Unauthorized Access.'}, status=status.HTTP_401_UNAUTHORIZED)
+#
+#         try:
+#             week = get_week()
+#             # check the update is being requested on the correct day
+#             if date.today() != week.date:
+#                 print("UpdateScoresView: update requested too early - ", date.today())
+#                 detail = ('Update requested too early.  Please try again on {}, or use the recalculate '
+#                           'scores function specifying a week.'.format(week.date))
+#                 print(detail)
+#                 return Response({'detail': detail}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#
+#             print("UpdateScoresView: getting player update for week ", week)
+#             update_players(week)
+#             print("UpdateScoresView: updating team scores for week ", week)
+#             update_weekly_scores(week)
+#             print("UpdateScoresView: update completed successfully!")
+#             return Response({'detail': 'Update successfully completed.'}, status=status.HTTP_200_OK)
+#         except Exception, err:
+#             print("Exceptions:", Exception)
+#             print("err:", err)
+#             import traceback
+#             traceback.print_exc()
+#             print("UpdateScoresView: error occurred during update!")
+#             return Response({'detail': 'Error with update.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class CurrentWindowView(APIView):

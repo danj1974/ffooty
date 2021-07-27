@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 from rest.views import (
     AuthUserView, ConstantsView, UserTeamView, AuctionNominationSummaryView,
     AuctionTeamSummaryView, TeamDetailsView, TeamLineupView, TeamValidateView,
-    UpdateScoresView, ProcessTransfersForTeamView, ManagerOfTheMonthView,
+    ProcessTransfersForTeamView, ManagerOfTheMonthView,  # UpdateScoresView
     TeamScoresView, AuctionRandomPlayerCodesView, AuctionPassNominationsView,
     AuctionDealLogsView
 )
@@ -30,7 +30,7 @@ urlpatterns = patterns('',
     url(r'^team_scores/(?P<id>[0-9]+)/$', TeamScoresView.as_view(), name='api-team_scores'),
     url(r'^team_lineup/(?P<id>[0-9]+)/$', TeamLineupView.as_view(), name='api-team_lineup'),
     url(r'^team_validate/(?P<id>[0-9]+)/$', TeamValidateView.as_view(), name='api-team_validate'),
-    url(r'^update_scores/$', UpdateScoresView.as_view(), name='api-update_scores'),
+    # url(r'^update_scores/$', UpdateScoresView.as_view(), name='api-update_scores'),
     url(r'^process_transfers_for_team/(?P<id>[0-9]+)/$', ProcessTransfersForTeamView.as_view(), name='api-process_transfers_for_team'),
     url(r'^monthly_scores/$', ManagerOfTheMonthView.as_view(), name='api-monthly_scores'),
 )

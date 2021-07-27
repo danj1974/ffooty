@@ -33,8 +33,8 @@ def initialise_weeks():
     """
     # TODO - use the constants to set the start/end date
     # TODO - or submit dates in the form when uploading the players.
-    week_date = dt(2020, 9, 15)  # the first Tuesday after start of season
-    end_date = dt(2021, 6, 2)  # the *Wednesday* after the cup final/last weekend
+    week_date = dt(2021, 8, 17)  # the first Tuesday after start of season
+    end_date = dt(2022, 5, 18)  # the *Wednesday* after the cup final/last weekend
 
     current_week = 1
 
@@ -77,14 +77,15 @@ def load_premiership_teams():
     team_list = [
         {'name': 'Arsenal', 'code': 'ARS', 'is_prem': True},
         {'name': 'Aston Villa', 'code': 'AVL', 'is_prem': True},
-        {'name': 'Brighton', 'code': 'BTN', 'is_prem': True},
+        {'name': 'Brighton and Hove Albion', 'code': 'BTN', 'is_prem': True},
+        {'name': 'Brentford', 'code': 'BRE', 'is_prem': True},
         {'name': 'Bournemouth', 'code': 'BOU', 'is_prem': False},
         {'name': 'Burnley', 'code': 'BUR', 'is_prem': True},
         {'name': 'Cardiff City', 'code': 'CAR', 'is_prem': False},
         {'name': 'Chelsea', 'code': 'CHE', 'is_prem': True},
         {'name': 'Crystal Palace', 'code': 'CRY', 'is_prem': True},
         {'name': 'Everton', 'code': 'EVE', 'is_prem': True},
-        {'name': 'Fulham', 'code': 'FUL', 'is_prem': True},
+        {'name': 'Fulham', 'code': 'FUL', 'is_prem': False},
         {'name': 'Hull', 'code': 'HUL', 'is_prem': False},
         {'name': 'Huddersfield Town', 'code': 'HUD', 'is_prem': False},
         {'name': 'Leeds United', 'code': 'LEE', 'is_prem': True},
@@ -94,16 +95,16 @@ def load_premiership_teams():
         {'name': 'Manchester United', 'code': 'MUN', 'is_prem': True},
         {'name': 'Middlesbrough', 'code': 'MID', 'is_prem': False},
         {'name': 'Newcastle United', 'code': 'NEW', 'is_prem': True},
-        {'name': 'Norwich City', 'code': 'NOR', 'is_prem': False},
+        {'name': 'Norwich City', 'code': 'NOR', 'is_prem': True},
         {'name': 'Queens Park Rangers', 'code': 'QPR', 'is_prem': False},
-        {'name': 'Sheffield United', 'code': 'SHF', 'is_prem': True},
+        {'name': 'Sheffield United', 'code': 'SHF', 'is_prem': False},
         {'name': 'Southampton', 'code': 'SOT', 'is_prem': True},
         {'name': 'Stoke City', 'code': 'STO', 'is_prem': False},
         {'name': 'Sunderland', 'code': 'SUN', 'is_prem': False},
         {'name': 'Swansea City', 'code': 'SWA', 'is_prem': False},
         {'name': 'Tottenham Hotspur', 'code': 'TOT', 'is_prem': True},
-        {'name': 'Watford', 'code': 'WAT', 'is_prem': False},
-        {'name': 'West Bromwich Albion', 'code': 'WBA', 'is_prem': True},
+        {'name': 'Watford', 'code': 'WAT', 'is_prem': True},
+        {'name': 'West Bromwich Albion', 'code': 'WBA', 'is_prem': False},
         {'name': 'West Ham United', 'code': 'WHM', 'is_prem': True},
         {'name': 'Wolverhampton Wanderers', 'code': 'WLV', 'is_prem': True},
     ]
@@ -182,27 +183,6 @@ def get_player_rows():
     return player_table.findAll('tr', {'class': 'playerstats'})
 
 
-def get_player_rows_from_file(file_object=None, initialise=False):
-    if not file_object:
-        file_object = open('/home/dan/ffooty/website_data/player_table.html')
-    players_source = BeautifulSoup(file_object)
-
-    # when initialising the table pre-season, different table id & row classes are needed
-    # stats centre table is valid pre-season 2019
-    # if initialise:
-    #     table_id = 'player-selection-list'
-    #     row_class = 'accel'
-    # else:
-    #     table_id = 'table-players'
-    #     row_class = 'playerstats'
-
-    table_id = 'table-players'
-    row_class = 'playerstats'
-
-    player_table = players_source.find(id=table_id)
-    return player_table.findAll('tr', {'class': row_class})
-
-
 def get_prem_team_dict(key='code'):
     """
     Return a lookup dict of :class:``ffooty.models.PremTeam`` objects,
@@ -228,32 +208,19 @@ def get_team_dict():
     return {t.manager.username: t for t in teams}
 
 
-def get_player_codes(use_web_codes=False):
-    gkp = Player.WEB_GKP if use_web_codes else Player.GKP
-    dfn = Player.WEB_DEF if use_web_codes else Player.DEF
-    mid = Player.WEB_MID if use_web_codes else Player.MID
-    str = Player.WEB_STR if use_web_codes else Player.STR
-
-    codes = {
-        gkp: Player.objects.goalkeepers().aggregate(Max('code'))['code__max'],
-        dfn: Player.objects.defenders().aggregate(Max('code'))['code__max'],
-        mid: Player.objects.midfielders().aggregate(Max('code'))['code__max'],
-        str: Player.objects.strikers().aggregate(Max('code'))['code__max']
-    }
-
-    return codes
-
-
-def get_position_lookup():
+def get_player_codes():
+    """
+    Returns a dict of player positions and the latest code assigned.
+    """
     return {
-        Player.WEB_GKP: Player.GKP,
-        Player.WEB_DEF: Player.DEF,
-        Player.WEB_MID: Player.MID,
-        Player.WEB_STR: Player.STR,
+        Player.GKP: Player.objects.goalkeepers().aggregate(Max('code'))['code__max'] or 1000,
+        Player.DEF: Player.objects.defenders().aggregate(Max('code'))['code__max'] or 2000,
+        Player.MID: Player.objects.midfielders().aggregate(Max('code'))['code__max'] or 3000,
+        Player.STR: Player.objects.strikers().aggregate(Max('code'))['code__max'] or 4000,
     }
 
 
-def initialise_players(update=False, from_file=True, file_object=None):
+def initialise_players(update=False, file_object=None):
     """
     Initialize player information from the TG website.
 
@@ -268,28 +235,21 @@ def initialise_players(update=False, from_file=True, file_object=None):
     if players.exists():
         # flag that this is an update performed to get new players before the auction
         update = True
-        codes = get_player_codes()
-        print(codes)
-    else:
-        codes = {
-            'G': 1000,
-            'D': 2000,
-            'M': 3000,
-            'S': 4000,
-        }
 
+    codes = get_player_codes()
     print("codes:", codes)
 
-    # get a lookup dict of PremTeams, key = name
-    prem_team_dict = get_prem_team_dict()
+    # get a lookup dict of PremTeams, key = web_code
+    prem_team_dict = get_prem_team_dict(key='web_code')
     print(prem_team_dict)
 
-    # get the rows from the provided stats file, or request it directly
+    # get the rows from the provided stats file
     if file_object:
-        rows = json.loads(file_object.read())['playerstats']
+        rows = json.load(file_object)
         file_object.close()
     else:
-        rows = requests.get(settings.TG_PLAYERS_STATS_JSON).json()['playerstats']
+        print("No file object provided")
+        return
     print("No. of player table rows = ", len(rows))
 
     # track new players *during update only*
@@ -300,17 +260,23 @@ def initialise_players(update=False, from_file=True, file_object=None):
     print("****")
 
     for row in rows:
-        name = row['PLAYERNAME']
-        web_code = row['PLAYERID']
-        prem_team_code = row['TEAMCODE']
-        prem_team = prem_team_dict[prem_team_code]
-        value = float(row['VALUE'])
 
-        try:
-            last_years_total = int(row['POINTS'])
-        except (KeyError, ValueError):
-            # no points available for previous season
-            last_years_total = 0
+        first_name = row.get('first_name')
+        if first_name:
+            name = "{}. {}".format(first_name[0].encode('utf-8'), row['last_name'].encode('utf-8'))
+        else:
+            name = row['last_name']
+
+        web_code = row['id']
+        prem_team_code = row['squad_id']
+        prem_team = prem_team_dict[prem_team_code]
+        value = float(row['cost'] / 1000000.0)
+        position = row['position']
+
+        # stats for new players can be an empty list
+        stats = row['stats'] or {}
+
+        last_years_total = stats.get('total_points', 0)
 
         # create (or update) a Player instance
         p, created = Player.objects.update_or_create(
@@ -318,7 +284,8 @@ def initialise_players(update=False, from_file=True, file_object=None):
             defaults={
                 'prem_team': prem_team,
                 'value': value,
-                'last_years_total': last_years_total
+                'last_years_total': last_years_total,
+                'position': position,
             }
         )
 
@@ -342,35 +309,35 @@ def initialise_players(update=False, from_file=True, file_object=None):
         # Note that we can't use the custom manager at this stage (it uses code not web_code)
 
         # GKP
-        gkps = Player.objects.filter(web_code__lt=2000).order_by('-value')
+        gkps = Player.objects.filter(position=Player.GKP).order_by('-value')
         print('gkps.count() = ', gkps.count())
         for g in gkps:
-            codes['G'] += 1
-            g.code = codes['G']
+            codes[Player.GKP] += 1
+            g.code = codes[Player.GKP]
             g.save()
 
         # DEF
-        defs = Player.objects.filter(web_code__range=(2000, 2999)).order_by('-value')
+        defs = Player.objects.filter(position=Player.DEF).order_by('-value')
         print('defs.count() = ', defs.count())
         for d in defs:
-            codes['D'] += 1
-            d.code = codes['D']
+            codes[Player.DEF] += 1
+            d.code = codes[Player.DEF]
             d.save()
 
         # MID
-        mids = Player.objects.filter(web_code__range=(3000, 3999)).order_by('-value')
+        mids = Player.objects.filter(position=Player.MID).order_by('-value')
         print('mids.count() = ', mids.count())
         for m in mids:
-            codes['M'] += 1
-            m.code = codes['M']
+            codes[Player.MID] += 1
+            m.code = codes[Player.MID]
             m.save()
 
         # STR
-        strs = Player.objects.filter(web_code__gte=4000).order_by('-value')
+        strs = Player.objects.filter(position=Player.STR).order_by('-value')
         print('strs.count() = ', strs.count())
         for s in strs:
-            codes['S'] += 1
-            s.code = codes['S']
+            codes[Player.STR] += 1
+            s.code = codes[Player.STR]
             s.save()
 
 
@@ -427,115 +394,12 @@ def reset_for_new_season(definitely=False):
     initialise_weeks()
 
 
-def update_players(week=None, from_file=False, file_object=None):
-    # get a lookup dict of PremTeams, key = name
-    prem_team_dict = get_prem_team_dict()
-
-    # get the rows from the players table
-    if from_file:
-        rows = get_player_rows_from_file(file_object=file_object)
-    else:
-        rows = get_player_rows()
-    print("No. of player table rows = ", len(rows))
-
-    # get the most recent codes assigned
-    codes = get_player_codes()
-
-    # for each <tr> element in the main players table
-    for row in rows:
-        attrs = row.attrs
-
-        if 'table-head' in attrs['class']:
-            continue
-
-        # if attrs['data-status'] == 'HIDDEN':
-        #     continue
-
-        # first cell contains <a href"player-stat-address"><img>player-name</img></a>
-        name = attrs['data-name']
-        web_code = attrs['data-playerid']
-        prem_team_code = attrs['data-team']
-        prem_team = prem_team_dict[prem_team_code]
-        value = float(attrs['data-value'])
-        try:
-            total_score = int(attrs['data-points'])
-            week_score = int(attrs['data-weekpoints'])
-        except ValueError:
-            # no points available
-            total_score = 0
-            week_score = 0
-
-        # get existing player (or None if the web code isn't in the db)
-        player = Player.objects.filter(web_code=web_code).first()
-
-        if player:
-            # check the weekly and total scores against the existing total
-            if total_score != week_score + player.total_score:
-                print("ERROR: Points don't add up for player ", player)
-                print("Web player total = {}, but week_score = {} and current total = {}".format(
-                    total_score, week_score, player.total_score
-                ))
-            # if team has changed, flag player as 'new' and update the team
-            if str(player.prem_team) != str(prem_team):
-                print("{}: {}; team change from {} to {}".format(
-                    player.code, name, player.prem_team, prem_team
-                ))
-                # TODO - review when to make is_new = false
-                player.is_new = True
-                player.prem_team = prem_team
-                player.save()
-
-        else:
-            player = Player.objects.create(name=name, web_code=web_code,
-                                           prem_team=prem_team, value=value)
-            codes[player.position] += 1
-            player.code = codes[player.position]
-            player.is_new = True
-
-            print("New Player: {}: {}, {}, {}".format(
-                player.code, player.name.encode('utf-8'), player.prem_team, player.value
-            ))
-
-        # compare appearance totals with database to determine if player played.
-        starts = row.find('td', {'class': 'player-sxi'}).text
-        subs = row.find('td', {'class': 'player-subs'}).text
-        new_appearances = int(starts) + int(subs)
-
-        if new_appearances <= player.appearances:
-            if week_score == 0:
-                week_score = None
-            else:
-                print("ERROR: appearances for player: ", player)
-                print("week_score = {}, but new_appearances = {} and current appearances = {}".format(
-                    week_score, new_appearances, player.appearances
-                ))
-
-        player.total_score = total_score
-        player.appearances = new_appearances
-        player.save()
-
-        # create a new PlayerScore if it's a scoring week and the player is owned by a team
-        # TODO - currently creating PlayerScores for all players - mainly used to identify inactive players
-
-        if week:
-            PlayerScore.objects.update_or_create(player=player, week=week, team=player.team,
-                                                 defaults={'value': week_score})
-
-    # find any players without a PlayerScore this week and deactivate them
-    players = Player.objects.filter(is_active=True)
-    for p in players:
-        week_score = PlayerScore.objects.filter(week=week, player=p).first()
-        if week_score is None:
-            p.is_active = False
-            p.save()
-
-
-def update_players_json(week=None, from_file=False, file_object=None):
+def update_players_json(week=None, file_object=None):
     # get a lookup dict of PremTeams, key = web_code
     prem_team_dict = get_prem_team_dict(key='web_code')
 
     if file_object:
-        rows = json.loads(file_object.read())
+        rows = json.load(file_object)
         file_object.close()
     else:
         rows = requests.get(settings.TG_PLAYERS_STATS_JSON).json()
@@ -543,8 +407,6 @@ def update_players_json(week=None, from_file=False, file_object=None):
 
     # get the most recent codes assigned
     codes = get_player_codes()
-
-    position_lookup = get_position_lookup()
 
     # get the round number for this week
     no_score_weeks = Constant.objects.get(name='NO_SCORE_WEEKS').value
@@ -563,7 +425,7 @@ def update_players_json(week=None, from_file=False, file_object=None):
         prem_team_code = row['squad_id']
         prem_team = prem_team_dict[prem_team_code]
         value = float(row['cost'] / 1000000.0)
-        position = position_lookup[row['position']]
+        position = row['position']
 
         # stats for new players can be an empty list
         stats = row['stats'] or {}
@@ -635,136 +497,6 @@ def update_players_json(week=None, from_file=False, file_object=None):
                 p.save()
 
 
-def load_player_text_file(file_object):
-
-    headers = ["name", "position", "team", "value", "total_score", "%selected"]
-    header_len = len(headers)
-
-    prem_team_dict = get_prem_team_dict(by_name=True)
-
-    position_regex = re.compile(".*, ([A-Z]{2,3})")
-
-    position_map = {
-        "GK": Player.GKP,
-        "DEF": Player.DEF,
-        "MID": Player.MID,
-        "ST": Player.STR,
-    }
-
-    player_rows = []
-    player_data = None
-
-    for line_no, line in enumerate(file_object):
-        data_field = headers[line_no % header_len]
-
-        line = line.strip()
-
-        if data_field == "name":
-            player_data = {
-                "name": line
-            }
-        elif data_field == "position":
-            position_code = position_regex.match(line).groups()[0]
-            player_data["position"] = position_map[position_code]
-        elif data_field == "team":
-            player_data["prem_team"] = prem_team_dict[line]
-        elif data_field == "value":
-            player_data["value"] = float(line.replace("m", ""))
-        elif data_field == "total_score":
-            player_data["total_score"] = int(line)
-        elif data_field == "%selected":
-            player_rows.append(player_data)
-
-    return player_rows
-
-
-def update_players_txt(week=None, from_file=False, file_object=None):
-    # get a lookup dict of PremTeams, key = name
-    prem_team_dict = get_prem_team_dict()
-
-    rows = load_player_text_file(file_object)
-
-    # get the most recent codes assigned
-    codes = get_player_codes()
-
-    # for each player in the main players table
-    for row in rows:
-
-        # get existing player (or None if the web code isn't in the db)
-        player = Player.objects.filter(
-            name=row["name"],
-            position=row["position"],
-            value=row["value"]
-        ).first()
-
-        if player:
-            # check the weekly and total scores against the existing total
-            # if row["total_score"] != week_score + player.total_score:
-            #     print("ERROR: Points don't add up for player ", player)
-            #     print("Web player total = {}, but week_score = {} and current total = {}".format(
-            #         row["total_score"], week_score, player.total_score
-            #     ))
-
-            # if team has changed, flag player as 'new' and update the team
-            if player.prem_team != row["prem_team"]:
-                print("{}: {}; team change from {} to {}".format(
-                    player.code, player.name.encode('utf-8'), player.prem_team, row["prem_team"]
-                ))
-                # TODO - review when to make is_new = false
-                player.is_new = True
-                player.prem_team = row["prem_team"]
-        else:
-            player = Player.objects.create(
-                name=row["name"],
-                position=row["position"],
-                prem_team=row["prem_team"],
-                value=row["value"]
-            )
-
-            codes[player.position] += 1
-            player.code = codes[player.position]
-            player.is_new = True
-
-            print("New Player: {}: {}, {}, {}".format(
-                player.code, player.name.encode('utf-8'), player.prem_team, player.value
-            ))
-
-        week_score = row["total_score"] - player.total_score
-        player.total_score = row["total_score"]
-        player.save()
-
-        # # compare appearance totals with database to determine if player played.
-        # starts = row['SXI']
-        # subs = row['SUBS']
-        # new_appearances = starts + subs
-
-        # if new_appearances <= player.appearances:
-        #     if week_score == 0:
-        #         week_score = None
-        #     else:
-        #         print("ERROR: appearances for player: ", player)
-        #         print("week_score = {}, but new_appearances = {} and current appearances = {}".format(
-        #             week_score, new_appearances, player.appearances
-        #         ))
-        # player.total_score = row["total_score"]
-        # player.appearances = new_appearances
-        # player.save()
-
-        # create a new PlayerScore if it's a scoring week
-        if week:
-            PlayerScore.objects.update_or_create(player=player, week=week, team=player.team,
-                                                 defaults={'value': week_score})
-
-    if week:
-        # find any players without a PlayerScore this week and deactivate them
-        players = Player.objects.filter(is_active=True)
-        for p in players:
-            week_score = PlayerScore.objects.filter(week=week, player=p).first()
-            if week_score is None:
-                p.is_active = False
-                p.save()
-
-
 def update_weekly_scores(week):
     teams = Team.active_objects.all()
 
@@ -823,61 +555,6 @@ def update_weekly_scores(week):
 
         # and finally update the total score for the team
         team.update_total_score()
-
-
-def player_has_played(web_code, week):
-
-    # get the individual player stats (<tr> elements)
-    player_source = BeautifulSoup(urlopen(settings.TG_PLAYER_STATS_BASE + str(web_code)))
-    player_stats = player_source.find_all("tr")
-
-    for row in player_stats:
-        if row.contents[1].string == 'Week':
-            # ignore the header row
-            continue
-        elif row.contents[1].string == 'Vs':
-            # unrecognised player code
-            return False
-        # get the week for the row
-        stat_week = int(row.contents[1].string)
-        if stat_week == week:
-            # entry for this week found
-            return True
-        elif stat_week > week:
-            # entry for a later week found
-            continue
-        else:
-            # entry for this week not found
-            return False
-    # finally for players with no table entry in their stats page:
-    return False
-
-
-def get_player_score(web_code, week):
-    # get the individual player stats (<tr> elements)
-    player_source = BeautifulSoup(urlopen(settings.TG_PLAYER_STATS_BASE + str(web_code)))
-    player_stats = player_source.find_all("tr")
-
-    score = 0
-
-    for row in player_stats:
-        if row.contents[1].string == 'Week':
-            # ignore the header row
-            continue
-        elif row.contents[1].string == 'Vs':
-            # unrecognised player code
-            return None
-        # get the week for the row
-        stat_week = int(row.contents[1].string)
-        if stat_week > week:
-            continue
-        elif stat_week == week:
-            score += int(row.contents[-2].string)
-            continue
-        else:  # stat_week < week
-            break
-
-    return score
 
 
 def update_no_score_week(week=None):
@@ -1016,7 +693,7 @@ def process_transfer_outcomes(team):
             )
             PlayerTeamScore.objects.get_or_create(
                 player=tn.player,
-                team=tn.team,
+                team=team,
                 defaults={'value': 0}
             )
         else:

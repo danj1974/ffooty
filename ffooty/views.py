@@ -44,13 +44,13 @@ class LoginView(View):
     def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
-                login(request, form.user_cache)
-                response = HttpResponseRedirect(reverse('home'))
-                if form.cleaned_data['remember_me']:
-                    response.set_cookie('username', form.cleaned_data['username'])
-                else:
-                    response.delete_cookie('username')
-                return response
+            login(request, form.user_cache)
+            response = HttpResponseRedirect(reverse('home'))
+            if form.cleaned_data['remember_me']:
+                response.set_cookie('username', form.cleaned_data['username'])
+            else:
+                response.delete_cookie('username')
+            return response
         else:
             # Return an 'invalid login' error message.
             return render(request, self.template_name, {'form': form})
@@ -81,7 +81,7 @@ class AuctionFileUploadView(LoginRequiredMixin, TemplateView):
 
             for row in reader:
                 # each row is expected to be a list: [<code>, <team_id>, <sale>]
-                print row
+                print(row)
                 code = int(row[0])
                 team_id = int(row[1])
                 sale = float(row[2])
@@ -99,7 +99,7 @@ class AuctionFileUploadView(LoginRequiredMixin, TemplateView):
             return HttpResponseRedirect('/auction_file_upload/')
 
         else:
-            print "form not valid!"
+            print("form not valid!")
 
 
 class PlayerUpdateFileUploadView(LoginRequiredMixin, TemplateView):
@@ -123,6 +123,6 @@ class PlayerUpdateFileUploadView(LoginRequiredMixin, TemplateView):
             update_weekly_scores(week)
 
         else:
-            print "form not valid"
+            print("form not valid")
 
         return HttpResponseRedirect('/#/home/')
