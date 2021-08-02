@@ -54,13 +54,15 @@ class AuctionNominationSummaryView(APIView):
         data = []
         teams = Team.active_objects.exclude(manager__username__in=['Admin', 'admin'])
 
+        position_dict = dict(Player.POSITION)
+
         for team in teams:
             nominations = AuctionNomination.objects.select_related('player', 'manager').filter(team=team)
             summary_dict = {'name': team.manager.username}
             # group by player position and count the values
             counts = nominations.values('player__position').annotate(Count('id'))
             for c in counts:
-                position = c['player__position']
+                position = position_dict[c['player__position']]
                 summary_dict[position] = c['id__count']
             data.append(summary_dict)
 
