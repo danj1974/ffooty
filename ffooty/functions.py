@@ -271,7 +271,7 @@ def initialise_players(update=False, file_object=None):
         prem_team_code = row['squad_id']
         prem_team = prem_team_dict[prem_team_code]
         value = float(row['cost'] / 1000000.0)
-        position = row['position']
+        position = str(row['position'])
 
         # stats for new players can be an empty list
         stats = row['stats'] or {}
@@ -425,7 +425,7 @@ def update_players_json(week=None, file_object=None):
         prem_team_code = row['squad_id']
         prem_team = prem_team_dict[prem_team_code]
         value = float(row['cost'] / 1000000.0)
-        position = row['position']
+        position = str(row['position'])
 
         # stats for new players can be an empty list
         stats = row['stats'] or {}
@@ -504,10 +504,10 @@ def update_weekly_scores(week):
 
         # flags to count reserve player scores:
         include_reserve = {
-            'G': False,
-            'D': False,
-            'M': False,
-            'S': False
+            Player.GKP: False,
+            Player.DEF: False,
+            Player.MID: False,
+            Player.STR: False
         }
 
         week_score = 0

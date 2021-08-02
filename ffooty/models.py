@@ -171,7 +171,7 @@ class Player(models.Model):
         (SQUAD, 'Squad'),
     )
 
-    # sql for ordering by position in a custom (non-alphbetical) ordering
+    # sql for ordering by position in a custom (non-alphabetical) ordering
     # CASE_SQL = "case when position='1' then 1 when position='D' then 2 when position='M' then 3 when position='S' then 4 end"
 
     name = models.CharField(max_length=50)
@@ -197,10 +197,14 @@ class Player(models.Model):
         unique_together = ('name', 'code',)
 
     def __unicode__(self):
-        return '{} {} {} {} {}'.format(self.code, self.position, self.name.encode('utf-8'), self.prem_team, self.value)
+        return '{} {} {} {} {}'.format(
+            self.code, self.get_position_display(), self.name.encode('utf-8'), self.prem_team, self.value
+        )
 
     def __str__(self):
-        return '{} {} {} {} {}'.format(self.code, self.position, self.name.encode('utf-8'), self.prem_team, self.value)
+        return '{} {} {} {} {}'.format(
+            self.code, self.get_position_display(), self.name.encode('utf-8'), self.prem_team, self.value
+        )
 
     @property
     def details(self, *args, **kwargs):
