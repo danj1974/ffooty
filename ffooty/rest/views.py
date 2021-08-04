@@ -84,6 +84,8 @@ class AuctionTeamSummaryView(APIView):
         teams = Team.active_objects.exclude(manager__username__in=['Admin', 'admin'])
         funds_per_player = 100.0 / 15
 
+        position_dict = dict(Player.POSITION)
+
         for team in teams:
             # update the funds available based on players bought so far
             team.update_funds()
@@ -92,16 +94,16 @@ class AuctionTeamSummaryView(APIView):
                 'manager': team.manager.username,
                 'funds': team.funds,
                 'players': {
-                    Player.GKP: [],
-                    Player.DEF: [],
-                    Player.MID: [],
-                    Player.STR: [],
+                    position_dict[Player.GKP]: [],
+                    position_dict[Player.DEF]: [],
+                    position_dict[Player.MID]: [],
+                    position_dict[Player.STR]: [],
                 },
                 'bought': 0,
                 'funds_per_player': funds_per_player,
             }
             for p in players:
-                data[team.id]['players'][p.position].append(p.sale)
+                data[team.id]['players'][p.get_position_display()].append(p.sale)
                 data[team.id]['bought'] += 1
                 # calculate the average funds per player left to buy
                 if data[team.id]['funds'] == 0 or data[team.id]['bought'] >= 15:

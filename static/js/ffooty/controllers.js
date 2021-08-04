@@ -665,7 +665,7 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
 
     $scope.savePlayer = function() {
         var p = $scope.selectedPlayer;
-        var position = p.position[0]
+        var position = p.position
         console.log("savePlayers: " + JSON.stringify(p, null, 4));
 
         if (p.team == undefined) {

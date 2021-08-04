@@ -73,21 +73,21 @@
     <tbody>
         <tr ng-repeat="(team_id, data) in auctionTeamSummary | orderBy: data.manager">
             <td>{{ data.manager }}</td>
-            <td ng-class="{warning: data.players['G'].length < 2, success: data.players['G'].length == 2, danger: data.players['G'].length > 2}">
-                <span><strong>{{ data.players['G'].length }}</strong></span>
-                [ <span ng-repeat="gkp_sale in data.players['G'] track by $index">{{ gkp_sale }}{{ $last ? '':' + ' }}</span> ]
+            <td ng-class="{warning: data.players['GKP'].length < 2, success: data.players['GKP'].length == 2, danger: data.players['GKP'].length > 2}">
+                <span><strong>{{ data.players['GKP'].length }}</strong></span>
+                [ <span ng-repeat="gkp_sale in data.players['GKP'] track by $index">{{ gkp_sale }}{{ $last ? '':' + ' }}</span> ]
             </td>
-            <td ng-class="{warning: data.players['D'].length < 5, success: data.players['D'].length == 5, danger: data.players['D'].length > 5}">
-                <span><strong>{{ data.players['D'].length }}</strong></span>
-                [ <span ng-repeat="def_sale in data.players['D'] track by $index">{{ def_sale }}{{ $last ? '':' + ' }}</span> ]
+            <td ng-class="{warning: data.players['DEF'].length < 5, success: data.players['DEF'].length == 5, danger: data.players['DEF'].length > 5}">
+                <span><strong>{{ data.players['DEF'].length }}</strong></span>
+                [ <span ng-repeat="def_sale in data.players['DEF'] track by $index">{{ def_sale }}{{ $last ? '':' + ' }}</span> ]
             </td>
-            <td ng-class="{warning: data.players['M'].length < 5, success: data.players['M'].length == 5, danger: data.players['M'].length > 5}">
-                <span><strong>{{ data.players['M'].length }}</strong></span>
-                [ <span ng-repeat="mid_sale in data.players['M'] track by $index">{{ mid_sale }}{{ $last ? '':' + ' }}</span> ]
+            <td ng-class="{warning: data.players['MID'].length < 5, success: data.players['MID'].length == 5, danger: data.players['MID'].length > 5}">
+                <span><strong>{{ data.players['MID'].length }}</strong></span>
+                [ <span ng-repeat="mid_sale in data.players['MID'] track by $index">{{ mid_sale }}{{ $last ? '':' + ' }}</span> ]
             </td>
-            <td ng-class="{warning: data.players['S'].length < 3, success: data.players['S'].length == 3, danger: data.players['S'].length > 3}">
-                <span><strong>{{ data.players['S'].length }}</strong>
-                </span> [ <span ng-repeat="str_sale in data.players['S'] track by $index">{{ str_sale }}{{ $last ? '':' + ' }}</span> ]
+            <td ng-class="{warning: data.players['STR'].length < 3, success: data.players['STR'].length == 3, danger: data.players['STR'].length > 3}">
+                <span><strong>{{ data.players['STR'].length }}</strong>
+                </span> [ <span ng-repeat="str_sale in data.players['STR'] track by $index">{{ str_sale }}{{ $last ? '':' + ' }}</span> ]
             </td>
             <td ng-class="{warning: data.funds_per_player <= 3, danger: data.funds_per_player <= 2.5}">
                 {{ data.funds | number: 1 }}&nbsp;&nbsp; ({{ 15 - data.bought }})
