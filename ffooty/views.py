@@ -119,7 +119,7 @@ class PlayerUpdateFileUploadView(LoginRequiredMixin, TemplateView):
         if form.is_valid():
             uploaded_file = request.FILES['file']
             week = get_week()
-            update_players_json(week, from_file=True, file_object=uploaded_file)
+            update_players_json(week, file_object=uploaded_file)
             update_weekly_scores(week)
 
         else:
