@@ -1162,6 +1162,19 @@ footyApp.controller('TransferConfirmationController', ['$scope', '$rootScope', '
     $scope.playerToSell = undefined;
     $scope.funds = 0;
 
+    var updateDisableFinalise = function() {
+        console.log("disableFinalise()...");
+        console.log("$scope.userNominations = " + JSON.stringify($scope.userNominations));
+        // if any nominations are still pending then don't allow the Finalise button to show
+        // TODO - additional logic needed here??
+        for (var i = 0; i < $scope.userNominations.length; i++) {
+            console.log("disableFinalise(): $scope.userNominations[i].status = " + $scope.userNominations[i].status);
+            if ($scope.userNominations[i].status == 'Pending') {
+                return true;
+            }
+        }
+        return false;
+    };
 
     $scope.refreshData = function() {
         TransferNominationPlayerDetails.query().$promise
@@ -1244,20 +1257,6 @@ footyApp.controller('TransferConfirmationController', ['$scope', '$rootScope', '
     };
 
     $scope.messages = [];
-
-    var updateDisableFinalise = function() {
-        console.log("disableFinalise()...");
-        console.log("$scope.userNominations = " + JSON.stringify($scope.userNominations));
-        // if any nominations are still pending then don't allow the Finalise button to show
-        // TODO - additional logic needed here??
-        for (var i = 0; i < $scope.userNominations.length; i++) {
-            console.log("disableFinalise(): $scope.userNominations[i].status = " + $scope.userNominations[i].status);
-            if ($scope.userNominations[i].status == 'Pending') {
-                return true;
-            }
-        }
-        return false;
-    };
 
     $scope.finaliseTransfers = function() {
         console.log("finaliseTransfers()");

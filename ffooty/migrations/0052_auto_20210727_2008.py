@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='player',
             name='position',
-            field=models.CharField(blank=True, max_length=1, null=True, choices=[(b'1', b'GKP'), (b'2', b'DEF'), (b'3', b'MID'), (b'4', b'STR')]),
+            field=models.CharField(blank=True, max_length=1, null=True, choices=[('1', 'GKP'), ('2', 'DEF'), ('3', 'MID'), ('4', 'STR')]),
         ),
         migrations.AlterField(
             model_name='teamtotalscorearchive',

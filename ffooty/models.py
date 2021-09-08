@@ -2,15 +2,14 @@
 
 import calendar
 import datetime
-from urllib import urlopen
+# from urllib.request import urlopen
 
 from django.contrib.auth.models import User
-from django.conf import settings
-from django.core.mail import send_mail
+# from django.conf import settings
+# from django.core.mail import send_mail
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-
-from bs4 import BeautifulSoup
+from django.utils import timezone
 
 
 class NameMixin(models.Model):
@@ -20,7 +19,7 @@ class NameMixin(models.Model):
         abstract = True
         app_label = 'ffooty'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -33,7 +32,7 @@ class TeamObjectManager(models.Manager):
 
 
 class Team(NameMixin):
-    manager = models.ForeignKey(User)
+    manager = models.ForeignKey(User, on_delete=models.CASCADE)
     score = models.IntegerField(default=0)
     funds = models.DecimalField(decimal_places=1, max_digits=4, default=0)
     loss = models.DecimalField(decimal_places=1, max_digits=4, default=0,
@@ -67,7 +66,7 @@ class Team(NameMixin):
         ).distinct()
         return Player.objects.filter(id__in=all_player_ids).exclude(team=self)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} ({})'.format(self.name, self.manager)
 
     def update_funds(self):
@@ -128,7 +127,7 @@ class PremTeam(NameMixin):
     code = models.CharField(max_length=3, unique=True)
     web_code = models.IntegerField(null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.code
 
 
@@ -179,8 +178,8 @@ class Player(models.Model):
     status = models.CharField(blank=True, max_length=1, choices=STATUS, default=AVAILABLE)
     code = models.IntegerField(null=True, blank=True)
     web_code = models.IntegerField(unique=True, null=True)
-    team = models.ForeignKey(Team, null=True, blank=True, related_name='players')
-    prem_team = models.ForeignKey(PremTeam, related_name='players')
+    team = models.ForeignKey(Team, null=True, blank=True, related_name='players', on_delete=models.CASCADE)
+    prem_team = models.ForeignKey(PremTeam, related_name='players', on_delete=models.CASCADE)
     value = models.DecimalField(decimal_places=1, max_digits=3, null=True, blank=True)
     sale = models.DecimalField(decimal_places=1, max_digits=3, null=True, blank=True)
     total_score = models.IntegerField(default=0)
@@ -196,19 +195,14 @@ class Player(models.Model):
         ordering = ['code']
         unique_together = ('name', 'code',)
 
-    def __unicode__(self):
-        return '{} {} {} {} {}'.format(
-            self.code, self.get_position_display(), self.name.encode('utf-8'), self.prem_team, self.value
-        )
-
     def __str__(self):
         return '{} {} {} {} {}'.format(
-            self.code, self.get_position_display(), self.name.encode('utf-8'), self.prem_team, self.value
+            self.code, self.get_position_display(), self.name, self.prem_team, self.value
         )
 
     @property
     def details(self, *args, **kwargs):
-        return "{}, {}, £{}m".format(self.name.encode('utf-8'), self.team, self.value)
+        return "{}, {}, £{}m".format(self.name, self.team, self.value)
 
     @property
     def auction_nomination_managers(self):
@@ -223,6 +217,20 @@ class Player(models.Model):
     def admin_auction_nomination_managers(self):
         # return a list of manager names
         return [nom.team.manager.username for nom in self.auctionnomination_set.all()]
+
+    @property
+    def transfer_nomination_managers(self):
+        # return a string of manager names, those with only 2 are anonymised
+        nom_list = [nom.team.manager.username for nom in self.transfernomination_set.all()]
+        if len(nom_list) == 2:
+            return '[2]'
+        else:
+            return ', '.join(nom_list)
+
+    @property
+    def admin_transfer_nomination_managers(self):
+        # return a list of manager names
+        return [nom.team.manager.username for nom in self.transfernomination_set.all()]
 
     @property
     def total_score_counted(self, team=None):
@@ -256,7 +264,7 @@ class Player(models.Model):
             self.save()
             return loss
         else:
-            print("return_to_pool(): {} is not owned by a team!".format(self.name.encode('utf-8')))
+            print("return_to_pool(): {} is not owned by a team!".format(self.name))
 
     def update_transfers(self):
 
@@ -315,7 +323,7 @@ class Week(models.Model):
     class Meta:
         ordering = ['number']
 
-    def __unicode__(self):
+    def __str__(self):
         return "Wk{}: {}-{}".format(self.number, self.date.day, self.date.month)
 
 
@@ -325,14 +333,14 @@ class ScoreBaseModel(models.Model):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         return self.value
 
 
 class PlayerScore(ScoreBaseModel):
-    player = models.ForeignKey(Player, related_name='scores')
-    team = models.ForeignKey(Team, null=True, blank=True)
-    week = models.ForeignKey(Week)
+    player = models.ForeignKey(Player, related_name='scores', on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, null=True, blank=True, on_delete=models.CASCADE)
+    week = models.ForeignKey(Week, on_delete=models.CASCADE)
     is_reserve = models.BooleanField(default=False)
     is_squad = models.BooleanField(default=False)
     is_counted = models.BooleanField(default=False)
@@ -349,7 +357,7 @@ class PlayerScore(ScoreBaseModel):
         else:
             return '*{}*'.format(self.value)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{}: {}: (week {}): {} - {}".format(
             self.player.code, self.player.name, self.week.number, self.value,
             ('Y' if self.is_counted else 'N')
@@ -357,8 +365,8 @@ class PlayerScore(ScoreBaseModel):
 
 
 class PlayerTeamScore(ScoreBaseModel):
-    team = models.ForeignKey(Team, related_name='player_team_scores')
-    player = models.ForeignKey(Player, related_name='player_team_scores')
+    team = models.ForeignKey(Team, related_name='player_team_scores', on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, related_name='player_team_scores', on_delete=models.CASCADE)
 
     def update(self):
         value = PlayerScore.objects.filter(
@@ -369,13 +377,13 @@ class PlayerTeamScore(ScoreBaseModel):
 
 
 class TeamWeeklyScore(ScoreBaseModel):
-    team = models.ForeignKey(Team, related_name='weekly_scores')
-    week = models.ForeignKey(Week)
+    team = models.ForeignKey(Team, related_name='weekly_scores', on_delete=models.CASCADE)
+    week = models.ForeignKey(Week, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('team', 'week',)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} (week {}): {}".format(
             self.team.name, self.week, self.value
         )
@@ -387,14 +395,14 @@ class TeamWeeklyScore(ScoreBaseModel):
 
 
 class TeamMonthlyScore(ScoreBaseModel):
-    team = models.ForeignKey(Team, related_name='monthly_scores')
+    team = models.ForeignKey(Team, related_name='monthly_scores', on_delete=models.CASCADE)
     month = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)])
     prize_awarded = models.BooleanField(default=False, blank=True)
 
     class Meta:
         unique_together = ('team', 'month',)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} ({}): {}".format(
             self.team.name, calendar.month_name[self.month], self.value
         )
@@ -411,9 +419,9 @@ class TeamMonthlyScore(ScoreBaseModel):
 
 
 class TeamTotalScore(ScoreBaseModel):
-    team = models.ForeignKey(Team)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} (total): {}".format(self.team.name, self.value)
 
 
@@ -421,19 +429,18 @@ class TeamTotalScoreArchive(ScoreBaseModel):
     """
     Model for archiving season total scores for teams.
     """
-    team = models.ForeignKey(Team)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
     YEAR_CHOICES = []
     for year in range(2014, 2030):
         YEAR_CHOICES.append((year, year))
 
     year = models.IntegerField(
-        max_length=4,
         choices=YEAR_CHOICES,
         default=datetime.datetime.now().year
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} (total for {}): {}".format(self.team.name, self.year, self.value)
 
 
@@ -441,7 +448,7 @@ class TeamTablePosition(models.Model):
     """
     Model to track team position in league table.
     """
-    team = models.ForeignKey(Team)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
     current_week = models.IntegerField()
     previous_week = models.IntegerField()
 
@@ -465,15 +472,15 @@ class Window(models.Model):
     deadline = models.DateTimeField()
     type = models.CharField(max_length=1, choices=TYPES, default=SQUAD_CHANGE)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{}: {} to {}".format(self.get_type_display(),
                                      self.open_from,
                                      self.deadline)
 
 
 class NominationMixin(models.Model):
-    team = models.ForeignKey(Team)
-    player = models.ForeignKey(Player)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -514,7 +521,7 @@ class TransferNomination(NominationMixin):
     )
 
     status = models.CharField(max_length=1, choices=STATUSES, default=PENDING)
-    transfer_window = models.ForeignKey(Window, blank=True, null=True)
+    transfer_window = models.ForeignKey(Window, blank=True, null=True, on_delete=models.CASCADE)
     bid = models.DecimalField(decimal_places=1, max_digits=3, null=True)
     priority = models.IntegerField(null=True, blank=True)
     processed = models.BooleanField(default=False)
@@ -522,7 +529,7 @@ class TransferNomination(NominationMixin):
     class Meta:
         unique_together = ('team', 'player', 'bid',)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} {} {} {} {}".format(
             self.player.id, self.player.name, self.team.manager.username,
             self.bid, self.get_status_display()
@@ -622,12 +629,12 @@ class SquadChange(models.Model):
     """
     Model for registering a squad/line-up change.
     """
-    player = models.ForeignKey(Player)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
     current_status = models.CharField(max_length=1, choices=Player.STATUS)
     new_status = models.CharField(max_length=1, choices=Player.STATUS)
-    window = models.ForeignKey(Window)
+    window = models.ForeignKey(Window, on_delete=models.CASCADE)
     # the month the changes will take place
-    week = models.ForeignKey(Week, null=True)
+    week = models.ForeignKey(Week, null=True, on_delete=models.CASCADE)
     processed = models.BooleanField(default=False)
 
     class Meta:
@@ -670,23 +677,23 @@ class SquadChange(models.Model):
 
 class Banter(models.Model):
     added = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
 
     class Meta:
         ordering = ['-added']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.text
 
 
 class Comment(models.Model):
     added = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
-    banter = models.ForeignKey(Banter, null=True, related_name='comments')
+    banter = models.ForeignKey(Banter, null=True, related_name='comments', on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.text
 
 
@@ -705,12 +712,12 @@ class Constant(NameMixin):
 
     type = models.CharField(max_length=1, choices=TYPES, default=NUMBER)
     description = models.TextField(null=True, blank=True)
-    boolean_value = models.NullBooleanField(null=True, blank=True)
+    boolean_value = models.BooleanField(null=True, blank=True)
     date_value = models.DateField(null=True, blank=True)
     number_value = models.IntegerField(null=True, blank=True)
     text_value = models.TextField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} = {}'.format(self.name, self.value)
 
     @property

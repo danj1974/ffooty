@@ -2,9 +2,9 @@ import csv
 
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.views.generic import View, TemplateView
 
 from ffooty.forms import LoginForm, AuctionFileUploadForm, PlayerFileUploadForm

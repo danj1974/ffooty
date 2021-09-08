@@ -114,16 +114,24 @@ ALLOWED_HOSTS = []
 
 ########## TEMPLATE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.request',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [normpath(join(SITE_ROOT, 'templates')), join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                # 'django.core.context_processors.media',
+                # 'django.core.context_processors.static',
+                # 'django.core.context_processors.tz',
+            ],
+        },
+    },
+]
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
 TEMPLATE_LOADERS = (
@@ -131,26 +139,21 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 )
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
-TEMPLATE_DIRS = (
-    normpath(join(SITE_ROOT, 'templates')),
-)
-
 ########## END TEMPLATE CONFIGURATION
 
 
 ########## MIDDLEWARE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     # Default Django middleware.
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+]
 
 ########## END MIDDLEWARE CONFIGURATION
 
@@ -177,8 +180,6 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     'rest_framework',
     'fixture_magic',
-    'django_cron',
-    # 'lettuce.django',
 )
 
 # Apps specific for this project go here.
@@ -207,6 +208,12 @@ USE_TEST_URLS = True
 ########## END DJANGO TESTING CONFIGURATION
 
 
+########## DJANGO NEW SETTINGS
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
+########## END DJANGO NEW SETTINGS
+
+
 ########## GRAPPELLI CONFIGURATION 
 GRAPPELLI_ADMIN_TITLE = 'Fantasy Footy Administration'
 
@@ -219,7 +226,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
     ],
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'PAGINATE_BY_PARAM': 'page_size',
 }

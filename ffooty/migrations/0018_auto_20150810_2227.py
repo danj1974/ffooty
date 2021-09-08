@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='teamweeklyscore',
             name='week',
-            field=models.ForeignKey(default=None, to='ffooty.Week'),
+            field=models.ForeignKey(default=None, to='ffooty.Week', on_delete=models.CASCADE),
             preserve_default=False,
         ),
         migrations.AlterUniqueTogether(

@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('value', models.IntegerField(null=True, blank=True)),
                 ('month', models.IntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(12)])),
-                ('team', models.ForeignKey(to='ffooty.Team')),
+                ('team', models.ForeignKey(to='ffooty.Team', on_delete=models.CASCADE)),
             ],
             options={
             },

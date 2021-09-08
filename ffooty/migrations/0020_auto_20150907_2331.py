@@ -18,11 +18,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='playerscore',
             name='player',
-            field=models.ForeignKey(related_name=b'scores', to='ffooty.Player'),
+            field=models.ForeignKey(related_name='scores', to='ffooty.Player', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='transfernomination',
             name='transfer_window',
-            field=models.ForeignKey(blank=True, to='ffooty.TransferWindow', null=True),
+            field=models.ForeignKey(blank=True, to='ffooty.TransferWindow', null=True, on_delete=models.CASCADE),
         ),
     ]

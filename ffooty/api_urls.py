@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
 
@@ -17,23 +17,23 @@ from rest.viewsets import (
 )
 
 
-urlpatterns = patterns('',
-    url(r'^auth_user/$', AuthUserView.as_view(), name='api-auth_user'),
-    url(r'^constants/$', ConstantsView.as_view(), name='api-constants'),
-    url(r'^userteam/(?P<username>\d+)/$', UserTeamView.as_view(), name='api-userteam'),
-    url(r'^auction_nomination_summary/$', AuctionNominationSummaryView.as_view(), name='api-auction_nomination_summary'),
-    url(r'^auction_team_summary/$', AuctionTeamSummaryView.as_view(), name='api-auction_team_summary'),
-    url(r'^auction_random_player_codes/$', AuctionRandomPlayerCodesView.as_view(), name='api-auction_player_codes'),
-    url(r'^auction_pass_nominations/(?P<player_id>[0-9]+)/$', AuctionPassNominationsView.as_view(), name='api-auction_pass_nominations'),
-    url(r'^auction_deal_logs/$', AuctionDealLogsView.as_view(), name='api-auction_deal_logs'),
-    url(r'^team_details/(?P<id>[0-9]+)/$', TeamDetailsView.as_view(), name='api-team_details'),
-    url(r'^team_scores/(?P<id>[0-9]+)/$', TeamScoresView.as_view(), name='api-team_scores'),
-    url(r'^team_lineup/(?P<id>[0-9]+)/$', TeamLineupView.as_view(), name='api-team_lineup'),
-    url(r'^team_validate/(?P<id>[0-9]+)/$', TeamValidateView.as_view(), name='api-team_validate'),
-    # url(r'^update_scores/$', UpdateScoresView.as_view(), name='api-update_scores'),
-    url(r'^process_transfers_for_team/(?P<id>[0-9]+)/$', ProcessTransfersForTeamView.as_view(), name='api-process_transfers_for_team'),
-    url(r'^monthly_scores/$', ManagerOfTheMonthView.as_view(), name='api-monthly_scores'),
-)
+urlpatterns = [
+    path('auth_user/', AuthUserView.as_view(), name='api-auth_user'),
+    path('constants/', ConstantsView.as_view(), name='api-constants'),
+    path('userteam/<str:username>/', UserTeamView.as_view(), name='api-userteam'),
+    path('auction_nomination_summary/', AuctionNominationSummaryView.as_view(), name='api-auction_nomination_summary'),
+    path('auction_team_summary/', AuctionTeamSummaryView.as_view(), name='api-auction_team_summary'),
+    path('auction_random_player_codes/', AuctionRandomPlayerCodesView.as_view(), name='api-auction_player_codes'),
+    path('auction_pass_nominations/<int:player_id>/', AuctionPassNominationsView.as_view(), name='api-auction_pass_nominations'),
+    path('auction_deal_logs/', AuctionDealLogsView.as_view(), name='api-auction_deal_logs'),
+    path('team_details/<int:id>/', TeamDetailsView.as_view(), name='api-team_details'),
+    path('team_scores/<int:id>/', TeamScoresView.as_view(), name='api-team_scores'),
+    path('team_lineup/<int:id>/', TeamLineupView.as_view(), name='api-team_lineup'),
+    path('team_validate/<int:id>/', TeamValidateView.as_view(), name='api-team_validate'),
+    # path('update_scores/', UpdateScoresView.as_view(), name='api-update_scores'),
+    path('process_transfers_for_team/<int:id>/', ProcessTransfersForTeamView.as_view(), name='api-process_transfers_for_team'),
+    path('monthly_scores/', ManagerOfTheMonthView.as_view(), name='api-monthly_scores'),
+]
 
 router = DefaultRouter()
 router.register(r'manager', ManagerViewSet, 'api-manager')

@@ -10,9 +10,9 @@ from rest_framework import status
 from rest_framework.views import APIView
 
 from ffooty.functions import (get_weeks_and_scores_for_month, get_week, update_weekly_scores,
-                              process_transfer_outcomes, get_months_to_date, )
+                              process_transfer_outcomes, get_months_to_date, get_current_window)
 from ffooty.models import (Constant, Team, AuctionNomination, Player, Window, TeamMonthlyScore,
-                           PlayerTeamScore, )
+                           TransferNomination, PlayerTeamScore, )
 from ffooty.rest.serializers import (TeamSerializer, TeamDetailsSerializer, PlayerScoreSerializer,
                                      TeamWeeklyScoreSerializer, WeekSerializer, WindowSerializer,
                                      TeamMonthlyScoreSerializer, AUCTION_LOG_FILE)
@@ -120,12 +120,18 @@ class AuctionRandomPlayerCodesView(APIView):
     Return a list of nominated player codes.
     """
     def get(self, request, *args, **kwargs):
-        # create a list of player codes nomincated for the auction but not assigned to a team
-        nominated_player_codes = AuctionNomination.objects.select_related(
+        window = get_current_window()
+        filter_kwargs = {"player__team__isnull": True}
+        if window.type in [Window.AUCTION_NOMINATION, Window.AUCTION]:
+            nomination_model = AuctionNomination
+            filter['passed'] = False
+        else:
+            nomination_model = TransferNomination
+        # create a list of player codes nominated for the auction but not assigned to a team
+        nominated_player_codes = nomination_model.objects.select_related(
             'player'
         ).filter(
-            player__team__isnull=True,
-            passed=False
+            **filter_kwargs
         ).order_by(
             'player__code'
         ).values_list(
@@ -137,9 +143,6 @@ class AuctionRandomPlayerCodesView(APIView):
 
         # randomise the list
         random.shuffle(nominated_player_codes)
-        print("****")
-        print("nominated_player_codes[:10] =", nominated_player_codes[:10])
-        print("****")
 
         return Response(nominated_player_codes)
 
@@ -166,7 +169,7 @@ class AuctionPassNominationsView(APIView):
             with open(AUCTION_LOG_FILE, 'a') as outfile:
                 msg = "{} {} ({}) {} - was returned to the pool".format(
                     player.code,
-                    player.name.encode('utf-8'),
+                    player.name,
                     player.prem_team,
                     player.value
                 )
@@ -210,7 +213,7 @@ class TeamScoresView(APIView):
     def get(self, request, *args, **kwargs):
         team = Team.active_objects.filter(
             id=kwargs['id']
-        ).select_related(
+        ).prefetch_related(
             'manager', 'players', 'weekly_scores', 'monthly_scores'
         ).first()
 
@@ -300,8 +303,7 @@ class TeamValidateView(APIView):
 class CurrentWindowView(APIView):
 
     def get(self):
-        now = timezone.now()
-        window = Window.objects.filter(open_from__lte=now, deadline__gte=now).first()
+        window = get_current_window()
         data = WindowSerializer(window).data
         return Response(data)
 

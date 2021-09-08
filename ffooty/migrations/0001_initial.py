@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('added', models.DateTimeField(auto_now_add=True)),
                 ('text', models.TextField()),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['-added'],
@@ -41,8 +41,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('added', models.DateTimeField(auto_now_add=True)),
                 ('text', models.TextField()),
-                ('banter', models.ForeignKey(related_name=b'comments', to='ffooty.Banter', null=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('banter', models.ForeignKey(related_name='comments', to='ffooty.Banter', null=True, on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=50)),
-                ('status', models.CharField(default=b'A', max_length=1, choices=[(b'A', b'Available'), (b'F', b'First Team'), (b'R', b'Reserve'), (b'S', b'Squad')])),
+                ('status', models.CharField(default='A', max_length=1, choices=[('A', 'Available'), ('F', 'First Team'), ('R', 'Reserve'), ('S', 'Squad')])),
                 ('code', models.IntegerField(unique=True)),
                 ('web_code', models.IntegerField(unique=True)),
                 ('value', models.FloatField(null=True, blank=True)),
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
                 ('value', models.IntegerField(null=True, blank=True)),
                 ('is_reserve', models.BooleanField(default=False)),
                 ('is_squad', models.BooleanField(default=False)),
-                ('player', models.ForeignKey(to='ffooty.Player')),
+                ('player', models.ForeignKey(to='ffooty.Player', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -98,7 +98,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('open_from', models.DateTimeField(auto_now_add=True)),
                 ('deadline', models.DateTimeField()),
-                ('new_status', models.CharField(max_length=1, choices=[(b'A', b'Available'), (b'F', b'First Team'), (b'R', b'Reserve'), (b'S', b'Squad')])),
+                ('new_status', models.CharField(max_length=1, choices=[('A', 'Available'), ('F', 'First Team'), ('R', 'Reserve'), ('S', 'Squad')])),
                 ('date', models.DateField(auto_now_add=True)),
             ],
             options={
@@ -125,7 +125,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(unique=True, max_length=50)),
                 ('money', models.IntegerField(default=0)),
                 ('line_up_is_valid', models.BooleanField(default=False)),
-                ('manager', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('manager', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -137,7 +137,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('value', models.IntegerField(null=True, blank=True)),
-                ('team', models.ForeignKey(to='ffooty.Team')),
+                ('team', models.ForeignKey(to='ffooty.Team', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -149,7 +149,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('value', models.IntegerField(null=True, blank=True)),
-                ('team', models.ForeignKey(to='ffooty.Team')),
+                ('team', models.ForeignKey(to='ffooty.Team', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -160,10 +160,10 @@ class Migration(migrations.Migration):
             name='TransferNomination',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('outcome', models.CharField(default=b'N', max_length=1, choices=[(b'N', b'Pending'), (b'S', b'Success'), (b'L', b'List'), (b'O', b'Outbid'), (b'P', b'Pass')])),
+                ('outcome', models.CharField(default='N', max_length=1, choices=[('N', 'Pending'), ('S', 'Success'), ('L', 'List'), ('O', 'Outbid'), ('P', 'Pass')])),
                 ('bid', models.FloatField(null=True)),
-                ('player', models.ForeignKey(to='ffooty.Player')),
-                ('team', models.ForeignKey(to='ffooty.Team')),
+                ('player', models.ForeignKey(to='ffooty.Player', on_delete=models.CASCADE)),
+                ('team', models.ForeignKey(to='ffooty.Team', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -197,55 +197,55 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='transfernomination',
             name='transfer_window',
-            field=models.ForeignKey(to='ffooty.TransferWindow'),
+            field=models.ForeignKey(to='ffooty.TransferWindow', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='squadchange',
             name='new_team',
-            field=models.ForeignKey(blank=True, to='ffooty.Team', null=True),
+            field=models.ForeignKey(blank=True, to='ffooty.Team', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='squadchange',
             name='player',
-            field=models.ForeignKey(to='ffooty.Player'),
+            field=models.ForeignKey(to='ffooty.Player', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='squadchange',
             name='window',
-            field=models.ForeignKey(to='ffooty.SquadChangeWindow'),
+            field=models.ForeignKey(to='ffooty.SquadChangeWindow', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='playerscore',
             name='week',
-            field=models.ForeignKey(to='ffooty.Week'),
+            field=models.ForeignKey(to='ffooty.Week', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='player',
             name='prem_team',
-            field=models.ForeignKey(related_name=b'players', blank=True, to='ffooty.PremTeam', null=True),
+            field=models.ForeignKey(related_name='players', blank=True, to='ffooty.PremTeam', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='player',
             name='team',
-            field=models.ForeignKey(related_name=b'players', to='ffooty.Team'),
+            field=models.ForeignKey(related_name='players', to='ffooty.Team', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='auctionnomination',
             name='player',
-            field=models.ForeignKey(to='ffooty.Player'),
+            field=models.ForeignKey(to='ffooty.Player', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='auctionnomination',
             name='team',
-            field=models.ForeignKey(to='ffooty.Team'),
+            field=models.ForeignKey(to='ffooty.Team', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

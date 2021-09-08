@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('value', models.IntegerField(null=True, blank=True)),
-                ('player', models.ForeignKey(related_name=b'team_scores', to='ffooty.Player')),
-                ('team', models.ForeignKey(related_name=b'player_scores', to='ffooty.Team')),
+                ('player', models.ForeignKey(related_name='team_scores', to='ffooty.Player', on_delete=models.CASCADE)),
+                ('team', models.ForeignKey(related_name='player_scores', to='ffooty.Team', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -27,11 +27,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='teammonthlyscore',
             name='team',
-            field=models.ForeignKey(related_name=b'monthly_scores', to='ffooty.Team'),
+            field=models.ForeignKey(related_name='monthly_scores', to='ffooty.Team', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='teamweeklyscore',
             name='team',
-            field=models.ForeignKey(related_name=b'weekly_scores', to='ffooty.Team'),
+            field=models.ForeignKey(related_name='weekly_scores', to='ffooty.Team', on_delete=models.CASCADE),
         ),
     ]

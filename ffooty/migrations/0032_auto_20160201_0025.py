@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='playerteamscore',
             name='player',
-            field=models.ForeignKey(related_name=b'player_team_scores', to='ffooty.Player'),
+            field=models.ForeignKey(related_name='player_team_scores', to='ffooty.Player', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='playerteamscore',
             name='team',
-            field=models.ForeignKey(related_name=b'player_team_scores', to='ffooty.Team'),
+            field=models.ForeignKey(related_name='player_team_scores', to='ffooty.Team', on_delete=models.CASCADE),
         ),
     ]

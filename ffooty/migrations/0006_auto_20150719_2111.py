@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=50)),
-                ('type', models.CharField(default=b'N', max_length=1, choices=[(b'B', b'Boolean'), (b'D', b'Date'), (b'N', b'Number'), (b'T', b'Text')])),
+                ('type', models.CharField(default='N', max_length=1, choices=[('B', 'Boolean'), ('D', 'Date'), ('N', 'Number'), ('T', 'Text')])),
                 ('description', models.TextField(null=True, blank=True)),
                 ('boolean_value', models.NullBooleanField()),
                 ('date_value', models.DateField(null=True, blank=True)),
@@ -31,6 +31,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='player',
             name='position',
-            field=models.CharField(blank=True, max_length=1, null=True, choices=[(b'G', b'GKP'), (b'D', b'DEF'), (b'M', b'MID'), (b'S', b'STR')]),
+            field=models.CharField(blank=True, max_length=1, null=True, choices=[('G', 'GKP'), ('D', 'DEF'), ('M', 'MID'), ('S', 'STR')]),
         ),
     ]

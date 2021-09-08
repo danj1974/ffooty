@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from rest_framework import status
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
@@ -76,7 +76,7 @@ class PlayerViewSet(ModelViewSet):
             return Response(self.get_serializer(players, many=True).data)
         return super(PlayerViewSet, self).list(request, *args, **kwargs)
 
-    @detail_route(methods=['patch'])
+    @action(detail=True, methods=['patch'])
     def return_to_pool(self, request, pk=None):
         try:
             player = self.get_object()
@@ -117,7 +117,7 @@ class WindowViewSet(ModelViewSet):
     queryset = Window.objects.all()
     serializer_class = WindowSerializer
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def get_current(self, request, pk=None):
         """
         Get the current Window if one is active.
@@ -153,7 +153,7 @@ class TransferNominationViewSet(ModelViewSet):
             print("TransferNominationViewSet: get_queryset(): normal user")
             return TransferNomination.objects.filter(team__manager=self.request.user).select_related('player').order_by('priority')
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def with_player_details(self, request):
         qs = self.get_queryset()
         serializer = TransferNominationSerializer(qs, many=True)
@@ -166,7 +166,7 @@ class TransferNominationViewSet(ModelViewSet):
             data['players'][nomination.player.id] = player
         return Response(data, status=status.HTTP_200_OK)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def summary(self, request):
         # get the most recent transfer window
         window = Window.objects.filter(type=Window.TRANSFER_NOMINATION).first()
@@ -226,7 +226,7 @@ class TransferNominationViewSet(ModelViewSet):
         print("TransferNominationViewSet.update: request.data = ", request.data)
         return super(TransferNominationViewSet, self).update(request, *args, **kwargs)
 
-    @detail_route(methods=['patch'])
+    @action(detail=True, methods=['patch'])
     def accept_bid(self, request, pk=None):
         print("accept_bid(): pk = ", pk)
         try:
@@ -235,7 +235,7 @@ class TransferNominationViewSet(ModelViewSet):
         except IllegalNominationOperationException as e:
             return Response({'detail': e.message}, status=status.HTTP_400_BAD_REQUEST)
 
-    @detail_route(methods=['patch'])
+    @action(detail=True, methods=['patch'])
     def pass_on_bid(self, request, pk=None):
         print("pass_on_bid(): pk = ", pk)
         self.get_object().pass_on_bid()

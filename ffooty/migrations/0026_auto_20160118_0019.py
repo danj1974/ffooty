@@ -14,17 +14,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='playerscore',
             name='team',
-            field=models.ForeignKey(blank=True, to='ffooty.Team', null=True),
+            field=models.ForeignKey(blank=True, to='ffooty.Team', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='transfernomination',
             name='status',
-            field=models.CharField(default=b'N', max_length=1, choices=[(b'N', b'Pending'), (b'H', b'Highest'), (b'L', b'List'), (b'O', b'Outbid'), (b'P', b'Passed'), (b'A', b'Accepted'), (b'F', b'Bid Failed')]),
+            field=models.CharField(default='N', max_length=1, choices=[('N', 'Pending'), ('H', 'Highest'), ('L', 'List'), ('O', 'Outbid'), ('P', 'Passed'), ('A', 'Accepted'), ('F', 'Bid Failed')]),
         ),
         migrations.AlterField(
             model_name='window',
             name='type',
-            field=models.CharField(default=b'S', max_length=1, choices=[(b'A', b'Auction Nomination'), (b'S', b'Squad Change'), (b'T', b'Transfer Nomination'), (b'C', b'Transfer Confirmation')]),
+            field=models.CharField(default='S', max_length=1, choices=[('A', 'Auction Nomination'), ('S', 'Squad Change'), ('T', 'Transfer Nomination'), ('C', 'Transfer Confirmation')]),
         ),
     ]

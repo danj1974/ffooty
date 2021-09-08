@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='transfernomination',
             name='status',
-            field=models.CharField(default=b'N', max_length=1, choices=[(b'N', b'Pending'), (b'H', b'Highest'), (b'L', b'List'), (b'O', b'Outbid'), (b'P', b'Passed'), (b'S', b'Accepted'), (b'F', b'Bid Failed')]),
+            field=models.CharField(default='N', max_length=1, choices=[('N', 'Pending'), ('H', 'Highest'), ('L', 'List'), ('O', 'Outbid'), ('P', 'Passed'), ('S', 'Accepted'), ('F', 'Bid Failed')]),
             preserve_default=True,
         ),
     ]

@@ -1,29 +1,30 @@
 from django.conf import settings
-from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from django.contrib.auth.views import password_change, password_change_done
+from django.contrib.auth.views import PasswordChangeView
+from django.urls import path, include, reverse_lazy
 
 from ffooty.views import (IndexView, LoginView, LogoutView,
                           AuctionFileUploadView, PlayerUpdateFileUploadView)
 
-urlpatterns = patterns('',
-    url(r'^$', IndexView.as_view(), name='home'),
-    url(r'^accounts/login/$', LoginView.as_view(), name='login'),
-    url(r'^accounts/logout/$', LogoutView.as_view(), name='logout'),
-    url(r'^accounts/password/change/$', password_change,
-            {'template_name': 'password_change.html', 
-             'post_change_redirect': 'home'}, 
-             name='password_change'),
-    url(r'^auction_file_upload/',
-        AuctionFileUploadView.as_view(),
-        name='auction_file_upload'),
-    url(r'^player_table_file_upload/',
-        PlayerUpdateFileUploadView.as_view(),
-        name='player_file_upload'),
+urlpatterns = [
+    path('', IndexView.as_view(), name='home'),
+    path('accounts/login/', LoginView.as_view(), name='login'),
+    path('accounts/logout/', LogoutView.as_view(), name='logout'),
+    path('accounts/password/change/',
+         PasswordChangeView.as_view(
+             template_name='password_change.html',
+             success_url=reverse_lazy('logout'),
+         ),
+         name='password_change'),
+    path('auction_file_upload/',
+         AuctionFileUploadView.as_view(),
+         name='auction_file_upload'),
+    path('player_table_file_upload/',
+         PlayerUpdateFileUploadView.as_view(),
+         name='player_file_upload'),
                        
-    url(r'^api/', include('ffooty.api_urls')),
+    path('api/', include('ffooty.api_urls')),
 
-    (r'^grappelli/', include('grappelli.urls')), # grappelli URLS
-    url(r'^admin/', include(admin.site.urls)),
-)
-
+    path('grappelli/', include('grappelli.urls')),  # grappelli URLS
+    path('admin/', admin.site.urls),
+]

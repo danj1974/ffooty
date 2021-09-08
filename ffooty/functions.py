@@ -1,23 +1,10 @@
-# from dateutil.parser import parse as dateParse
-
 import csv
 from datetime import datetime as dt, timedelta
-from decimal import Decimal
 import json
-import os
 import random
-import re
 import requests
-import socket
-import urllib2
-from urllib import urlopen
-from xlrd import open_workbook
 
-import bs4
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common import utils
-from selenium.webdriver.phantomjs.service import Service
+from xlrd import open_workbook
 
 from django.conf import settings
 from django.db.models import Max
@@ -68,6 +55,14 @@ def get_weeks_for_month(month=None):
     return Week.objects.filter(date__month=month).order_by('number')
 
 
+def get_current_window():
+    """
+    Returns the current active Window or None.
+    """
+    now = timezone.now()
+    return Window.objects.filter(open_from__lte=now, deadline__gte=now).first()
+
+
 def load_premiership_teams():
     """
     Load Premiership team data.
@@ -116,71 +111,6 @@ def load_premiership_teams():
             defaults={'is_prem': team['is_prem']}
         ))
         # print(pt, created)
-
-
-def is_player_stats_table_visible(session):
-    print("waiting for playerstats to load...")
-    players_source = BeautifulSoup(session.body())
-    rows = players_source.findAll('tr', {'class': 'playerstats'})
-    if rows:
-        return True
-    else:
-        return False
-
-
-def new_free_port():
-    """
-    Determines a free port using sockets.
-    """
-    ip = os.environ['OPENSHIFT_PYTHON_IP']
-    free_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    free_socket.bind((ip, 0))
-    free_socket.listen(5)
-    port = free_socket.getsockname()[1]
-    free_socket.close()
-    return port
-
-
-class NewService(Service):
-
-    def __init__(self, executable_path, port=0, service_args=None, log_path=None):
-        self.port = '127.8.247.1:8080'
-        self.path = executable_path
-        self.service_args= service_args
-        if self.port == 0:
-            self.port = new_free_port()
-        if self.service_args is None:
-            self.service_args = []
-        else:
-            self.service_args=service_args[:]
-        self.service_args.insert(0, self.path)
-        self.service_args.append("--webdriver=%d" % self.port)
-        if not log_path:
-            log_path = "ghostdriver.log"
-        self._log = open(log_path, 'w')
-
-
-def get_player_rows():
-    """
-    Return an iterable containing ``<tr>`` elements from TG player list.
-
-    :return: iterable containing :class:``bs4.element.Tag`` of player data.
-    :rtype: :class:``bs4.element.ResultSet``
-    """
-    # players_source = BeautifulSoup(urlopen(settings.TG_PLAYERS_STATS))
-
-    if settings.ON_OPENSHIFT:
-        webdriver.phantomjs.webdriver.Service = NewService
-
-    print("settings.ON_OPENSHIFT:", settings.ON_OPENSHIFT)
-    print("settings.PHANTOMJS_PATH: ", settings.PHANTOMJS_PATH)
-
-    browser = webdriver.PhantomJS(settings.PHANTOMJS_PATH)
-    browser.get(settings.TG_PLAYERS_STATS)
-
-    players_source = BeautifulSoup(browser.page_source, "html.parser")
-    player_table = players_source.find(id="table-players")
-    return player_table.findAll('tr', {'class': 'playerstats'})
 
 
 def get_prem_team_dict(key='code'):
@@ -263,7 +193,7 @@ def initialise_players(update=False, file_object=None):
 
         first_name = row.get('first_name')
         if first_name:
-            name = "{}. {}".format(first_name[0].encode('utf-8'), row['last_name'].encode('utf-8'))
+            name = "{}. {}".format(first_name[0], row['last_name'])
         else:
             name = row['last_name']
 
@@ -296,7 +226,7 @@ def initialise_players(update=False, file_object=None):
             p.is_new = True
             p.save()
             new_players.append(p)
-            print(p.code, p.name.encode('utf-8'), p.prem_team, p.value, created)
+            print(p.code, p.name, p.prem_team, p.value, created)
 
     print("****")
     print('All players saved')
@@ -417,7 +347,7 @@ def update_players_json(week=None, file_object=None):
 
         first_name = row.get('first_name')
         if first_name:
-            name = "{}. {}".format(first_name[0].encode('utf-8'), row['last_name'].encode('utf-8'))
+            name = "{}. {}".format(first_name[0], row['last_name'])
         else:
             name = row['last_name']
 
@@ -473,8 +403,8 @@ def update_players_json(week=None, file_object=None):
                 appearances=appearances,
             )
 
-            print("New Player: {}: {}, {}".format(
-                player.code, player.prem_team, player.value
+            print("New Player: {}: {} {}, {}".format(
+                player.code, player.name, player.prem_team, player.value
             ))
 
         # create a new PlayerScore if it's a scoring week and the player is owned by a team
@@ -526,7 +456,7 @@ def update_weekly_scores(week):
                     score.is_counted = True
                     score.save()
                     print("score for {} ({}) is {}, counted = {}".format(
-                        player.name.encode('utf-8'), player.status, score.value, score.is_counted
+                        player.name, player.status, score.value, score.is_counted
                     ))
 
             elif score.value is None:
@@ -637,7 +567,7 @@ def export_player_list_csv():
             for p in players.filter(position=position[0]):
                 writer.writerow([
                     p.code,
-                    p.name.encode('utf-8'),
+                    p.name,
                     p.prem_team.code,
                     p.value,
                     p.last_years_total,
@@ -655,7 +585,7 @@ def process_transfer_nominations():
 
     for id in player_ids:
         player = Player.objects.get(id=id)
-        print("Updating transfer for ", player.name.encode('utf-8'))
+        print("Updating transfer for ", player.name)
         player.update_transfers()
 
 
@@ -682,7 +612,7 @@ def process_transfer_outcomes(team):
             tn.player.sale = tn.bid    # LIST outcomes have already set bid to list value
             tn.player.save()
             messages.append("Adding {} to {}'s team (sale = {})".format(
-                tn.player.name.encode('utf-8'), tn.player.team.manager.username, tn.player.sale
+                tn.player.name, tn.player.team.manager.username, tn.player.sale
             ))
             # add a dummy player score record so new players show in team pages
             PlayerScore.objects.create(

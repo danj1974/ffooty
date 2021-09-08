@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('open_from', models.DateTimeField()),
                 ('deadline', models.DateTimeField()),
-                ('type', models.CharField(default=b'S', max_length=1, choices=[(b'A', b'Auction Nomination'), (b'S', b'Squad Change'), (b'T', b'Transfer Nomination')])),
+                ('type', models.CharField(default='S', max_length=1, choices=[('A', 'Auction Nomination'), ('S', 'Squad Change'), ('T', 'Transfer Nomination')])),
             ],
             options={
             },
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='transfernomination',
             name='transfer_window',
-            field=models.ForeignKey(blank=True, to='ffooty.Window', null=True),
+            field=models.ForeignKey(blank=True, to='ffooty.Window', null=True, on_delete=models.CASCADE),
         ),
         migrations.DeleteModel(
             name='TransferWindow',

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='player',
             name='prem_team',
-            field=models.ForeignKey(related_name=b'players', to='ffooty.PremTeam'),
+            field=models.ForeignKey(related_name='players', to='ffooty.PremTeam', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='player',
@@ -24,6 +24,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='player',
             name='team',
-            field=models.ForeignKey(related_name=b'players', blank=True, to='ffooty.Team', null=True),
+            field=models.ForeignKey(related_name='players', blank=True, to='ffooty.Team', null=True, on_delete=models.CASCADE),
         ),
     ]

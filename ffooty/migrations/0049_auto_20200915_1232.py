@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='squadchange',
             name='week',
-            field=models.ForeignKey(to='ffooty.Week', null=True),
+            field=models.ForeignKey(to='ffooty.Week', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterField(

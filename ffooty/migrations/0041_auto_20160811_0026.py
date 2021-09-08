@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='window',
             name='type',
-            field=models.CharField(default=b'S', max_length=1, choices=[(b'N', b'Auction Nomination'), (b'A', b'Auction'), (b'S', b'Squad Change'), (b'T', b'Transfer Nomination'), (b'C', b'Transfer Confirmation')]),
+            field=models.CharField(default='S', max_length=1, choices=[('N', 'Auction Nomination'), ('A', 'Auction'), ('S', 'Squad Change'), ('T', 'Transfer Nomination'), ('C', 'Transfer Confirmation')]),
         ),
         migrations.AlterUniqueTogether(
             name='player',

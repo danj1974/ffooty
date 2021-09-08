@@ -16,12 +16,12 @@ class Migration(migrations.Migration):
             name='SquadChange',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('current_status', models.CharField(max_length=1, choices=[(b'A', b'Available'), (b'F', b'First Team'), (b'R', b'Reserve'), (b'S', b'Squad')])),
-                ('new_status', models.CharField(max_length=1, choices=[(b'A', b'Available'), (b'F', b'First Team'), (b'R', b'Reserve'), (b'S', b'Squad')])),
+                ('current_status', models.CharField(max_length=1, choices=[('A', 'Available'), ('F', 'First Team'), ('R', 'Reserve'), ('S', 'Squad')])),
+                ('new_status', models.CharField(max_length=1, choices=[('A', 'Available'), ('F', 'First Team'), ('R', 'Reserve'), ('S', 'Squad')])),
                 ('month', models.IntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(12)])),
                 ('processed', models.BooleanField(default=False)),
-                ('player', models.ForeignKey(to='ffooty.Player')),
-                ('window', models.ForeignKey(to='ffooty.Window')),
+                ('player', models.ForeignKey(to='ffooty.Player', on_delete=models.CASCADE)),
+                ('window', models.ForeignKey(to='ffooty.Window', on_delete=models.CASCADE)),
             ],
             options={
             },

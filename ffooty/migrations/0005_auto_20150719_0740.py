@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='player',
             name='position',
-            field=models.CharField(blank=True, max_length=1, null=True, choices=[(b'G', b'Goalkeeper'), (b'D', b'Defender'), (b'M', b'Midfielder'), (b'S', b'Striker')]),
+            field=models.CharField(blank=True, max_length=1, null=True, choices=[('G', 'Goalkeeper'), ('D', 'Defender'), ('M', 'Midfielder'), ('S', 'Striker')]),
         ),
     ]

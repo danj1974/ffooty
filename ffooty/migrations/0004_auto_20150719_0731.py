@@ -18,12 +18,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='player',
             name='position',
-            field=models.CharField(blank=True, max_length=1, null=True, choices=[(b'A', b'Available'), (b'F', b'First Team'), (b'R', b'Reserve'), (b'S', b'Squad')]),
+            field=models.CharField(blank=True, max_length=1, null=True, choices=[('A', 'Available'), ('F', 'First Team'), ('R', 'Reserve'), ('S', 'Squad')]),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='player',
             name='status',
-            field=models.CharField(default=b'A', max_length=1, blank=True, choices=[(b'A', b'Available'), (b'F', b'First Team'), (b'R', b'Reserve'), (b'S', b'Squad')]),
+            field=models.CharField(default='A', max_length=1, blank=True, choices=[('A', 'Available'), ('F', 'First Team'), ('R', 'Reserve'), ('S', 'Squad')]),
         ),
     ]

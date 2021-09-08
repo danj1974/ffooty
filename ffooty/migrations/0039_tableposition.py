@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('current_week', models.IntegerField()),
                 ('previous_week', models.IntegerField()),
-                ('team', models.ForeignKey(to='ffooty.Team')),
+                ('team', models.ForeignKey(to='ffooty.Team', on_delete=models.CASCADE)),
             ],
             options={
             },

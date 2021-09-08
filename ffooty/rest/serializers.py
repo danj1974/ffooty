@@ -26,6 +26,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
+        fields = '__all__'
 
 
 class TeamWriteSerializer(serializers.ModelSerializer):
@@ -38,6 +39,7 @@ class TeamWriteSerializer(serializers.ModelSerializer):
 class PremTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = PremTeam
+        fields = '__all__'
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -45,10 +47,12 @@ class PlayerSerializer(serializers.ModelSerializer):
     prem_team = serializers.StringRelatedField()
     position = serializers.CharField(source='get_position_display')
     auction_nomination_managers = serializers.CharField(read_only=True)
+    transfer_nomination_managers = serializers.CharField(read_only=True)
     manager = serializers.SerializerMethodField()
 
     class Meta:
         model = Player
+        fields = '__all__'
 
     def get_manager(self, obj):
         return obj.team.manager.username if obj.team else None
@@ -77,7 +81,7 @@ class PlayerSerializer(serializers.ModelSerializer):
         with open(AUCTION_LOG_FILE, 'a') as outfile:
             msg = "{} {} ({}){} sale = {}".format(
                 instance.code,
-                instance.name.encode('utf-8'),
+                instance.name,
                 instance.prem_team,
                 action,
                 new_sale
@@ -93,6 +97,10 @@ class AdminPlayerSerializer(PlayerSerializer):
         read_only=True,
         child=serializers.CharField()
     )
+    admin_transfer_nomination_managers = serializers.ListField(
+        read_only=True,
+        child=serializers.CharField()
+    )
 
 
 class WeekSerializer(serializers.ModelSerializer):
@@ -100,6 +108,7 @@ class WeekSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Week
+        fields = '__all__'
 
     def get_date(self, obj):
         return "({day:02d}-{month:02d})".format(day=obj.date.day, month=obj.date.month)
@@ -110,17 +119,20 @@ class PlayerScoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PlayerScore
+        fields = '__all__'
 
 
 class PlayerTeamScoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PlayerTeamScore
+        fields = '__all__'
 
 
 class TeamWeeklyScoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamWeeklyScore
+        fields = '__all__'
 
 
 class TeamMonthlyScoreSerializer(serializers.ModelSerializer):
@@ -133,6 +145,7 @@ class TeamMonthlyScoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamMonthlyScore
+        fields = '__all__'
 
     def get_manager(self, obj):
         return obj.team.manager.username
@@ -141,6 +154,7 @@ class TeamMonthlyScoreSerializer(serializers.ModelSerializer):
 class TeamTotalScoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamTotalScore
+        fields = '__all__'
 
 
 class TeamDetailsSerializer(serializers.ModelSerializer):
@@ -151,6 +165,7 @@ class TeamDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
+        fields = '__all__'
 
     def get_player_team_scores(self, obj):
         return {pts.player.id: pts.value for pts in obj.player_team_scores.all()}
@@ -161,11 +176,13 @@ class WindowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Window
+        fields = '__all__'
 
 
 class AuctionNominationSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuctionNomination
+        fields = '__all__'
 
 
 class TransferNominationSerializer(serializers.ModelSerializer):
@@ -174,6 +191,7 @@ class TransferNominationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TransferNomination
+        fields = '__all__'
 
 
 class SquadChangeSerializer(serializers.ModelSerializer):
@@ -192,11 +210,13 @@ class TransferNominationPlayerSerializer(TransferNominationSerializer):
 class BanterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banter
+        fields = '__all__'
 
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
+        fields = '__all__'
 
 
 class ConstantSerializer(serializers.ModelSerializer):
