@@ -493,6 +493,11 @@ def update_no_score_week(week=None):
         for p in players:
             PlayerScore.objects.create(player=p, team=p.team, week=week, value=None)
 
+        # update the constant monitoring the number of 'no score' weeks
+        c = Constant.objects.get(name="NO_SCORE_WEEKS")
+        c.number_value += 1
+        c.save()
+
 
 def get_weeks_and_scores_for_month(team, month=None):
     weeks = get_weeks_for_month(month)
