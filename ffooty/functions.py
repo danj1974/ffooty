@@ -4,8 +4,6 @@ import json
 import random
 import requests
 
-from xlrd import open_workbook
-
 from django.conf import settings
 from django.db.models import Max
 
@@ -507,32 +505,6 @@ def get_weeks_and_scores_for_month(team, month=None):
     weekly_scores = TeamWeeklyScore.objects.filter(team=team, week__in=weeks)
 
     return weeks, player_scores, weekly_scores
-
-
-def read_auction_excel_file(filepath):
-    """
-    Read in an Excel file with details of auction sales.
-
-    Column 0 [A]: player code
-    Column 4 [E]: Manager
-    Column 5 [F]: sale
-    """
-    # create a lookup dict of teams by manager name
-    teams = Team.active_objects.all()
-    team_dict = {}
-
-    for t in teams:
-        team_dict[t.manager.username] = t
-
-    wb = open_workbook(filepath)
-    s = wb.sheet_by_index(0)
-
-    for rw in range(s.nrows):
-        if s.cell_value(rw, 4) not in ['', 'Manager']:
-            player = Player.objects.get(code=int(s.cell_value(rw, 0)))
-            player.team = team_dict[s.cell_value(rw, 4)]
-            player.sale = float(s.cell_value(rw, 5))
-            player.save()
 
 
 def export_player_sales():
