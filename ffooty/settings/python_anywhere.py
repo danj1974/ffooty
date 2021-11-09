@@ -53,3 +53,5 @@ EMAIL_HOST_USER = 'noreply.azff@gmail.com'
 EMAIL_HOST_PASSWORD = 'astraffootyzeneca'
 DEFAULT_FROM_EMAIL = 'noreply.azff@gmail.com'
 DEFAULT_TO_EMAIL = 'danj1974@gmail.com'
+
+ALLOWED_HOSTS = ['danj1974.pythonanywhere.com']
