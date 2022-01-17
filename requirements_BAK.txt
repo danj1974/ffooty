@@ -4,7 +4,7 @@ coverage==3.7.1
 Django==1.7
 django-common-helpers==0.7.0
 django-cron==0.4.3
-django-debug-toolbar==1.2.2
+django-debug-toolbar==1.11.1
 django-filter==0.7
 django-fixture-magic==0.0.4
 django-grappelli==2.6.1
