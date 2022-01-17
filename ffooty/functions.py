@@ -456,7 +456,7 @@ def update_weekly_scores(week):
             print("player = ", player)
             score = PlayerScore.objects.filter(player=player, week=week).first()
 
-            if score.value is not None:
+            if score and score.value is not None:
                 # determine if the score counts
                 if player.status == Player.FIRST_TEAM or \
                         (player.status == Player.RESERVE and include_reserve[player.position]):
@@ -468,14 +468,10 @@ def update_weekly_scores(week):
                         player.name, player.status, score.value, score.is_counted
                     ))
 
-            elif score.value is None:
+            else:
                 # if it's a first team player, we flag that the reserve score can be counted
                 if player.status == Player.FIRST_TEAM:
                     include_reserve[player.position] = True
-
-            else:
-                print("****ERROR****: Logic needs reviewing:")
-                print("Player:", player, "score:", score)
 
             # get or create the PlayerTeamScore for this team & player and update its value
             player_team_score, _created = PlayerTeamScore.objects.get_or_create(
