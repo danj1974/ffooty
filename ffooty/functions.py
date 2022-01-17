@@ -342,7 +342,6 @@ def update_players_json(week=None, file_object=None):
 
     # for each player in the main players table
     for row in rows:
-
         first_name = row.get('first_name')
         if first_name:
             name = "{}. {}".format(first_name[0], row['last_name'])
@@ -350,6 +349,20 @@ def update_players_json(week=None, file_object=None):
             name = row['last_name']
 
         web_code = row['id']
+
+        # get existing player (or None if the web code isn't in the db)
+        player = Player.objects.filter(web_code=web_code).first()
+
+        if row["status"] == "eliminated":
+            if player.is_active:
+                print("{}: {} is now inactive".format(
+                    player.code, name
+                ))
+                player.is_active = False
+                player.save()
+
+            continue
+
         prem_team_code = row['squad_id']
         prem_team = prem_team_dict[prem_team_code]
         value = float(row['cost'] / 1000000.0)
@@ -369,9 +382,6 @@ def update_players_json(week=None, file_object=None):
         else:
             week_score = round_scores.get(str(round_no))
 
-        # get existing player (or None if the web code isn't in the db)
-        player = Player.objects.filter(web_code=web_code).first()
-        
         if player:
             # if team has changed, flag player as 'new' and update the team
             if str(player.prem_team) != str(prem_team):
@@ -415,6 +425,7 @@ def update_players_json(week=None, file_object=None):
                 defaults={'value': week_score}
             )
 
+    # TODO - is this still needed??
     if week:
         # find any players without a PlayerScore this week and deactivate them
         players = Player.objects.filter(is_active=True)
