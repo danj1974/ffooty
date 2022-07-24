@@ -16,15 +16,13 @@ def initialise_weeks():
 
     :return: None
     """
-    # TODO - use the constants to set the start/end date
-    # TODO - or submit dates in the form when uploading the players.
-    week_date = dt(2021, 8, 17)  # the first Tuesday after start of season
-    end_date = dt(2022, 5, 18)  # the *Wednesday* after the cup final/last weekend
+    week_date = Constant.objects.get(name='START_DATE').value
+    end_date = Constant.objects.get(name='END_DATE').value
 
     current_week = 1
 
     while week_date < end_date:
-        w = Week.objects.create(number=current_week, date=week_date)
+        Week.objects.create(number=current_week, date=week_date)
         current_week += 1
         week_date += timedelta(days=7)
 
