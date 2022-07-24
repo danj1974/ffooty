@@ -16,15 +16,13 @@ def initialise_weeks():
 
     :return: None
     """
-    # TODO - use the constants to set the start/end date
-    # TODO - or submit dates in the form when uploading the players.
-    week_date = dt(2021, 8, 17)  # the first Tuesday after start of season
-    end_date = dt(2022, 5, 18)  # the *Wednesday* after the cup final/last weekend
+    week_date = Constant.objects.get(name='START_DATE').value
+    end_date = Constant.objects.get(name='END_DATE').value
 
     current_week = 1
 
     while week_date < end_date:
-        w = Week.objects.create(number=current_week, date=week_date)
+        Week.objects.create(number=current_week, date=week_date)
         current_week += 1
         week_date += timedelta(days=7)
 
@@ -342,7 +340,6 @@ def update_players_json(week=None, file_object=None):
 
     # for each player in the main players table
     for row in rows:
-
         first_name = row.get('first_name')
         if first_name:
             name = "{}. {}".format(first_name[0], row['last_name'])
@@ -350,6 +347,20 @@ def update_players_json(week=None, file_object=None):
             name = row['last_name']
 
         web_code = row['id']
+
+        # get existing player (or None if the web code isn't in the db)
+        player = Player.objects.filter(web_code=web_code).first()
+
+        if row["status"] == "eliminated":
+            if player.is_active:
+                print("{}: {} is now inactive".format(
+                    player.code, name
+                ))
+                player.is_active = False
+                player.save()
+
+            continue
+
         prem_team_code = row['squad_id']
         prem_team = prem_team_dict[prem_team_code]
         value = float(row['cost'] / 1000000.0)
@@ -369,9 +380,6 @@ def update_players_json(week=None, file_object=None):
         else:
             week_score = round_scores.get(str(round_no))
 
-        # get existing player (or None if the web code isn't in the db)
-        player = Player.objects.filter(web_code=web_code).first()
-        
         if player:
             # if team has changed, flag player as 'new' and update the team
             if str(player.prem_team) != str(prem_team):
@@ -415,6 +423,7 @@ def update_players_json(week=None, file_object=None):
                 defaults={'value': week_score}
             )
 
+    # TODO - is this still needed??
     if week:
         # find any players without a PlayerScore this week and deactivate them
         players = Player.objects.filter(is_active=True)
@@ -445,7 +454,7 @@ def update_weekly_scores(week):
             print("player = ", player)
             score = PlayerScore.objects.filter(player=player, week=week).first()
 
-            if score.value is not None:
+            if score and score.value is not None:
                 # determine if the score counts
                 if player.status == Player.FIRST_TEAM or \
                         (player.status == Player.RESERVE and include_reserve[player.position]):
@@ -457,14 +466,10 @@ def update_weekly_scores(week):
                         player.name, player.status, score.value, score.is_counted
                     ))
 
-            elif score.value is None:
+            else:
                 # if it's a first team player, we flag that the reserve score can be counted
                 if player.status == Player.FIRST_TEAM:
                     include_reserve[player.position] = True
-
-            else:
-                print("****ERROR****: Logic needs reviewing:")
-                print("Player:", player, "score:", score)
 
             # get or create the PlayerTeamScore for this team & player and update its value
             player_team_score, _created = PlayerTeamScore.objects.get_or_create(
