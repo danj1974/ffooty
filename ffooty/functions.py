@@ -12,7 +12,7 @@ from ffooty.models import *
 
 def initialise_weeks():
     """
-    Create :class:``ffooty.mpdels.Week`` objects for a season.
+    Create :class:``ffooty.models.Week`` objects for a season.
 
     :return: None
     """
@@ -66,38 +66,39 @@ def load_premiership_teams():
     """
     # list of PremTeams to add
     team_list = [
-        {'name': 'Arsenal', 'code': 'ARS', 'is_prem': True},
-        {'name': 'Aston Villa', 'code': 'AVL', 'is_prem': True},
-        {'name': 'Brighton and Hove Albion', 'code': 'BTN', 'is_prem': True},
-        {'name': 'Brentford', 'code': 'BRE', 'is_prem': True},
-        {'name': 'Bournemouth', 'code': 'BOU', 'is_prem': False},
-        {'name': 'Burnley', 'code': 'BUR', 'is_prem': True},
-        {'name': 'Cardiff City', 'code': 'CAR', 'is_prem': False},
-        {'name': 'Chelsea', 'code': 'CHE', 'is_prem': True},
-        {'name': 'Crystal Palace', 'code': 'CRY', 'is_prem': True},
-        {'name': 'Everton', 'code': 'EVE', 'is_prem': True},
-        {'name': 'Fulham', 'code': 'FUL', 'is_prem': False},
-        {'name': 'Hull', 'code': 'HUL', 'is_prem': False},
-        {'name': 'Huddersfield Town', 'code': 'HUD', 'is_prem': False},
-        {'name': 'Leeds United', 'code': 'LEE', 'is_prem': True},
-        {'name': 'Leicester City', 'code': 'LEI', 'is_prem': True},
-        {'name': 'Liverpool', 'code': 'LIV', 'is_prem': True},
-        {'name': 'Manchester City', 'code': 'MCY', 'is_prem': True},
-        {'name': 'Manchester United', 'code': 'MUN', 'is_prem': True},
-        {'name': 'Middlesbrough', 'code': 'MID', 'is_prem': False},
-        {'name': 'Newcastle United', 'code': 'NEW', 'is_prem': True},
-        {'name': 'Norwich City', 'code': 'NOR', 'is_prem': True},
-        {'name': 'Queens Park Rangers', 'code': 'QPR', 'is_prem': False},
-        {'name': 'Sheffield United', 'code': 'SHF', 'is_prem': False},
-        {'name': 'Southampton', 'code': 'SOT', 'is_prem': True},
-        {'name': 'Stoke City', 'code': 'STO', 'is_prem': False},
-        {'name': 'Sunderland', 'code': 'SUN', 'is_prem': False},
-        {'name': 'Swansea City', 'code': 'SWA', 'is_prem': False},
-        {'name': 'Tottenham Hotspur', 'code': 'TOT', 'is_prem': True},
-        {'name': 'Watford', 'code': 'WAT', 'is_prem': True},
-        {'name': 'West Bromwich Albion', 'code': 'WBA', 'is_prem': False},
-        {'name': 'West Ham United', 'code': 'WHM', 'is_prem': True},
-        {'name': 'Wolverhampton Wanderers', 'code': 'WLV', 'is_prem': True},
+        {'name': 'Arsenal', 'code': 'ARS', 'is_prem': True, 'web_code': 3},
+        {'name': 'Aston Villa', 'code': 'AVL', 'is_prem': True, 'web_code': 7},
+        {'name': 'Bournemouth', 'code': 'BOU', 'is_prem': True, 'web_code': 91},
+        {'name': 'Brentford', 'code': 'BRE', 'is_prem': True, 'web_code': 94},
+        {'name': 'Brighton and Hove Albion', 'code': 'BTN', 'is_prem': True, 'web_code': 36},
+        {'name': 'Burnley', 'code': 'BUR', 'is_prem': False, 'web_code': 90},
+        {'name': 'Cardiff City', 'code': 'CAR', 'is_prem': False, 'web_code': None},
+        {'name': 'Chelsea', 'code': 'CHE', 'is_prem': True, 'web_code': 8},
+        {'name': 'Crystal Palace', 'code': 'CRY', 'is_prem': True, 'web_code': 31},
+        {'name': 'Everton', 'code': 'EVE', 'is_prem': True, 'web_code': 11},
+        {'name': 'Fulham', 'code': 'FUL', 'is_prem': True, 'web_code': 54},
+        {'name': 'Hull', 'code': 'HUL', 'is_prem': False, 'web_code': None},
+        {'name': 'Huddersfield Town', 'code': 'HUD', 'is_prem': False, 'web_code': None},
+        {'name': 'Leeds United', 'code': 'LEE', 'is_prem': True, 'web_code': 2},
+        {'name': 'Leicester City', 'code': 'LEI', 'is_prem': True, 'web_code': 13},
+        {'name': 'Liverpool', 'code': 'LIV', 'is_prem': True, 'web_code': 14},
+        {'name': 'Manchester City', 'code': 'MCY', 'is_prem': True, 'web_code': 43},
+        {'name': 'Manchester United', 'code': 'MUN', 'is_prem': True, 'web_code': 1},
+        {'name': 'Middlesbrough', 'code': 'MID', 'is_prem': False, 'web_code': None},
+        {'name': 'Newcastle United', 'code': 'NEW', 'is_prem': True, 'web_code': 4},
+        {'name': 'Norwich City', 'code': 'NOR', 'is_prem': False, 'web_code': 45},
+        {'name': 'Nottingham Forest', 'code': 'NOT', 'is_prem': True, 'web_code': 17},
+        {'name': 'Queens Park Rangers', 'code': 'QPR', 'is_prem': False, 'web_code': None},
+        {'name': 'Sheffield United', 'code': 'SHF', 'is_prem': False, 'web_code': 49},
+        {'name': 'Southampton', 'code': 'SOT', 'is_prem': True, 'web_code': 20},
+        {'name': 'Stoke City', 'code': 'STO', 'is_prem': False, 'web_code': None},
+        {'name': 'Sunderland', 'code': 'SUN', 'is_prem': False, 'web_code': None},
+        {'name': 'Swansea City', 'code': 'SWA', 'is_prem': False, 'web_code': None},
+        {'name': 'Tottenham Hotspur', 'code': 'TOT', 'is_prem': True, 'web_code': 6},
+        {'name': 'Watford', 'code': 'WAT', 'is_prem': False, 'web_code': 57},
+        {'name': 'West Bromwich Albion', 'code': 'WBA', 'is_prem': False, 'web_code': 35},
+        {'name': 'West Ham United', 'code': 'WHM', 'is_prem': True, 'web_code': 21},
+        {'name': 'Wolverhampton Wanderers', 'code': 'WLV', 'is_prem': True, 'web_code': 39},
     ]
 
     for team in team_list:
