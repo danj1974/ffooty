@@ -105,6 +105,7 @@ def load_premiership_teams():
         print(PremTeam.objects.update_or_create(
             name=team['name'],
             code=team['code'],
+            web_code=team['web_code'],
             defaults={'is_prem': team['is_prem']}
         ))
         # print(pt, created)
