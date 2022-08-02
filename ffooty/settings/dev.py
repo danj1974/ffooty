@@ -35,8 +35,8 @@ DEFAULT_FILE_STORAGE = 'storage.handlers.DatabaseStorage'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        # "NAME": os.path.join(BASE_DIR, "../data", "db.sqlite3"),
-        "NAME": "../../ffooty/website_data/db.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "../data", "db.sqlite3"),
+        # "NAME": "../../ffooty/website_data/db.sqlite3",
         # "NAME": "../../ffooty/website_data/2018/db_2018_season_final.sqlite3",
         "USER": "",
         "PASSWORD": "",
@@ -46,6 +46,7 @@ DATABASES = {
     },
 }
 
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True

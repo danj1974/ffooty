@@ -124,7 +124,7 @@ class AuctionRandomPlayerCodesView(APIView):
         filter_kwargs = {"player__team__isnull": True}
         if window.type in [Window.AUCTION_NOMINATION, Window.AUCTION]:
             nomination_model = AuctionNomination
-            filter['passed'] = False
+            filter_kwargs['passed'] = False
         else:
             nomination_model = TransferNomination
         # create a list of player codes nominated for the auction but not assigned to a team
