@@ -588,7 +588,7 @@ class TransferNomination(NominationMixin):
         Ensure the nomination bid is at least the list price for the player.
         Extends the superclass method.
         """
-        if self.bid < self.player.value:
+        if not self.bid or self.bid < self.player.value:
             self.bid = self.player.value
 
         super(TransferNomination, self).save(*args, **kwargs)
