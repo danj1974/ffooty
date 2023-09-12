@@ -944,7 +944,7 @@ footyApp.controller('TransferSelectionController', ['$scope', '$rootScope', '$lo
             console.log("noms = " + JSON.stringify(noms));
 
             if (noms.length == 0) {
-                var nom = {player: player.id, bid: undefined, id: undefined, team: $rootScope.userTeam.id}
+                var nom = {player: player.id, bid: player.value, id: undefined, team: $rootScope.userTeam.id}
                 $scope.playerNoms.push({nom: nom, player: player});
             }
 
@@ -964,7 +964,7 @@ footyApp.controller('TransferSelectionController', ['$scope', '$rootScope', '$lo
             });
 
             if (noms.length == 0) {
-                var nom = {player: player.id, bid: undefined, id: undefined, team: $rootScope.userTeam.id}
+                var nom = {player: player.id, bid: player.value, id: undefined, team: $rootScope.userTeam.id}
                 $scope.playerNoms.push({nom: nom, player: player});
             }
 
