@@ -32,20 +32,21 @@
             <td ng-if="!nomination.is_next_highest_bid"><span class="fa fa-times"></span></td>
             <td class="actions">
                 <button class="btn btn-success"
-                        ng-dblclick="acceptNomination(nomination)"
-                        ng-if="nomination.status == 'Highest' || nomination.status == 'List'"
-                        ng-disabled="funds < nomination.bid">
+                        ng-click="acceptNomination(nomination)"
+                        ng-if="nomination.status == 'Highest' || nomination.status == 'List'">
+<!--                        ng-disabled="funds < nomination.bid"-->
+
                     <span class="fa fa-check"></span>
                     Accept
                 </button>
                 <button class="btn btn-warning"
-                        ng-dblclick="refreshData();"
+                        ng-click="refreshData();"
                         ng-if="nomination.status == 'Outbid'">
                     <span class="fa fa-refresh"></span>
                     Refresh Status
                 </button>
                 <button class="btn btn-danger"
-                        ng-dblclick="passOnNomination(nomination)"
+                        ng-click="passOnNomination(nomination)"
                         ng-hide="nomination.status == 'Bid Failed' || nomination.status == 'Accepted' || nomination.status == 'Passed' || nomination.status == 'Pending' || nomination.status == 'Joint Highest'">
                     <span class="fa fa-times"></span>
                     Pass
@@ -93,7 +94,7 @@
                         <button class="btn btn-warning" ng-click="removePlayerToSell(player)" >
                             <span class="fa fa-times"></span> Cancel
                         </button>
-                        <button class="btn btn-danger" ng-dblclick="sellPlayer(player)" >
+                        <button class="btn btn-danger" ng-click="sellPlayer(player)" >
                             <span class="fa fa-check"></span> Sell
                         </button>
                     </td>

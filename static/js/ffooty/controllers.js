@@ -1232,11 +1232,12 @@ footyApp.controller('TransferConfirmationController', ['$scope', '$rootScope', '
             console.log("parseFloat(player.value):", parseFloat(player.value));
             $scope.funds += parseFloat(player.value);
         });
-        angular.forEach($scope.userNominations, function (nomination) {
-            if (nomination.status == 'Accepted') {
-                $scope.funds -= parseFloat(nomination.bid);
-            }
-        });
+//        NOTE - not needed as the funds are refreshed after each buy/sell
+//        angular.forEach($scope.userNominations, function (nomination) {
+//            if (nomination.status == 'Accepted') {
+//                $scope.funds -= parseFloat(nomination.bid);
+//            }
+//        });
 
         // round the calculated value
         $scope.funds = Math.round( $scope.funds * 10 ) / 10;

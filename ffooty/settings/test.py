@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import os
 
 from .base import *
 
@@ -9,11 +10,16 @@ from .base import *
 # TEST_DISCOVER_ROOT = BASE_DIR
 # TEST_DISCOVER_PATTERN = "tests/test_*.py"
 
+DEBUG = True
+
+TEMPLATE_DEBUG = True
+
 ########## IN-MEMORY TEST DATABASE CONFIGURATION
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
+        # "NAME": ":memory:",
+        "NAME": os.path.join(BASE_DIR, "../data", "db.sqlite3"),
         "USER": "",
         "PASSWORD": "",
         "HOST": "",
