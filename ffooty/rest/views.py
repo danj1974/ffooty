@@ -127,6 +127,7 @@ class AuctionRandomPlayerCodesView(APIView):
             filter_kwargs['passed'] = False
         else:
             nomination_model = TransferNomination
+            filter_kwargs['status'] = TransferNomination.PENDING
         # create a list of player codes nominated for the auction but not assigned to a team
         nominated_player_codes = nomination_model.objects.select_related(
             'player'

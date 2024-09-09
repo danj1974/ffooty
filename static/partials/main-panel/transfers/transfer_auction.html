@@ -1,0 +1,59 @@
+<div ng-if="authUser == 'Admin'">
+    <label for="player_code">Enter player code</label>
+    <input id="player_code" type="number" ng-model="selectedPlayer.code" >
+    <button class="btn btn-default" ng-click="getPlayer(selectedPlayer.code)">Get Player</button>
+    <br>
+    <div id="selected_player" ng-if="selectedPlayer.admin_transfer_nomination_managers.length > 0">
+        <table class="table table-condensed" width="75%" border="1">
+            <tr>
+                <td><h2>{{ selectedPlayer.code }}</h2></td>
+                <td><h2>{{ selectedPlayer.name }}</h2></td>
+                <td><h2>{{ selectedPlayer.prem_team }}</h2></td>
+                <td><h2>{{ selectedPlayer.value }}</h2></td>
+                <td>
+                    <br>
+                    <span ng-repeat="manager in selectedPlayer.admin_transfer_nomination_managers"
+                            ng-click="setManager(manager)">{{ manager }}{{ $last ? '':', ' }}</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br>
+    <br>
+    <table class="table table-condensed" width="75%">
+        <thead>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Team</th>
+            <th>Value</th>
+            <th>Manager</th>
+            <th>Sale</th>
+            <th></th>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>{{ selectedPlayer.code }}</td>
+                <!--<td><input type="number" ng-model="selectedPlayer.code" ng-change="getPlayer()"></td>-->
+                <td>{{ selectedPlayer.name }}</td>
+                <td>{{ selectedPlayer.prem_team }}</td>
+                <td>{{ selectedPlayer.value }}</td>
+                <td><select ng-model="selectedPlayer.team" ng-options="team.id as team.manager.username for team in teams"></select></td>
+                <td><input ng-model="selectedPlayer.sale" ></td>
+                <td>
+                    <button class="btn btn-warning" ng-click="savePlayer()">
+                        <i class="fa fa-check"></i> Save
+                    </button>&nbsp;
+                    <!--<button class="btn btn-secondary" ng-click="cancel()">-->
+                        <!--<i class="fa fa-times"></i> Cancel-->
+                    <!--</button>-->
+                    <button class="btn btn-danger" ng-click="passNominations()">
+                        <i class="fa fa-undo"></i> Pass / Cancel
+                    </button>
+
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+</div>

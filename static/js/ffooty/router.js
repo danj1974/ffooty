@@ -202,6 +202,19 @@ footyApp.config(['$routeProvider', '$locationProvider', 'TEMPLATE_PATH', functio
 //	            return TeamDetails.get({id: $rootScope.userTeam.id}).$promise;
 //	        }],
 //        }
+    }).when('/transfers/auction/', {
+        controller: 'AdminTransferAuctionController',
+        templateUrl: TEMPLATE_PATH + 'main-panel/transfers/transfer_auction.html',
+        resolve: {
+            auctionRandomPlayerCodes: ['$rootScope', 'AuctionRandomPlayerCodes', function($rootScope, AuctionRandomPlayerCodes) {
+                console.log('admin: resolving auctionRandomPlayerCodes...');
+                return AuctionRandomPlayerCodes.query().$promise;
+            }],
+            teams: ['$rootScope', 'Teams', function($rootScope, Teams) {
+                console.log('admin: resolving Teams...');
+                return Teams.query().$promise;
+            }],
+    	}
     }).when('/teams/:team_id/', {
         controller: 'TeamScoresController',
         templateUrl: TEMPLATE_PATH + 'main-panel/teams/team_details.html',

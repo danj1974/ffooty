@@ -740,6 +740,99 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
 
 }]);
 
+footyApp.controller('AdminTransferAuctionController', ['$scope', '$location', '$rootScope', '$filter', 'Players', 'teams', 'auctionRandomPlayerCodes', 'AuctionPassNominations', 'AuctionDealLogs', 'TEMPLATE_PATH', function($scope, $location, $rootScope, $filter, Players, teams, auctionRandomPlayerCodes, AuctionPassNominations, AuctionDealLogs, TEMPLATE_PATH) {
+
+    $scope.players = $rootScope.players;
+    $scope.randomPlayerCodes = auctionRandomPlayerCodes;
+    $scope.teams = teams;
+
+    $scope.isAdmin = ($rootScope.authUser == 'Admin');
+
+    $scope.selectedPlayer = {};
+
+    $scope.getPlayer = function(playerCode) {
+        console.log("get_player");
+
+        // if no player code is provide, use the next one from the randomised list
+        if (playerCode == undefined) {
+            playerCode = $scope.randomPlayerCodes.pop();
+            console.log("playerCode set to " + playerCode);
+        }
+
+        Players.query({code: playerCode}).$promise
+            .then(function (response) {
+                console.log("getPlayer(): response = " + JSON.stringify(response));
+                // returns an array with one player object
+                $scope.selectedPlayer = response[0];
+            },
+            function (error) {
+                window.alert(JSON.stringify(error));
+            });
+    };
+
+    $scope.savePlayer = function() {
+        var p = $scope.selectedPlayer;
+        var position = p.position
+        console.log("savePlayers: " + JSON.stringify(p, null, 4));
+
+        if (p.team == undefined) {
+            window.alert("Please set the Manager or click 'Pass / Cancel'");
+        } else if (p.sale == undefined || parseFloat(p.sale) < parseFloat(p.value)) {
+            window.alert("Please add a valid sale price or click 'Pass / Cancel'");
+        } else {
+
+            Players.patch(p).$promise
+                .then(function (response) {
+                    var team = $scope.auctionTeamSummary[p.team];
+                    team.players[position].push(p.sale)
+                    team.funds -= p.sale;
+                    team.bought += 1;
+                    if (team.bought < 15) {
+                        team.funds_per_player = team.funds / (15 - team.bought);
+                    } else {
+                        team.funds_per_player = team.funds
+                    }
+                    $scope.selectedPlayer = {};
+                    $scope.refreshAuctionDealLogs();
+                },
+                function (error) {
+                    window.alert(JSON.stringify(error));
+                });
+        }
+    };
+
+    $scope.setManager = function(manager) {
+        angular.forEach($scope.teams, function(team, id) {
+            if (team.manager.username === manager) {
+                $scope.selectedPlayer.team = team.id;
+            }
+        });
+    }
+
+    $scope.cancel = function() {
+        $scope.selectedPlayer = {};
+    };
+
+    $scope.passNominations = function() {
+        var p = $scope.selectedPlayer;
+        console.log("passNominations: " + JSON.stringify(p, null, 4));
+
+        if (p.admin_transfer_nomination_managers.length > 0) {
+            AuctionPassNominations.get({player_id: p.id}).$promise
+                .then(function(response) {
+                    console.log('AuctionPassNominations: response = ' + JSON.stringify(response));
+                    $scope.selectedPlayer = {};
+//                    $scope.refreshAuctionDealLogs();
+                },
+                function (error) {
+                    window.alert(JSON.stringify(error));
+                });
+        } else {
+            console.log("passNominations: no auction nominations to pass.");
+        }
+    };
+}]);
+
 footyApp.controller('TransferListController', ['$scope', '$location', '$rootScope', 'CurrentWindow', 'TransferNominations', 'userTransferNoms', 'TEMPLATE_PATH', function($scope, $location, $rootScope, CurrentWindow, TransferNominations, userTransferNoms, TEMPLATE_PATH) {
 
     CurrentWindow.query().$promise
@@ -1096,6 +1189,7 @@ footyApp.controller('TransferRedirectController', ['$scope', '$rootScope', '$loc
 
     $rootScope.players = players;
     $rootScope.baseUrl = $location.path();
+    $scope.isAdmin = ($rootScope.authUser == 'Admin');
 
     console.log("TransferRedirectController: currentWindow = " + JSON.stringify($scope.currentWindow));
     var windowTypes = $rootScope.windowTypes;
@@ -1104,8 +1198,13 @@ footyApp.controller('TransferRedirectController', ['$scope', '$rootScope', '$loc
         console.log("TransferRedirectController: redirecting to /transfers/players_list/");
         $location.path('/transfers/players_list/');
     } else if (currentWindow.type == windowTypes.TRANSFER_CONFIRMATION) {
-        console.log("TransferRedirectController: redirecting to /transfers/confirmation/");
-        $location.path('/transfers/confirmation/');
+        if ($scope.isAdmin) {
+            console.log("TransferRedirectController: redirecting to /transfers/auction/");
+            $location.path('/transfers/auction/');
+        } else {
+            console.log("TransferRedirectController: redirecting to /transfers/confirmation/");
+            $location.path('/transfers/confirmation/');
+        }
     } else {
         console.log("TransferRedirectController: redirecting to /transfers/summary/");
         $location.path('/transfers/summary/');
