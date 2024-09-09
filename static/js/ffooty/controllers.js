@@ -740,7 +740,7 @@ footyApp.controller('AdminAuctionTeamsController', ['$scope', '$location', '$roo
 
 }]);
 
-footyApp.controller('AdminTransferAuctionController', ['$scope', '$location', '$rootScope', '$filter', 'Players', 'teams', 'auctionRandomPlayerCodes', 'AuctionPassNominations', 'AuctionDealLogs', 'TEMPLATE_PATH', function($scope, $location, $rootScope, $filter, Players, teams, auctionRandomPlayerCodes, AuctionPassNominations, AuctionDealLogs, TEMPLATE_PATH) {
+footyApp.controller('AdminTransferAuctionController', ['$scope', '$location', '$rootScope', '$filter', 'Players', 'teams', 'auctionRandomPlayerCodes', 'TransferNominations', 'AuctionPassNominations', 'AuctionDealLogs', 'TEMPLATE_PATH', function($scope, $location, $rootScope, $filter, Players, teams, auctionRandomPlayerCodes, TransferNominations, AuctionPassNominations, AuctionDealLogs, TEMPLATE_PATH) {
 
     $scope.players = $rootScope.players;
     $scope.randomPlayerCodes = auctionRandomPlayerCodes;
@@ -783,21 +783,24 @@ footyApp.controller('AdminTransferAuctionController', ['$scope', '$location', '$
 
             Players.patch(p).$promise
                 .then(function (response) {
-                    var team = $scope.auctionTeamSummary[p.team];
-                    team.players[position].push(p.sale)
-                    team.funds -= p.sale;
-                    team.bought += 1;
-                    if (team.bought < 15) {
-                        team.funds_per_player = team.funds / (15 - team.bought);
-                    } else {
-                        team.funds_per_player = team.funds
-                    }
+//                    var team = $scope.auctionTeamSummary[p.team];
+//                    team.players[position].push(p.sale)
+//                    team.funds -= p.sale;
+//                    team.bought += 1;
+//                    if (team.bought < 15) {
+//                        team.funds_per_player = team.funds / (15 - team.bought);
+//                    } else {
+//                        team.funds_per_player = team.funds
+//                    }
                     $scope.selectedPlayer = {};
-                    $scope.refreshAuctionDealLogs();
+//                    $scope.refreshAuctionDealLogs();
                 },
                 function (error) {
                     window.alert(JSON.stringify(error));
                 });
+
+                // TODO - update player nominations here?
+
         }
     };
 
