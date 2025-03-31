@@ -30,6 +30,7 @@ class AuctionFileUploadForm(forms.Form):
 
 class PlayerFileUploadForm(forms.Form):
     """
-    Form for uploading an html file of player scores.
+    Form for uploading a JSON file of player scores.
     """
     file = forms.FileField(label='File')
+    week = forms.IntegerField(label='Week', required=False)
