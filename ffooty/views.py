@@ -12,7 +12,7 @@ from ffooty.functions import (
     get_team_dict, get_week, update_players_json, update_weekly_scores,
     reset_for_new_season, initialise_players
 )
-from ffooty.models import Player, Team
+from ffooty.models import Player, Team, Week
 
 
 class LoginRequiredMixin(object):
@@ -118,7 +118,7 @@ class PlayerUpdateFileUploadView(LoginRequiredMixin, TemplateView):
 
         if form.is_valid():
             uploaded_file = request.FILES['file']
-            week = form.week or get_week()
+            week = Week.objects.filter(number=form.week).first() or get_week()
             update_players_json(week, file_object=uploaded_file)
             update_weekly_scores(week)
 
