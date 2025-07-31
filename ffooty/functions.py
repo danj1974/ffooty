@@ -102,12 +102,13 @@ def load_premiership_teams():
         {'name': 'Wolverhampton Wanderers', 'code': 'WLV', 'is_prem': True, 'web_code': 39},
     ]
 
-    for team in team_list:
-        print(PremTeam.objects.update_or_create(
-            name=team['name'],
-            code=team['code'],
-            defaults={'is_prem': team['is_prem'], 'web_code': team['web_code']}
-        ))
+    # TODO - manage active prem team list with migration files?
+    # for team in team_list:
+    #     print(PremTeam.objects.update_or_create(
+    #         name=team['name'],
+    #         code=team['code'],
+    #         defaults={'is_prem': team['is_prem'], 'web_code': team['web_code']}
+    #     ))
         # print(pt, created)
 
 
