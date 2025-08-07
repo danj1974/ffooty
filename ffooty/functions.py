@@ -225,14 +225,14 @@ def initialise_players(update=False, file_object=None):
             p.is_new = True
             p.save()
             new_players.append(p)
-            print(p.code, p.name, p.prem_team, p.value, created)
+            print(f'{p.code},"{p.name}",{p.prem_team},{p.value}')
 
     print("****")
     print('All players saved')
     print("****")
 
     if not update:
-        # Makes ure players are in the correct order before calculating tha AZFF player code
+        # Make sure players are in the correct order before calculating tha AZFF player code
         # get each group of players (by position), order by decreasing value then
         # assign an incrementing code for AZFF
         # Note that we can't use the custom manager at this stage (it uses code not web_code)
