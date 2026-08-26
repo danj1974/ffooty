@@ -2,8 +2,10 @@ import csv
 from datetime import datetime as dt, timedelta
 import json
 import random
+import re
 import requests
 
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Max
 
@@ -66,49 +68,50 @@ def load_premiership_teams():
     """
     # list of PremTeams to add
     team_list = [
-        {'name': 'Arsenal', 'code': 'ARS', 'is_prem': True, 'web_code': 3},
-        {'name': 'Aston Villa', 'code': 'AVL', 'is_prem': True, 'web_code': 7},
-        {'name': 'Bournemouth', 'code': 'BOU', 'is_prem': True, 'web_code': 91},
-        {'name': 'Brentford', 'code': 'BRE', 'is_prem': True, 'web_code': 94},
-        {'name': 'Brighton and Hove Albion', 'code': 'BTN', 'is_prem': True, 'web_code': 36},
-        {'name': 'Burnley', 'code': 'BUR', 'is_prem': False, 'web_code': 90},
+        {'name': 'Arsenal', 'code': 'ARS', 'is_prem': True, 'web_code': 810},
+        {'name': 'Aston Villa', 'code': 'AVL', 'is_prem': True, 'web_code': 811},
+        {'name': 'Bournemouth', 'code': 'BOU', 'is_prem': True, 'web_code': 809},
+        {'name': 'Brentford', 'code': 'BRE', 'is_prem': True, 'web_code': 812},
+        {'name': 'Brighton and Hove Albion', 'code': 'BTN', 'is_prem': True, 'web_code': 813},
+        {'name': 'Burnley', 'code': 'BUR', 'is_prem': False, 'web_code': None},
         {'name': 'Cardiff City', 'code': 'CAR', 'is_prem': False, 'web_code': None},
-        {'name': 'Chelsea', 'code': 'CHE', 'is_prem': True, 'web_code': 8},
-        {'name': 'Crystal Palace', 'code': 'CRY', 'is_prem': True, 'web_code': 31},
-        {'name': 'Everton', 'code': 'EVE', 'is_prem': True, 'web_code': 11},
-        {'name': 'Fulham', 'code': 'FUL', 'is_prem': True, 'web_code': 54},
+        {'name': 'Chelsea', 'code': 'CHE', 'is_prem': True, 'web_code': 814},
+        {'name': 'Coventry', 'code': 'COV', 'is_prem': True, 'web_code': 815},
+        {'name': 'Crystal Palace', 'code': 'CRY', 'is_prem': True, 'web_code': 816},
+        {'name': 'Everton', 'code': 'EVE', 'is_prem': True, 'web_code': 817},
+        {'name': 'Fulham', 'code': 'FUL', 'is_prem': True, 'web_code': 818},
         {'name': 'Huddersfield Town', 'code': 'HUD', 'is_prem': False, 'web_code': None},
-        {'name': 'Hull', 'code': 'HUL', 'is_prem': False, 'web_code': None},
-        {'name': 'Ipswich Town', 'code': 'IPS', 'is_prem': True, 'web_code': 40},
-        {'name': 'Leeds United', 'code': 'LEE', 'is_prem': False, 'web_code': 2},
-        {'name': 'Leicester City', 'code': 'LEI', 'is_prem': True, 'web_code': 13},
-        {'name': 'Liverpool', 'code': 'LIV', 'is_prem': True, 'web_code': 14},
-        {'name': 'Manchester City', 'code': 'MCY', 'is_prem': True, 'web_code': 43},
-        {'name': 'Manchester United', 'code': 'MUN', 'is_prem': True, 'web_code': 1},
+        {'name': 'Hull', 'code': 'HUL', 'is_prem': True, 'web_code': 819},
+        {'name': 'Ipswich Town', 'code': 'IPS', 'is_prem': True, 'web_code': 820},
+        {'name': 'Leeds United', 'code': 'LEE', 'is_prem': True, 'web_code': 821},
+        {'name': 'Leicester City', 'code': 'LEI', 'is_prem': False, 'web_code': None},
+        {'name': 'Liverpool', 'code': 'LIV', 'is_prem': True, 'web_code': 822},
+        {'name': 'Manchester City', 'code': 'MCY', 'is_prem': True, 'web_code': 823},
+        {'name': 'Manchester United', 'code': 'MUN', 'is_prem': True, 'web_code': 824},
         {'name': 'Middlesbrough', 'code': 'MID', 'is_prem': False, 'web_code': None},
-        {'name': 'Newcastle United', 'code': 'NEW', 'is_prem': True, 'web_code': 4},
-        {'name': 'Norwich City', 'code': 'NOR', 'is_prem': False, 'web_code': 45},
-        {'name': 'Nottingham Forest', 'code': 'NOT', 'is_prem': True, 'web_code': 17},
+        {'name': 'Newcastle United', 'code': 'NEW', 'is_prem': True, 'web_code': 825},
+        {'name': 'Norwich City', 'code': 'NOR', 'is_prem': False, 'web_code': None},
+        {'name': 'Nottingham Forest', 'code': 'NOT', 'is_prem': True, 'web_code': 826},
         {'name': 'Queens Park Rangers', 'code': 'QPR', 'is_prem': False, 'web_code': None},
-        {'name': 'Sheffield United', 'code': 'SHF', 'is_prem': False, 'web_code': 49},
-        {'name': 'Southampton', 'code': 'SOT', 'is_prem': True, 'web_code': 20},
+        {'name': 'Sheffield United', 'code': 'SHF', 'is_prem': False, 'web_code': None},
+        {'name': 'Southampton', 'code': 'SOT', 'is_prem': False, 'web_code': None},
         {'name': 'Stoke City', 'code': 'STO', 'is_prem': False, 'web_code': None},
-        {'name': 'Sunderland', 'code': 'SUN', 'is_prem': False, 'web_code': None},
+        {'name': 'Sunderland', 'code': 'SUN', 'is_prem': True, 'web_code': 827},
         {'name': 'Swansea City', 'code': 'SWA', 'is_prem': False, 'web_code': None},
-        {'name': 'Tottenham Hotspur', 'code': 'TOT', 'is_prem': True, 'web_code': 6},
-        {'name': 'Watford', 'code': 'WAT', 'is_prem': False, 'web_code': 57},
-        {'name': 'West Bromwich Albion', 'code': 'WBA', 'is_prem': False, 'web_code': 35},
-        {'name': 'West Ham United', 'code': 'WHM', 'is_prem': True, 'web_code': 21},
-        {'name': 'Wolverhampton Wanderers', 'code': 'WLV', 'is_prem': True, 'web_code': 39},
+        {'name': 'Tottenham Hotspur', 'code': 'TOT', 'is_prem': True, 'web_code': 828},
+        {'name': 'Watford', 'code': 'WAT', 'is_prem': False, 'web_code': None},
+        {'name': 'West Bromwich Albion', 'code': 'WBA', 'is_prem': False, 'web_code': None},
+        {'name': 'West Ham United', 'code': 'WHM', 'is_prem': False, 'web_code': None},
+        {'name': 'Wolverhampton Wanderers', 'code': 'WLV', 'is_prem': False, 'web_code': None},
     ]
 
     # TODO - manage active prem team list with migration files?
-    # for team in team_list:
-    #     print(PremTeam.objects.update_or_create(
-    #         name=team['name'],
-    #         code=team['code'],
-    #         defaults={'is_prem': team['is_prem'], 'web_code': team['web_code']}
-    #     ))
+    for team in team_list:
+        print(PremTeam.objects.update_or_create(
+            name=team['name'],
+            code=team['code'],
+            defaults={'is_prem': team['is_prem'], 'web_code': team['web_code']}
+        ))
         # print(pt, created)
 
 
@@ -148,13 +151,81 @@ def get_player_codes():
         Player.STR: Player.objects.strikers().aggregate(Max('code'))['code__max'] or 4000,
     }
 
+def extract_data_from_html(file_obj):
+    """
+    Extract player & squad data from TG stats html.
+    """
+    soup = BeautifulSoup(file_obj, "html.parser")
 
+    decoder = json.JSONDecoder()
+
+    for script in soup.find_all("script"):
+        text = script.string or script.get_text()
+
+        if "self.__next_f.push" not in text:
+            continue
+
+        if "competitionData" not in text:
+            continue
+
+        # Extract the JSON string which is the second argument to
+        # self.__next_f.push([1, "..."])
+        match = re.search(
+            r'self\.__next_f\.push\(\[1,\s*("(?:\\.|[^"\\])*")\]\)',
+            text
+        )
+
+        if not match:
+            continue
+
+        # Decode the escaped JavaScript string.
+        payload = json.loads(match.group(1))
+
+        # The payload contains Next.js Flight data before/after the
+        # actual JSON object. Find the beginning of the object.
+        start = payload.find('{"brand"')
+
+        if start == -1:
+            continue
+
+        # Decode exactly one JSON object rather than using {.*}.
+        data, _ = decoder.raw_decode(payload[start:])
+
+        comp_data = data.get("competitionData")
+
+        if comp_data is None:
+            continue
+
+        return (
+            comp_data["players"],
+            normalize_stat_list(comp_data["stats"]),
+        )
+
+    raise ValueError("Could not find competitionData in Next.js payload")
+
+def normalize_stat_list(stats: list) -> list:
+    normalized = []
+
+    for stat in stats:
+        normalized.append({
+            "web_code": stat["i"],
+            "match_id": stat["m"],
+            "points": stat["p"],
+            "week": stat["w"],
+            "club_id": stat["c"],
+            "player_stats": json.loads(stat["r"]),
+            "results": stat["results"],
+        })
+
+    return normalized
+
+# TODO - requires further updates to work with the new player data structure
 def initialise_players(update=False, file_object=None):
     """
     Initialize player information from the TG website.
 
     This function should only be run once at the start of a season. If there
-    are existing :class:``ffooty.models.Player`` records then the the method
+    are existing :class:``ffooty.models.Player`` records then the method
     will not run.
 
     :return: None
@@ -169,17 +240,17 @@ def initialise_players(update=False, file_object=None):
     print("codes:", codes)
 
     # get a lookup dict of PremTeams, key = web_code
-    prem_team_dict = get_prem_team_dict(key='web_code')
+    prem_team_dict = get_prem_team_dict(key='code')
     print(prem_team_dict)
 
     # get the rows from the provided stats file
     if file_object:
-        rows = json.load(file_object)
+        players, _ = extract_data_from_html(file_object)
         file_object.close()
     else:
         print("No file object provided")
         return
-    print("No. of player table rows = ", len(rows))
+    print("No. of player table rows = ", len(players))
 
     # track new players *during update only*
     new_players = []
@@ -188,7 +259,7 @@ def initialise_players(update=False, file_object=None):
     print("New Players")
     print("****")
 
-    for row in rows:
+    for row in players:
 
         first_name = row.get('first_name')
         if first_name:
@@ -197,15 +268,17 @@ def initialise_players(update=False, file_object=None):
             name = row['last_name']
 
         web_code = row['id']
-        prem_team_code = row['squad_id']
+        prem_team_code = row['clubId']
         prem_team = prem_team_dict[prem_team_code]
-        value = float(row['cost'] / 1000000.0)
+        value = float(row['value'])
         position = str(row['position'])
 
+        # TODO - check the wk0 file and see if last years total was available
         # stats for new players can be an empty list
-        stats = row['stats'] or {}
+        season_stats = row.get('seasonStats', {})
 
-        last_years_total = stats.get('total_points', 0)
+        last_years_total = season_stats.get('total_points', 0)
+
 
         # create (or update) a Player instance
         p, created = Player.objects.update_or_create(
@@ -319,8 +392,139 @@ def reset_for_new_season(definitely=False):
         team.line_up_is_valid = False
         team.save()
 
+    # reset some constants
+    no_score_weeks = Constant.objects.get(name='NO_SCORE_WEEKS')
+    no_score_weeks.number_value = 0
+    no_score_weeks.save()
+
+    team_funds = Constant.objects.get(name='TEAM_TRANSFER_FUNDS')
+    team_funds.number_value = 0
+    team_funds.save()
+
+    for team in Team.active_objects.all():
+        team.winnings = 0.0
+        team.save()
+
     load_premiership_teams()
     initialise_weeks()
+
+def update_players(players: list):
+    # get a lookup dict of PremTeams, key = web_code
+    prem_team_dict = get_prem_team_dict(key='web_code')
+
+    # get the most recent codes assigned
+    codes = get_player_codes()
+
+    for player in players:
+        name = player['short']
+        web_code = player['id']
+
+        # get existing player (or None if the web code isn't in the db)
+        found_player = Player.objects.filter(web_code=web_code).first()
+
+        # filter out any inactive players in the dataset
+        # deactivate any matching players in the db (i.e. those that leave the premier league)
+        if not player["active"]:
+            if found_player and found_player.is_active:
+                print("{}: {} is now inactive".format(
+                    player.code, name
+                ))
+                found_player.is_active = False
+                found_player.save()
+            continue
+
+        prem_team_code = player['clubId']
+        prem_team = prem_team_dict[prem_team_code]
+        value = float(player['value'])
+        position = str(player['positionId'])
+        total_score = player.get('points', 0)
+
+        if found_player:
+            # if team has changed, flag player as 'new' and update the team
+            if str(found_player.prem_team) != str(prem_team):
+                print("{}: {} team change from {} to {}".format(
+                    found_player.code, found_player.name, found_player.prem_team, prem_team
+                ))
+                # TODO - review when to make is_new = false
+                found_player.is_new = True
+                found_player.prem_team = prem_team
+
+            found_player.total_score = total_score
+            found_player.save()
+        else:
+            codes[position] += 1
+            player_code = codes[position]
+
+            new_player = Player.objects.create(
+                name=name,
+                position=position,
+                code=player_code,
+                web_code=web_code,
+                prem_team=prem_team,
+                value=value,
+                total_score=total_score,
+                is_new=True,
+            )
+
+            print("New Player: {}: {} {}, {}".format(
+                new_player.code, new_player.name, new_player.prem_team, new_player.value
+            ))
+
+
+def update_player_scores(week: Week, stats: list):
+    for stat in stats:
+        if stat["week"] != week.number:
+            continue
+
+        player = Player.objects.filter(web_code=stat['web_code']).first()
+
+        if not player:
+            print("UNKNOWN PLAYER:", stat)
+            continue
+
+        score = stat["points"]
+
+        appearances = stat["player_stats"].get("games_played")
+        if player.appearances == appearances:
+            if score== 0:
+                # sets the score to None if the player has not played
+                score = None
+            else:
+                print("WARNING GAMES_PLAYED HAS NOT CHANGED FOR NON-ZERO SCORE:", player, score)
+        else:
+            # update appearances for the player
+            player.appearances = appearances
+            player.save()
+
+        PlayerScore.objects.update_or_create(
+            player=player,
+            week=week,
+            team=player.team,
+            defaults={'value': score}
+        )
+
+    # this step shouldn't be necessary, but some players are missing from the website stats data
+    # (whilst others that have not played are included, but with a score of zero)
+    # we have to assume that they haven't played.
+    # Possibly a bug, but it could be that unused subs are included, but players not in the match
+    # squad are excluded
+    for player in Player.objects.filter(is_active=True):
+        ps = PlayerScore.objects.filter(player=player, week=week)
+        if not ps:
+            PlayerScore.objects.create(
+                player=player,
+                week=week,
+                team=player.team,
+                value=None,
+            )
+
+
+def update_players_and_scores_from_html_file(week: int, file_object):
+    players, stats = extract_data_from_html(file_object)
+    file_object.close()
+
+    update_players(players)
+    update_player_scores(week, stats)
 
 
 def update_players_json(week=None, file_object=None):

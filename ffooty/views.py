@@ -9,8 +9,7 @@ from django.views.generic import View, TemplateView
 
 from ffooty.forms import LoginForm, AuctionFileUploadForm, PlayerFileUploadForm
 from ffooty.functions import (
-    get_team_dict, get_week, update_players_json, update_weekly_scores,
-    reset_for_new_season, initialise_players
+    get_week, update_players_and_scores_from_html_file, update_weekly_scores,
 )
 from ffooty.models import Player, Team, Week
 
@@ -119,7 +118,7 @@ class PlayerUpdateFileUploadView(LoginRequiredMixin, TemplateView):
         if form.is_valid():
             uploaded_file = request.FILES['file']
             week = Week.objects.filter(number=form.data['week']).first() or get_week()
-            update_players_json(week, file_object=uploaded_file)
+            update_players_and_scores_from_html_file(week, file_object=uploaded_file)
             update_weekly_scores(week)
 
         else:
