@@ -1,4 +1,5 @@
 import csv
+from copy import deepcopy
 from datetime import datetime as dt, timedelta
 import json
 import random
@@ -151,6 +152,7 @@ def get_player_codes():
         Player.STR: Player.objects.strikers().aggregate(Max('code'))['code__max'] or 4000,
     }
 
+
 def extract_data_from_html(file_obj):
     """
     Extract player & squad data from TG stats html.
@@ -198,16 +200,18 @@ def extract_data_from_html(file_obj):
 
         return (
             comp_data["players"],
-            normalize_stat_list(comp_data["stats"]),
+            process_stats(comp_data["stats"]),
         )
 
     raise ValueError("Could not find competitionData in Next.js payload")
 
-def normalize_stat_list(stats: list) -> list:
-    normalized = []
+
+def process_stats(stats: list) -> list:
+    # first normalize the stats into a more sensible data structure
+    normalized_stats = []
 
     for stat in stats:
-        normalized.append({
+        normalized_stats.append({
             "web_code": stat["i"],
             "match_id": stat["m"],
             "points": stat["p"],
@@ -217,7 +221,21 @@ def normalize_stat_list(stats: list) -> list:
             "results": stat["results"],
         })
 
-    return normalized
+    stats_dict = {}
+
+    default_week_stats = {
+        "games_played": 0,
+        "points": 0,
+    }
+
+    for stat in normalized_stats:
+        player_stats = stats_dict.setdefault(stat["web_code"], {})
+        week_stats = player_stats.setdefault(stat["week"], deepcopy(default_week_stats))
+        week_stats["games_played"] += stat["stats"]["games_played"]
+        week_stats["points"] += stat["stats"]["points"]
+
+    return stats_dict
+
 
 # TODO - requires further updates to work with the new player data structure
 def initialise_players(update=False, file_object=None):
@@ -408,6 +426,7 @@ def reset_for_new_season(definitely=False):
     load_premiership_teams()
     initialise_weeks()
 
+
 def update_players(players: list):
     # get a lookup dict of PremTeams, key = web_code
     prem_team_dict = get_prem_team_dict(key='web_code')
@@ -471,52 +490,23 @@ def update_players(players: list):
             ))
 
 
-def update_player_scores(week: Week, stats: list):
-    for stat in stats:
-        if stat["week"] != week.number:
-            continue
+def update_player_scores(week: Week, stats: dict):
+    for player in Player.objects.filter(is_active=True):
 
-        player = Player.objects.filter(web_code=stat['web_code']).first()
+        week_stats = stats.get(player.web_code, {}).get(week.number, {})
 
-        if not player:
-            print("UNKNOWN PLAYER:", stat)
-            continue
+        games_played = week_stats.get("games_played", 0)
+        score = week_stats.get("points", 0)
 
-        score = stat["points"]
-
-        appearances = stat["player_stats"].get("games_played")
-        if player.appearances == appearances:
-            if score== 0:
-                # sets the score to None if the player has not played
-                score = None
-            else:
-                print("WARNING GAMES_PLAYED HAS NOT CHANGED FOR NON-ZERO SCORE:", player, score)
-        else:
-            # update appearances for the player
-            player.appearances = appearances
-            player.save()
+        if games_played == 0:
+            score = None
 
         PlayerScore.objects.update_or_create(
             player=player,
             week=week,
             team=player.team,
-            defaults={'value': score}
+            value=score,
         )
-
-    # this step shouldn't be necessary, but some players are missing from the website stats data
-    # (whilst others that have not played are included, but with a score of zero)
-    # we have to assume that they haven't played.
-    # Possibly a bug, but it could be that unused subs are included, but players not in the match
-    # squad are excluded
-    for player in Player.objects.filter(is_active=True):
-        ps = PlayerScore.objects.filter(player=player, week=week)
-        if not ps:
-            PlayerScore.objects.create(
-                player=player,
-                week=week,
-                team=player.team,
-                value=None,
-            )
 
 
 def update_players_and_scores_from_html_file(week: int, file_object):
