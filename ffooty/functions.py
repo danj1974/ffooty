@@ -231,8 +231,8 @@ def process_stats(stats: list) -> list:
     for stat in normalized_stats:
         player_stats = stats_dict.setdefault(stat["web_code"], {})
         week_stats = player_stats.setdefault(stat["week"], deepcopy(default_week_stats))
-        week_stats["games_played"] += stat["stats"]["games_played"]
-        week_stats["points"] += stat["stats"]["points"]
+        week_stats["games_played"] += stat["player_stats"]["games_played"]
+        week_stats["points"] += stat["points"]
 
     return stats_dict
 
