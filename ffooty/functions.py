@@ -427,7 +427,7 @@ def update_players(players: list):
         if not player["active"]:
             if found_player and found_player.is_active:
                 print("{}: {} is now inactive".format(
-                    player.code, name
+                    found_player.code, name
                 ))
                 found_player.is_active = False
                 found_player.save()
