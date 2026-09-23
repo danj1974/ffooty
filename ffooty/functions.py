@@ -30,6 +30,19 @@ def initialise_weeks():
         week_date += timedelta(days=7)
 
 
+def get_season():
+    """
+    Return the season (competition end) year as an integer.
+    """
+    now = dt.now().date()
+
+    # season year is the year the competition ends, so
+    # anytime after July would be the next year
+    if now.month > 7:
+        return now.year + 1
+    return now.year
+
+
 def get_week():
     """
     Get the current Week instance.
@@ -52,6 +65,15 @@ def get_weeks_for_month(month=None):
     if not month:
         month = dt.now().month
     return Week.objects.filter(date__month=month).order_by('number')
+
+
+def get_game_week(week = None):
+    """
+    Return the TG Game Week number as an int.
+    """
+    week_number = week.number if week else get_week().number
+    no_score_weeks = Constant.objects.get(name='NO_SCORE_WEEKS').value
+    return week_number - no_score_weeks
 
 
 def get_current_window():
@@ -153,9 +175,9 @@ def get_player_codes():
     }
 
 
-def extract_data_from_html(file_obj):
+def extract_player_data_from_html(file_obj):
     """
-    Extract player & squad data from TG stats html.
+    Extract player data from TG stats html.
     """
     soup = BeautifulSoup(file_obj, "html.parser")
 
@@ -198,10 +220,7 @@ def extract_data_from_html(file_obj):
         if comp_data is None:
             continue
 
-        return (
-            comp_data["players"],
-            process_stats(comp_data["stats"]),
-        )
+        return comp_data["players"]
 
     raise ValueError("Could not find competitionData in Next.js payload")
 
@@ -263,7 +282,7 @@ def initialise_players(update=False, file_object=None):
 
     # get the rows from the provided stats file
     if file_object:
-        players, _ = extract_data_from_html(file_object)
+        players = extract_player_data_from_html(file_object)
         file_object.close()
     else:
         print("No file object provided")
@@ -491,9 +510,11 @@ def update_players(players: list):
 
 
 def update_player_scores(week: Week, stats: dict):
+    game_week = get_game_week(week=week)
+
     for player in Player.objects.filter(is_active=True):
 
-        week_stats = stats.get(player.web_code, {}).get(week.number, {})
+        week_stats = stats.get(player.web_code, {}).get(game_week, {})
 
         games_played = week_stats.get("games_played", 0)
         score = week_stats.get("points", 0)
@@ -509,9 +530,13 @@ def update_player_scores(week: Week, stats: dict):
         )
 
 
-def update_players_and_scores_from_html_file(week: int, file_object):
-    players, stats = extract_data_from_html(file_object)
-    file_object.close()
+def update_players_and_scores_from_html_file(week: int, html_file, json_file):
+    players = extract_player_data_from_html(html_file)
+    html_file.close()
+
+    raw_stats = json.load(json_file)["stats"]
+    json_file.close()
+    stats = process_stats(raw_stats)
 
     update_players(players)
     update_player_scores(week, stats)

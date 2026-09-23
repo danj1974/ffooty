@@ -9,7 +9,11 @@ from django.views.generic import View, TemplateView
 
 from ffooty.forms import LoginForm, AuctionFileUploadForm, PlayerFileUploadForm
 from ffooty.functions import (
-    get_week, update_players_and_scores_from_html_file, update_weekly_scores,
+    get_game_week,
+    get_season,
+    get_week,
+    update_players_and_scores_from_html_file,
+    update_weekly_scores,
 )
 from ffooty.models import Player, Team, Week
 
@@ -109,16 +113,24 @@ class PlayerUpdateFileUploadView(LoginRequiredMixin, TemplateView):
         Add the file upload form to the context.
         """
         context = super(PlayerUpdateFileUploadView, self).get_context_data(**kwargs)
-        context.update({'file_upload_form': PlayerFileUploadForm})
+        context.update(
+            {
+                'file_upload_form': PlayerFileUploadForm,
+                'season': get_season(),
+                'game_week': get_game_week(),
+                'tg_site': 'https://fantasyfootball.telegraph.co.uk',
+            }
+        )
         return context
 
     def post(self, request, *args, **kwargs):
         form = PlayerFileUploadForm(request.POST, request.FILES)
 
         if form.is_valid():
-            uploaded_file = request.FILES['file']
+            html_file = request.FILES['html_file']
+            json_file = request.FILES['json_file']
             week = Week.objects.filter(number=form.data['week']).first() or get_week()
-            update_players_and_scores_from_html_file(week, file_object=uploaded_file)
+            update_players_and_scores_from_html_file(week, html_file=html_file, json_file=json_file)
             update_weekly_scores(week)
 
         else:
