@@ -531,14 +531,15 @@ def update_player_scores(week: Week, stats: dict):
 
 
 def update_players_and_scores_from_html_file(week: int, html_file, json_file):
-    players = extract_player_data_from_html(html_file)
-    html_file.close()
+    # the player file can be none for score-only updates
+    if html_file:
+        players = extract_player_data_from_html(html_file)
+        html_file.close()
+        update_players(players)
 
     raw_stats = json.load(json_file)["stats"]
     json_file.close()
     stats = process_stats(raw_stats)
-
-    update_players(players)
     update_player_scores(week, stats)
 
 
