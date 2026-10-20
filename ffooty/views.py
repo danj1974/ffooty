@@ -127,7 +127,6 @@ class PlayerUpdateFileUploadView(LoginRequiredMixin, TemplateView):
         form = PlayerFileUploadForm(request.POST, request.FILES)
 
         if form.is_valid():
-            breakpoint()
             html_file = request.FILES.get('html_file')
             json_file = request.FILES['json_file']
             week = Week.objects.filter(number=form.data['week']).first() or get_week()
