@@ -32,6 +32,6 @@ class PlayerFileUploadForm(forms.Form):
     """
     Form for uploading a JSON file of player scores.
     """
-    html_file = forms.FileField(label='Player File (HTML)')
+    html_file = forms.FileField(label='Player File (HTML) [Optional]', required=False)
     json_file = forms.FileField(label='Scores File (JSON)')
     week = forms.IntegerField(label='Week', required=False)

@@ -80,6 +80,10 @@ td.actions > button {
 }
 
 label {
-    margin-top: 20px;
-    margin-right: 20px;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+#id_html_file, #id_json_file {
+    margin-bottom: 10px;
 }
